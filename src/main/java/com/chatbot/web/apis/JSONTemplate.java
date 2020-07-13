@@ -1,4 +1,4 @@
-/* template 준비 중
+/*
 package com.chatbot.web.apis;
 
 import org.json.simple.JSONObject;
@@ -23,4 +23,5 @@ public class JSONTemplate {
         json = outer.toJSONString();
     }
 }
-*/
+
+ */
