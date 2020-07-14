@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 
 ### DB ###
-!**/src/main/resource/
+!**/main/resources/*.properties
 
 ### STS ###
 .apt_generated
