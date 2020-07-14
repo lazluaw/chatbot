@@ -1,0 +1,61 @@
+{
+  "bot": {
+    "id": "5f018b3e2ed9de0001ebd697", //chatbotBody
+    "name": "bicycle"
+  },
+  "intent": {
+    "id": "5f0c8d0bc519090001ecb0bd",
+    "name": "checkReservation",
+    "extra": {
+      "reason": {
+        "code": 0,
+        "message": "OK" //try-catch : json이 넘어왔는지 여부
+      }
+    }
+  },
+  "action": { //스킬
+    "id": "5f0c8b3b09555a00012d0a50",
+    "name": "bicycle_checkReservation",
+    "params": { //매핑
+      "reservationDate": "{\"date\": \"2020-07-17\", \"dateTag\": \"Friday\", \"dateHeadword\": null, \"year\": null, \"month\": null, \"day\": null}"
+    }, //date - bicycleDate
+    "detailParams": {
+      "reservationDate": {
+        "groupName": "",
+        "origin": "금요일",
+        "value": "{\"date\": \"2020-07-17\", \"dateTag\": \"Friday\", \"dateHeadword\": null, \"year\": null, \"month\": null, \"day\": null}"
+      } //detailParams와 db를 연결해야 할 지, params와 연결해야 할 지 고민 중
+    },
+    "clientExtra": {}
+  },
+  "userRequest": {
+    "block": {
+      "id": "5f0c8d0bc519090001ecb0bd",
+      "name": "checkReservation"
+    },
+    "user": {
+      "id": "50d8fa3e102f9fc9fe9b34d43c0386adc3dfbb53dea4006a4c5cfb60ba55a1bfdb",
+      "type": "botUserKey",
+      "properties": {
+        "botUserKey": "50d8fa3e102f9fc9fe9b34d43c0386adc3dfbb53dea4006a4c5cfb60ba55a1bfdb",
+        "plusfriendUserKey": "A3kX5K8iVr2l", //userPlusfriendKey
+        "bot_user_key": "50d8fa3e102f9fc9fe9b34d43c0386adc3dfbb53dea4006a4c5cfb60ba55a1bfdb",
+        "plusfriend_user_key": "A3kX5K8iVr2l"
+      }
+    },
+    "utterance": "금요일", //try-catch === !null 발화 ok
+    "params": {
+      "surface": "Kakaotalk.plusfriend"
+    },
+    "lang": "ko",
+    "timezone": "Asia/Seoul"
+  },
+  "contexts": [
+    {
+      "name": "addReservation", //출력
+      "lifespan": 1,
+      "ttl": 60,
+      "params": {}
+    }
+  ]
+}

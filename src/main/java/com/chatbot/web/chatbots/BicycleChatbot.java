@@ -5,11 +5,11 @@ import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FixBicycleChatbot {
+public class BicycleChatbot {
     private String json;
     private JSONObject inner, outer, middleInner, finalInner;
     private JSONArray list;
-    public FixBicycleChatbot() {
+    public BicycleChatbot() {
         inner = new JSONObject();
         outer = new JSONObject();
         list = new JSONArray();
@@ -34,7 +34,8 @@ public class FixBicycleChatbot {
         return json;
     }
     public String checkReservation() {
-        inner.put("text", "예약일을 반드시 체크해주시기 바랍니다. 예약 확정 도와드릴까요?");
+
+        inner.put("text", "예약일을 반드시 체크해주시기 바랍니다. 맞으신가요?");
         outer.put("simpleText", inner);
         list.add(outer);
         middleInner.put("outputs", list);
