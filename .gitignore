@@ -36,5 +36,6 @@ out/
 
 ### VS Code ###
 .vscode/
-src/main/java/com/chatbot/web/domains/
-src/main/resources/templates/
+src/main/resources/templates
+src/main/java/com/chatbot/web/daos/
+
