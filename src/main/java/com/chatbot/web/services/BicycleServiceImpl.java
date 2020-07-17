@@ -1,15 +1,15 @@
-package com.chatbot.web.chatbots;
+package com.chatbot.web.services;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BicycleChatbot {
+public class BicycleServiceImpl {
     private String json;
     private JSONObject inner, outer, middleInner, finalInner;
     private JSONArray list;
-    public BicycleChatbot() {
+    public BicycleServiceImpl() {
         inner = new JSONObject();
         outer = new JSONObject();
         list = new JSONArray();
