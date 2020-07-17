@@ -4,33 +4,38 @@ import com.chatbot.web.domains.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.Map;
+
 public class MainSerialization {
-    @Autowired Response response;
-    public static void getResponseSerialization() throws JsonProcessingException {
+
+    public static String getResponseSerialization() throws JsonProcessingException {
         ObjectMapper mapper = getObjectMapper();
-        Response responses = getResponse();
-        String response = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(responses);
-        System.out.println(response);
+        Map<String, String> responses = getContent();
+        String responseStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(responses);
+        System.out.println(responseStr);
+        return responseStr;
     }
 
     private static ObjectMapper getObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-
         SimpleModule simpleModule = new SimpleModule();
-
         simpleModule.addSerializer(Response.class, new ResponseSerializer());
         mapper.registerModule(simpleModule);
+        System.out.println(mapper);
         return mapper;
     }
 
-    private static Response getResponse() {
-        Response addContent = new Response(
-                "version", "기본 텍스트"
-        );
-        return addContent;
+    private static Map<String, String> getContent() {
+        Response response = new Response();
+        response.setVersion("2.0");
+        response.setText("기본 텍스트");
+        Map<String, String> responses = new HashMap<>();
+        responses.put("version", response.getVersion());
+        responses.put("text", response.getText());
+        return responses;
     }
 }
