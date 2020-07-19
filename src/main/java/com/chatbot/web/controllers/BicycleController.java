@@ -1,7 +1,7 @@
 package com.chatbot.web.controllers;
 
 import com.chatbot.web.domains.Bicycle;
-import com.chatbot.web.services.BicycleServiceImpl;
+import com.chatbot.web.conversions.BicycleSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class BicycleController {
     @Autowired
-    BicycleServiceImpl bicycleService;
+    BicycleSerializer bicycleService;
     @Autowired
     Bicycle bicycle;
 
-    @PostMapping("/reservation")
+    @PostMapping("/v1/kakao/reservation")
     public String fixReservation() {
         return bicycleService.addReservation();
     }
 
-    @PostMapping("/reservation/check")
+    @PostMapping("/v1/kakao/reservation/check")
     public String checkReservation(@RequestBody Bicycle jsonData) {
         System.out.println(jsonData);
         return bicycleService.checkReservation();
     }
 
-    @PostMapping("/reservation/complete")
+    @PostMapping("/v1/kakao/reservation/complete")
     public String completeReservation() {
         return bicycleService.completeReservation();
     }

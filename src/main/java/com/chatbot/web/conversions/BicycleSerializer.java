@@ -1,15 +1,15 @@
-package com.chatbot.web.services;
+package com.chatbot.web.conversions;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BicycleServiceImpl {
+public class BicycleSerializer {
     private String json;
     private JSONObject inner, outer, middleInner, finalInner;
     private JSONArray list;
-    public BicycleServiceImpl() {
+    public BicycleSerializer() {
         inner = new JSONObject();
         outer = new JSONObject();
         list = new JSONArray();

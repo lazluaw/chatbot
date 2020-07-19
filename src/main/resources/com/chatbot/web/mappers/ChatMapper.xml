@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chatbot.web.mappers.ChatMapper">
+    <insert id="insertChat" parameterType="com.chatbot.web.domains.Chat">
+        insert id, chat_idx chatIdx, chat_kind chatKind, chat_body chatBody,
+        insert_date insertDate, update_date updateDate into chat
+        values (#{chatKind}, #{chatBody})
+    </insert>
+    <update id="updateChat" parameterType="com.chatbot.web.domains.Chat">
+        update
+    </update>
+</mapper>

@@ -1,4 +1,5 @@
 create table chat (
+id int auto_increment,
 chat_idx int auto_increment,
 insert_date datetime,
 update_date datetime,
@@ -11,6 +12,7 @@ DEFAULT CHARSET=utf8
 COLLATE=utf8_general_ci;
 
 create table chathistory (
+id int auto_increment,
 history_idx int auto_increment,
 chat_idx int,
 chat_body text,

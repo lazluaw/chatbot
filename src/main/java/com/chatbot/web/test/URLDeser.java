@@ -1,4 +1,4 @@
-package com.chatbot.web.conversions;
+package com.chatbot.web.test;
 
 import com.chatbot.web.domains.Product;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.Map;
 
 @Service
-public class Input {
+public class URLDeser {
     @Autowired
     Product product;
     public void serializer(Map<String, Object> jsonData) {
