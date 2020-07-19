@@ -4,21 +4,20 @@ import com.chatbot.web.domains.Response;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.io.IOException;
 
+@Service
 public class ResponseSerializer extends JsonSerializer<Response> {
     @Override
     public void serialize(Response value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
-        gen.writeFieldName("version");
-        gen.writeString(String.valueOf(value.getVersion()));
+        gen.writeStringField("version", value.getVersion());
 
         gen.writeObject("template");
         gen.writeStartArray("outputs");
         gen.writeObject("simpleText");
-        gen.writeFieldName("text");
-        gen.writeString("text");
+        gen.writeStringField("text", "기본 텍스트");
 
         gen.writeEndArray();
         gen.writeEndObject();

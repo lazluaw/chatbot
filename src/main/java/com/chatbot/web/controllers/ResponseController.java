@@ -1,19 +1,19 @@
 package com.chatbot.web.controllers;
 
-import com.chatbot.web.conversions.MainSerialization;
-import com.chatbot.web.conversions.ResponseSerializer;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import com.chatbot.web.services.ResponseServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/chatbot")
 public class ResponseController {
+    @Autowired
+    ResponseServiceImpl responseService;
     @ResponseBody
     @GetMapping("/response")
-    public String basicResponse() throws JsonProcessingException {
-        return MainSerialization.getResponseSerialization();
+    public String basicResponse() throws IOException {
+        return responseService.serializer();
     }
 }

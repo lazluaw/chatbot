@@ -1,4 +1,4 @@
-package com.chatbot.web;
+package com.chatbot.web.config;
 
 import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
