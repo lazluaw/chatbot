@@ -1,4 +1,4 @@
-package com.chatbot.web.conversions;
+package com.chatbot.web.test;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

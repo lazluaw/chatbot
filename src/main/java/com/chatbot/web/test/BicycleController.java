@@ -1,7 +1,5 @@
-package com.chatbot.web.controllers;
+package com.chatbot.web.test;
 
-import com.chatbot.web.domains.Bicycle;
-import com.chatbot.web.conversions.BicycleSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

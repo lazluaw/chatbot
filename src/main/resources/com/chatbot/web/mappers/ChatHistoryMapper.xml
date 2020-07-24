@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chatbot.web.mappers.ChatHistoryMapper">
+    <select id="insertHistoryData" parameterType="com.chatbot.web.domains.ChatHistory">
+        insert into chathistory (user_info, chat_body, insert_date, update_date)
+        values (#{userInfo}, #{chatBody}, now(), now())
+    </select>
+
+    <update id="updateHistoryData" parameterType="com.chatbot.web.domains.ChatHistory">
+        update chathistory set
+        user_info = #{userInfo},
+        chat_body = #{chatBody},
+        updat_date = #{updateDate}
+    </update>
+
+    <delete id="deleteHistoryData" parameterType="com.chatbot.web.domains.ChatHistory">
+        delete from chathistory where chat_id = {#chatId};
+    </delete>
+</mapper>

@@ -1,4 +1,4 @@
-package com.chatbot.web.domains;
+package com.chatbot.web.test;
 
 import lombok.Data;
 import org.springframework.context.annotation.Lazy;
