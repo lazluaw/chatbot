@@ -4,8 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ChatMapper">
     <insert id="insertChat" parameterType="com.chatbot.web.domains.Chat">
-        insert into chat (user_code, chat_kind, chat_body, insert_date, update_date)
-        values (100020004, "c", "스킬", now(), now())
+        insert into chat (user_code, chat_kind, chat_body, insert_date)
+        values (100020001, #{chatKind}, #{chatBody}, now())
     </insert>
 
     <update id="updateChat" parameterType="com.chatbot.web.domains.Chat">
@@ -13,7 +13,7 @@
         chat_kind = #{chatKind},
         chat_body = #{chatBody},
         update_date = now()
-        where user_code = 100020003;
+        where user_code = 100020003
     </update>
 
     <delete id="deleteChat" parameterType="com.chatbot.web.domains.Chat">
