@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @MappedTypes(LocalDate.class)
 public class ChatHistory {
     private Long id;
+    private int chatId;
     private String userInfo, chatBody;
     private LocalDateTime insertDate, updateDate;
 }

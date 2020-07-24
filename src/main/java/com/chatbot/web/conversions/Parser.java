@@ -36,13 +36,14 @@ public class Parser {
             String userInfo = userRequest.toString();
 
             if(chatKind != null) {
-                chat.setChatKind("c");
+                chat.setChatKind("b");
                 chat.setChatBody(chatBody);
-                chatMapper.updateChatData(chat);
+                chatMapper.insertChat(chat);
+                System.out.println(chat.getId());
 
                 chatHistory.setUserInfo(userInfo);
                 chatHistory.setChatBody(chatBody);
-                chatHistoryMapper.insertHistoryData(chatHistory);
+                chatHistoryMapper.insertHistory(chatHistory);
             }
         } catch (ParseException e) {
             e.printStackTrace();

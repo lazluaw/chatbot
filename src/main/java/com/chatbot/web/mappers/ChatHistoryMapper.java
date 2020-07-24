@@ -7,9 +7,9 @@ import java.util.List;
 
 @Repository
 public interface ChatHistoryMapper {
-    public void insertHistoryData(ChatHistory chatHistory);
-    public void updateHistoryData(ChatHistory chatHistory);
-    public void deleteHistoryData(ChatHistory chatHistory);
-    public ChatHistory findOneHistoryData(String Id);
-    public List<ChatHistory> findAllHistoryData();
+    public void insertHistory(ChatHistory chatHistory);
+    public void updateHistory(ChatHistory chatHistory);
+    public void deleteHistory(ChatHistory chatHistory);
+    public ChatHistory findOneHistory(String Id);
+    public List<ChatHistory> findAllHistory();
 }

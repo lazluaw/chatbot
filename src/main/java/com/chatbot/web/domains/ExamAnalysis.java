@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @MappedTypes(LocalDate.class)
 public class ExamAnalysis {
     private Long id;
-    private String wrongAnswer;
+    private int userCode, examKind, examNum;
+    private String subjectCode, wrongAnswer;
     private LocalDateTime insertDate;
 }

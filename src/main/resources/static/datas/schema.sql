@@ -51,7 +51,7 @@ COLLATE=utf8_general_ci;
 create table examanalysis (
 analysis_id int auto_increment primary key,
 user_code int not null,
-subject_code varchar(30) not null,
+subject_code varchar(10) not null,
 exam_kind int not null,
 exam_num int not null,
 wrong_answer varchar(200) not null,
@@ -69,7 +69,6 @@ CREATE TABLE user
     `id`                INT            NOT NULL    AUTO_INCREMENT,
     `user_code`         INT            NOT NULL UNIQUE,
     `school_code`       INT            NOT NULL,
-    //데이터 파일과 다른 필드명 문의
     `cur_grade`         INT            NULL,
     `home_class`        INT            NULL,
     `name`              VARCHAR(9)     NOT NULL,
