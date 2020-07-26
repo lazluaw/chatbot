@@ -3,10 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ChatHistoryMapper">
-    <select id="insertHistory" parameterType="com.chatbot.web.domains.ChatHistory">
-        insert into chathistory (user_info, chat_body, insert_date, update_date)
-        values (#{userInfo}, #{chatBody}, now(), now())
-    </select>
+    <insert id="insertHistory" parameterType="com.chatbot.web.domains.ChatHistory">
+        insert into chathistory (user_info, chat_body, insert_date)
+        values (#{userInfo}, #{chatBody}, now())
+    </insert>
 
     <update id="updateHistory" parameterType="com.chatbot.web.domains.ChatHistory">
         update chathistory set
@@ -16,6 +16,6 @@
     </update>
 
     <delete id="deleteHistory" parameterType="com.chatbot.web.domains.ChatHistory">
-        delete from chathistory where chat_id = {#chatId};
+        delete from chathistory where chatBody = #{chatBody};
     </delete>
 </mapper>

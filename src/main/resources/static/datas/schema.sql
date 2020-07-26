@@ -1,12 +1,11 @@
 -- 기본 --
 create table chat (
-chat_id int auto_increment,
+chat_id int auto_increment primary key,
 user_code int not null,
-insert_date timestamp,
-update_date timestamp,
-chat_kind varchar(1),
-chat_body text,
-constraint chat_pk primary key (chat_id),
+insert_date timestamp not null,
+update_date timestamp not null,
+chat_kind varchar(1) not null,
+chat_body text not null,
 constraint chat_fk foreign key (user_code) references user(user_code)
 )
 ENGINE=InnoDB
@@ -14,13 +13,12 @@ DEFAULT CHARSET=utf8
 COLLATE=utf8_general_ci;
 
 create table chathistory (
-history_id int auto_increment,
-chat_id int,
+history_id int auto_increment primary key,
+chat_id int null,
 user_info varchar(1000) not null,
-chat_body text,
-insert_date datetime,
-update_date datetime,
-constraint history_pk primary key (history_id),
+chat_body text not null,
+insert_date timestamp not null,
+update_date timestamp not null,
 constraint history_fk foreign key (chat_id) references chat(chat_id)
 )
 ENGINE=InnoDB
@@ -42,7 +40,7 @@ exam_choice4 varchar(100) not null,
 exam_choice5 varchar(100) not null,
 exam_answer varchar(200) not null,
 exam_content varchar(1000) not null,
-insert_date timestamp
+insert_date timestamp not null
 )
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8
@@ -55,7 +53,7 @@ subject_code varchar(10) not null,
 exam_kind int not null,
 exam_num int not null,
 wrong_answer varchar(200) not null,
-insert_date timestamp,
+insert_date timestamp not null,
 constraint examanalysis_fk foreign key (user_code) references user(user_code)
 )
 ENGINE=InnoDB

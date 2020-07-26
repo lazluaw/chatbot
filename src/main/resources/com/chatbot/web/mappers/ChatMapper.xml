@@ -19,7 +19,7 @@
     <delete id="deleteChat" parameterType="com.chatbot.web.domains.Chat">
         delete from chat where chat_kind = #{chatKind}
     </delete>
-    
+
     <select id="findOneChat" parameterType="com.chatbot.web.domains.Chat"
             resultType="String">
         select chat_body, chat_kind
@@ -27,6 +27,8 @@
     </select>
 </mapper>
 
-<!--<selectKey resultType="int" keyProperty="id" order="BEFORE">-->
-<!--select chat_id from chat-->
-<!--</selectKey>-->
+<!--
+<selectKey resultType="int" keyProperty="id" order="BEFORE">
+            select chat_id from chat
+        </selectKey>
+-->

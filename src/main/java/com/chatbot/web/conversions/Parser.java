@@ -40,7 +40,7 @@ public class Parser {
                 chat.setChatBody(chatBody);
                 chatMapper.insertChat(chat);
                 chatMapper.updateChat(chat);
-                System.out.println("chat_id: " + chat.getId());
+                System.out.println("chat_id: " + chat.getId()); //null값 수정해야 함
                 System.out.println("chat_kind: " + chat.getChatKind());
                 System.out.println("chat_body: " + chat.getChatBody());
 
@@ -52,38 +52,21 @@ public class Parser {
             e.printStackTrace();
         }
     }
-    public void examKindParser(Map<String, Object> jsonParams) throws JsonProcessingException {
+    public void subjectCodeParser(Map<String, Object> jsonData) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
+        String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonData);
         JSONParser parser = new JSONParser();
         try {
             JSONObject obj = (JSONObject) parser.parse(jsonStr);
-            JSONObject userRequset = (JSONObject) obj.get("userRequest");
-            String examKind = (String) userRequset.get("utterance");
+            JSONObject userRequest = (JSONObject) obj.get("userRequest");
+            String subjectCode = (String) userRequest.get("utterance");
+            System.out.println("subjectCode: " + subjectCode);
 
-            switch (examKind) {
-                case "1학기 중간고사":
-                    exam.setExamKind(1);
-                    examMapper.insertExamData(exam);
-                    break;
-                case "1학기 기말고사":
-                    exam.setExamKind(2);
-                    examMapper.insertExamData(exam);
-                    break;
-                case "2학기 중간고사":
-                    exam.setExamKind(3);
-                    examMapper.insertExamData(exam);
-                    break;
-                case "2학기 기말고사":
-                    exam.setExamKind(4);
-                    examMapper.insertExamData(exam);
-                    break;
-                default:
-                    System.out.println("ERROR");
-                    break;
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public void examAnalysisParser(Map<String, Object> jsonData) throws JsonProcessingException {
+
     }
 }
