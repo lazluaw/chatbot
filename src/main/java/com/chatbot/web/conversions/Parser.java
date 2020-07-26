@@ -52,7 +52,8 @@ public class Parser {
             e.printStackTrace();
         }
     }
-    public void subjectCodeParser(Map<String, Object> jsonData) throws JsonProcessingException {
+
+    public void examAnalysisParser(Map<String, Object> jsonData) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonData);
         JSONParser parser = new JSONParser();
@@ -62,11 +63,9 @@ public class Parser {
             String subjectCode = (String) userRequest.get("utterance");
             System.out.println("subjectCode: " + subjectCode);
 
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    public void examAnalysisParser(Map<String, Object> jsonData) throws JsonProcessingException {
-
     }
 }

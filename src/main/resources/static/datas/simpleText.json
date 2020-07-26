@@ -56,45 +56,5 @@
 
 
 
-mostInnerObj1.put("blockId", "59ed51909418c2298c0e0bcd");
-innerObj2.put("data", mostInnerObj1);
-innerObj2.put("type", "block");
-innerObj2.put("label", "처음으로");
-innerObj2.put("message", "처음으로");
-arr1.add(innerObj2);
 
-innerObj3.put("type", "text");
-innerObj3.put("label", "국어");
-innerObj3.put("message", "국어");
-arr1.add(innerObj3);
-
-innerObj4.put("type", "text");
-innerObj4.put("label", "국어");
-innerObj4.put("message", "국어");
-arr1.add(innerObj4);
-
-innerObj5.put("type", "text");
-innerObj5.put("label", "국어");
-innerObj5.put("message", "국어");
-arr1.add(innerObj5);
-
-innerObj6.put("type", "text");
-innerObj6.put("label", "국어");
-innerObj6.put("message", "국어");
-arr1.add(innerObj6);
-
-innerObj7.put("type", "text");
-innerObj7.put("label", "국어");
-innerObj7.put("message", "국어");
-arr1.add(innerObj7);
-
-innerObj8.put("type", "text");
-innerObj8.put("label", "국어");
-innerObj8.put("message", "국어");
-arr1.add(innerObj8);
-
-innerObj9.put("type", "text");
-innerObj9.put("label", "국어");
-innerObj9.put("message", "국어");
-arr1.add(innerObj9);
 
