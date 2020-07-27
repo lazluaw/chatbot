@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Lazy @Data
 @MappedTypes(LocalDate.class)
 public class Chat {
-    private Long id;
+    private int id;
     private int userCode;
     private String chatKind, chatBody;
     private LocalDateTime insertDate, updateDate;

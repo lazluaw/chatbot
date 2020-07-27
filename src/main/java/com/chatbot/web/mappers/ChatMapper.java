@@ -10,6 +10,6 @@ public interface ChatMapper {
     public void insertChat(Chat chat);
     public void updateChat(Chat chat);
     public void deleteChat(Chat chat);
-    public Chat findOneChat(String Id);
+    public Chat findOneChat(int id);
     public List<Chat> findAllChat();
 }

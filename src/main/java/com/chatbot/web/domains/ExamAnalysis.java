@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Lazy @Data
 @MappedTypes(LocalDate.class)
 public class ExamAnalysis {
-    private Long id;
+    private int id;
     private int userCode, examKind, examNum;
     private String subjectCode, wrongAnswer;
     private LocalDateTime insertDate;

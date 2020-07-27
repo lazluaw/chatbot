@@ -4,6 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ChatMapper">
     <insert id="insertChat" parameterType="com.chatbot.web.domains.Chat">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
         insert into chat (user_code, chat_kind, chat_body, insert_date)
         values (100020001, #{chatKind}, #{chatBody}, now())
     </insert>
@@ -22,13 +25,8 @@
 
     <select id="findOneChat" parameterType="com.chatbot.web.domains.Chat"
             resultType="String">
-        select chat_body, chat_kind
+        select chat_body
         from chat
+        where last_insert_id()
     </select>
 </mapper>
-
-<!--
-<selectKey resultType="int" keyProperty="id" order="BEFORE">
-            select chat_id from chat
-        </selectKey>
--->

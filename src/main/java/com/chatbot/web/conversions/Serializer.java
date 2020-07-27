@@ -50,6 +50,13 @@ public class Serializer {
         innerObj9 = new JSONObject();
         mostInnerObj1 = new JSONObject(); //block
 
+//        for(int i=0; i < 8; ++i) {
+//            innerObj1.put("action", "message");
+//            innerObj1.put("label", subjects);
+//            innerObj1.put("messageText", subjects);
+//            arr1.add(innerObj1);
+//        }
+
         innerObj1.put("action", "message");
         innerObj1.put("label", "국어");
         innerObj1.put("messageText", "국어");
@@ -133,10 +140,10 @@ public class Serializer {
 
         arr1.add(innerObj);
 
-        innerObj.put("title", "[시험문제 번호]\n[시험문제 질문] 삼색이는 언제나 귀엽다. 가장 귀여운 순간은?");
-        innerObj.put("description", "정답: [시험문제 정답]\n선택한 답: [오답]\n[시험문제 내용] 간략한 설명을 해주겠다.");
+        innerObj.put("title", "[시험문제 번호]\n[시험문제 질문]");
+        innerObj.put("description", "정답: [시험문제 정답]\n선택한 답: [오답]\n[시험문제 내용]");
         innerObj.put("thumbnail", mostInnerObj);
-        mostInnerObj.put("imageUrl", "https://i.ytimg.com/vi/dk137nhAK3E/maxresdefault.jpg");
+        mostInnerObj.put("imageUrl", "https://cdn.pixabay.com/photo/2016/07/06/15/29/math-1500720_1280.jpg");
 
         innerObj.put("buttons", arr2);
         arr2.add(mostInnerObj1);

@@ -1,5 +1,6 @@
 package com.chatbot.web.controllers;
 
+import com.chatbot.web.conversions.Analyst;
 import com.chatbot.web.conversions.Parser;
 import com.chatbot.web.conversions.Serializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,15 @@ import java.util.Map;
 public class ExamAnalysisController {
     @Autowired Parser parser;
     @Autowired Serializer serializer;
+
+    //test
+    @Autowired Analyst analyst;
+
+
     @PostMapping("/v1/kakao/subject/code")
     public Map<String, Object> subjectCodeCheck(@RequestBody Map<String, Object> jsonParams) throws IOException {
         parser.chatDataParser(jsonParams);
+        analyst.examAnalysis();
         return serializer.subjectCodeSer();
     }
 

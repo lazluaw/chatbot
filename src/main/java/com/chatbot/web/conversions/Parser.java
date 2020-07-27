@@ -17,12 +17,12 @@ import java.util.Map;
 
 @Service
 public class Parser {
-    @Autowired ChatMapper chatMapper;
-    @Autowired ChatHistoryMapper chatHistoryMapper;
-    @Autowired ExamMapper examMapper;
     @Autowired Chat chat;
     @Autowired ChatHistory chatHistory;
     @Autowired Exam exam;
+    @Autowired ChatMapper chatMapper;
+    @Autowired ChatHistoryMapper chatHistoryMapper;
+    @Autowired ExamMapper examMapper;
     public void chatDataParser(Map<String, Object> jsonParams) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
@@ -40,7 +40,8 @@ public class Parser {
                 chat.setChatBody(chatBody);
                 chatMapper.insertChat(chat);
                 chatMapper.updateChat(chat);
-                System.out.println("chat_id: " + chat.getId()); //null값 수정해야 함
+
+                System.out.println("chat_id: " + chat.getId());
                 System.out.println("chat_kind: " + chat.getChatKind());
                 System.out.println("chat_body: " + chat.getChatBody());
 

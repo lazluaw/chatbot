@@ -1,4 +1,4 @@
-package com.chatbot.web.controllers;
+package com.chatbot.web.test;
 
 import com.chatbot.web.conversions.Parser;
 import com.chatbot.web.conversions.Serializer;
