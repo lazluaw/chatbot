@@ -63,7 +63,6 @@ public class Parser {
             String subjectCode = (String) userRequest.get("utterance");
             System.out.println("subjectCode: " + subjectCode);
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
