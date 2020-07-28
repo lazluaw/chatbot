@@ -3,30 +3,21 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ChatMapper">
-    <insert id="insertChat" parameterType="com.chatbot.web.domains.Chat">
-        <selectKey resultType="int" keyProperty="id" order="AFTER">
-            select last_insert_id()
-        </selectKey>
+    <insert id="insertData" parameterType="chat"
+            useGeneratedKeys="true" keyProperty="id">
         insert into chat (user_code, chat_kind, chat_body, insert_date)
         values (100020001, #{chatKind}, #{chatBody}, now())
     </insert>
 
-    <update id="updateChat" parameterType="com.chatbot.web.domains.Chat">
+    <update id="updateData" parameterType="chat">
         update chat set
         chat_kind = #{chatKind},
         chat_body = #{chatBody},
         update_date = now()
-        where user_code = 100020003
+        where chat_id = 1
     </update>
 
-    <delete id="deleteChat" parameterType="com.chatbot.web.domains.Chat">
-        delete from chat where chat_kind = #{chatKind}
+    <delete id="deleteData" parameterType="chat">
+        delete from chat where chat_id = #{chatId}
     </delete>
-
-    <select id="findOneChat" parameterType="com.chatbot.web.domains.Chat"
-            resultType="String">
-        select chat_body
-        from chat
-        where last_insert_id()
-    </select>
 </mapper>

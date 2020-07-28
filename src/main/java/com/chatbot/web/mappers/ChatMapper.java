@@ -7,9 +7,7 @@ import java.util.List;
 
 @Repository
 public interface ChatMapper {
-    public void insertChat(Chat chat);
-    public void updateChat(Chat chat);
-    public void deleteChat(Chat chat);
-    public Chat findOneChat(int id);
-    public List<Chat> findAllChat();
+    public void insertData(Chat chat);
+    public void updateData(Chat chat);
+    public void deleteData(Chat chat);
 }

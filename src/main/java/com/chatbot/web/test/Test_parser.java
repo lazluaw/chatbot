@@ -22,27 +22,28 @@ public class Test_parser {
             JSONObject userRequset = (JSONObject) obj.get("userRequest");
             String examKind = (String) userRequset.get("utterance");
 
-            switch (examKind) {
-                case "1학기 중간고사":
-                    exam.setExamKind(1);
-                    examMapper.insertExamData(exam);
-                    break;
-                case "1학기 기말고사":
-                    exam.setExamKind(2);
-                    examMapper.insertExamData(exam);
-                    break;
-                case "2학기 중간고사":
-                    exam.setExamKind(3);
-                    examMapper.insertExamData(exam);
-                    break;
-                case "2학기 기말고사":
-                    exam.setExamKind(4);
-                    examMapper.insertExamData(exam);
-                    break;
-                default:
-                    System.out.println("ERROR");
-                    break;
-            }
+//            switch (examKind) {
+//                case "1학기 중간고사":
+//                    exam.setExamKind(1);
+//                    examMapper.insertExam(exam);
+//                    break;
+//                case "1학기 기말고사":
+//                    exam.setExamKind(2);
+//                    examMapper.insertExam(exam);
+//                    break;
+//                case "2학기 중간고사":
+//                    exam.setExamKind(3);
+//                    exam.setExamKind(3);
+//                    examMapper.insertExam(exam);
+//                    break;
+//                case "2학기 기말고사":
+//                    exam.setExamKind(4);
+//                    examMapper.insertExam(exam);
+//                    break;
+//                default:
+//                    System.out.println("ERROR");
+//                    break;
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

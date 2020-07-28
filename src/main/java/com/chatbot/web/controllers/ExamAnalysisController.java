@@ -15,7 +15,6 @@ import java.util.Map;
 public class ExamAnalysisController {
     @Autowired Parser parser;
     @Autowired Serializer serializer;
-
     //test
     @Autowired Analyst analyst;
 

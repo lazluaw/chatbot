@@ -143,7 +143,7 @@ public class Serializer {
         innerObj.put("title", "[시험문제 번호]\n[시험문제 질문]");
         innerObj.put("description", "정답: [시험문제 정답]\n선택한 답: [오답]\n[시험문제 내용]");
         innerObj.put("thumbnail", mostInnerObj);
-        mostInnerObj.put("imageUrl", "https://cdn.pixabay.com/photo/2016/07/06/15/29/math-1500720_1280.jpg");
+        mostInnerObj.put("imageUrl", "https://cdn.pixabay.com/photo/2014/06/03/19/38/road-sign-361513_1280.jpg");
 
         innerObj.put("buttons", arr2);
         arr2.add(mostInnerObj1);

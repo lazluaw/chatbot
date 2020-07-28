@@ -3,8 +3,20 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ExamMapper">
-    <insert id="insertExamData" parameterType="com.chatbot.web.domains.Exam">
-        insert into exam (exam_kind, insert_date)
-        values (#{examKind}, now())
-    </insert>
+    <select id="selectList" parameterType="exam"
+            resultType="hashMap">
+        select exam_kind as examKind,
+        exam_num as examNum,
+        exam_question as examQuestion,
+        exam_division as examDivision,
+        exam_choice1 as examChoice1,
+        exam_choice2 as examChoice2,
+        exam_choice3 as examChoice3,
+        exam_choice4 as examChoice4,
+        exam_choice5 as examChoice5,
+        exam_answer as examAnswer,
+        exam_content as examContent
+        from exam
+        where exam_id = 1
+    </select>
 </mapper>

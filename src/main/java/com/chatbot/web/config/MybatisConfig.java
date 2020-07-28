@@ -20,6 +20,8 @@ public class MybatisConfig {
         sessionFactory.setDataSource(dataSource);
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sessionFactory.setMapperLocations(resolver.getResources("classpath:com/chatbot/web/mappers/*.xml"));
+        //Alias
+        sessionFactory.setTypeAliasesPackage("com.chatbot.web.domains");
         return sessionFactory.getObject();
     }
 

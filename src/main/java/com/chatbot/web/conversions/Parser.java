@@ -38,16 +38,12 @@ public class Parser {
             if(chatKind != null) {
                 chat.setChatKind("B");
                 chat.setChatBody(chatBody);
-                chatMapper.insertChat(chat);
-                chatMapper.updateChat(chat);
-
-                System.out.println("chat_id: " + chat.getId());
-                System.out.println("chat_kind: " + chat.getChatKind());
-                System.out.println("chat_body: " + chat.getChatBody());
+                chatMapper.insertData(chat);
+                chatMapper.updateData(chat);
 
                 chatHistory.setUserInfo(userInfo);
                 chatHistory.setChatBody(chatBody);
-                chatHistoryMapper.insertHistory(chatHistory);
+                chatHistoryMapper.insertData(chatHistory);
             }
         } catch (ParseException e) {
             e.printStackTrace();
