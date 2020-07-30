@@ -1,26 +1,31 @@
 package com.chatbot.web.conversions;
 
+import com.chatbot.web.domains.ChatHistory;
+import com.chatbot.web.mappers.ChatHistoryMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
 public class Serializer {
-    private JSONObject obj, arrObj, arrObj1, innerObj, middleObj, outsideObj, mostInnerObj, mostInnerObj1,
+    @Autowired ChatHistoryMapper chatHistoryMapper;
+    @Autowired ChatHistory chatHistory;
+    private JSONObject obj, arrObj, innerObj, middleObj, outsideObj, mostInnerObj, mostInnerObj1, getMostInnerObj2,
             innerObj1, innerObj2, innerObj3, innerObj4, innerObj5, innerObj6, innerObj7, innerObj8, innerObj9;
     private JSONArray arr, arr1, arr2;
 
-    public Map<String, Object> simpleTextSer() {
+    public Map<String, Object> exitSer() {
         obj = new JSONObject();
         arrObj = new JSONObject();
         arr = new JSONArray();
         innerObj = new JSONObject();
         mostInnerObj = new JSONObject();
 
-        mostInnerObj.put("text", "기본 텍스트");
+        mostInnerObj.put("text", "챗봇이 종료됩니다. 감사합니다.");
         innerObj.put("simpleText", mostInnerObj);
         arr.add(innerObj);
         arrObj.put("outputs", arr);
@@ -30,7 +35,7 @@ public class Serializer {
         return obj;
     }
 
-    public Map<String, Object> subjectCodeSer() {
+    public Map<String, Object> subjectCodeSer() throws JsonProcessingException {
         obj = new JSONObject();
         arrObj = new JSONObject();
         arr = new JSONArray();
@@ -111,6 +116,10 @@ public class Serializer {
         obj.put("template", arrObj);
         obj.put("version", "2.0");
 
+        chatHistory.setChatKind("B");
+        chatHistory.setChatBody("과목명을 선택해주세요.");
+        chatHistoryMapper.insertData(chatHistory);
+
         return obj;
     }
 
@@ -123,6 +132,7 @@ public class Serializer {
         middleObj = new JSONObject();
         innerObj = new JSONObject();
         mostInnerObj = new JSONObject();
+        getMostInnerObj2 = new JSONObject();
 
         arr1 = new JSONArray();
         arr2 = new JSONArray();
@@ -147,9 +157,13 @@ public class Serializer {
 
         innerObj.put("buttons", arr2);
         arr2.add(mostInnerObj1);
+        arr2.add(getMostInnerObj2);
         mostInnerObj1.put("messageText", "처음으로");
         mostInnerObj1.put("label", "처음으로");
         mostInnerObj1.put("action", "message");
+        getMostInnerObj2.put("messageText", "챗봇종료");
+        getMostInnerObj2.put("label", "챗봇종료");
+        getMostInnerObj2.put("action", "message");
 
         arrObj.put("outputs", arr);
         obj.put("template", arrObj);

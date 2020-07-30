@@ -13,6 +13,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -27,25 +30,36 @@ public class Parser {
         ObjectMapper mapper = new ObjectMapper();
         String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
         JSONParser parser = new JSONParser();
+        SimpleDateFormat sDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); //날짜 포맷 지정
+
         try {
             JSONObject obj = (JSONObject) parser.parse(jsonStr);
-            JSONObject bot = (JSONObject) obj.get("bot");
-            String chatKind = (String) bot.get("id");
             JSONObject userRequest = (JSONObject) obj.get("userRequest");
             String chatBody = (String) userRequest.get("utterance");
+//            JSONObject block = (JSONObject) userRequest.get("block");
+//            String name = (String) block.get("name"); //block's name
             String userInfo = userRequest.toString();
 
-            if(chatKind != null) {
-                chat.setChatKind("B");
-                chat.setChatBody(chatBody);
-                chatMapper.insertData(chat);
-                chatMapper.updateData(chat);
+            String uDate = sDate.format(new Date()); //날짜 지정
+            Date toDate = sDate.parse(uDate);
 
-                chatHistory.setUserInfo(userInfo);
-                chatHistory.setChatBody(chatBody);
-                chatHistoryMapper.insertData(chatHistory);
+            chat.setChatBody(chatBody);
+
+            //update 로직 변경
+            if(chat.getInsertDate() == toDate){
+                chatMapper.insertData(chat);
+            }else{
+                chat.setCheckDate(uDate);
+                chatMapper.updateData(chat);
             }
-        } catch (ParseException e) {
+
+            chatHistory.setChatId(chat.getId());
+            System.out.println(chat.getId());
+            chatHistory.setChatKind("C");
+            chatHistory.setUserInfo(userInfo);
+            chatHistory.setChatBody(chatBody);
+            chatHistoryMapper.insertData(chatHistory);
+        } catch (ParseException | java.text.ParseException e) {
             e.printStackTrace();
         }
     }
@@ -54,11 +68,12 @@ public class Parser {
         ObjectMapper mapper = new ObjectMapper();
         String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonData);
         JSONParser parser = new JSONParser();
+
         try {
             JSONObject obj = (JSONObject) parser.parse(jsonStr);
             JSONObject userRequest = (JSONObject) obj.get("userRequest");
             String subjectCode = (String) userRequest.get("utterance");
-            System.out.println("subjectCode: " + subjectCode);
+//            System.out.println("subjectCode: " + subjectCode);
 
         } catch (Exception e) {
             e.printStackTrace();

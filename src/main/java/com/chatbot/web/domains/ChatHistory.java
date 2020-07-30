@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 @Alias("chatHistory")
 @MappedTypes(LocalDate.class)
 public class ChatHistory {
-    private int id;
-    private int chatId;
-    private String userInfo, chatBody;
+    private int id, chatId;
+    private String userInfo, chatKind, chatBody;
     private LocalDateTime insertDate, updateDate;
 }

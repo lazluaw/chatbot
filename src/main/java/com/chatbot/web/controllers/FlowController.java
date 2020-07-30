@@ -1,4 +1,4 @@
-package com.chatbot.web.test;
+package com.chatbot.web.controllers;
 
 import com.chatbot.web.conversions.Parser;
 import com.chatbot.web.conversions.Serializer;
@@ -11,13 +11,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/chatbot")
 @ResponseBody
-public class SimpleTextController {
+public class FlowController {
     @Autowired
     Serializer serializer;
     @Autowired Parser parser;
-    @PostMapping("/v1/kakao/simple/text")
-    public Map<String, Object> basicResponse(@RequestBody Map<String, Object> jsonParams) throws IOException {
+    @PostMapping("/v1/kakao/chat/exit")
+    public Map<String, Object> exitResponse(@RequestBody Map<String, Object> jsonParams) throws IOException {
         parser.chatDataParser(jsonParams);
-        return serializer.simpleTextSer();
+        return serializer.exitSer();
     }
 }

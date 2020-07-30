@@ -16,11 +16,11 @@ public class Analyst {
     public void examAnalysis() {
         System.out.println("---chat---");
         System.out.println("id: "+chat.getId());
-        System.out.println("chatKind: "+chat.getChatKind());
         System.out.println("chatBody: "+chat.getChatBody());
 
         System.out.println("---chat history---");
         System.out.println(chatHistory.getChatId());
+        System.out.println("chatKind: "+chatHistory.getChatKind());
         System.out.println(chatHistory.getChatBody());
 
         System.out.println("---exam---");

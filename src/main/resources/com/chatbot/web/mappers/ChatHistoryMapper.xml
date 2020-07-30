@@ -4,18 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ChatHistoryMapper">
     <insert id="insertData" parameterType="chatHistory">
-        <selectKey resultType="int" keyProperty="id" order="AFTER">
-            select last_insert_id()
-        </selectKey>
-        insert into chathistory (user_info, chat_body, insert_date)
-        values (#{userInfo}, #{chatBody}, now())
+        insert into chathistory (chat_id, user_info, chat_kind, chat_body, insert_date)
+        values (#{chatId}, #{userInfo}, #{chatKind}, #{chatBody}, now())
     </insert>
 
     <update id="updateData" parameterType="chatHistory">
         update chathistory set
         user_info = #{userInfo},
+        chat_kind = #{chatKind},
         chat_body = #{chatBody},
-        updat_date = #{updateDate}
+        updat_date = now()
     </update>
 
     <delete id="deleteData" parameterType="chatHistory">

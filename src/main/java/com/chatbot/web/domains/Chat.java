@@ -6,16 +6,18 @@ import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.MappedTypes;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Component
 @Lazy @Data
 @Alias("chat")
 @MappedTypes(LocalDate.class)
 public class Chat {
-    private int id;
-    private int userCode;
-    private String chatKind, chatBody;
-    private LocalDateTime insertDate, updateDate;
+    private int id, userCode;
+    private String chatBody, checkDate;
+    private Date insertDate, updateDate;
 }

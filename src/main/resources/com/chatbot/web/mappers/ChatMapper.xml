@@ -5,16 +5,17 @@
 <mapper namespace="com.chatbot.web.mappers.ChatMapper">
     <insert id="insertData" parameterType="chat"
             useGeneratedKeys="true" keyProperty="id">
-        insert into chat (user_code, chat_kind, chat_body, insert_date)
-        values (100020001, #{chatKind}, #{chatBody}, now())
+        insert into chat (user_code, chat_body, insert_date, update_date)
+        values (100020001, #{chatBody}, now(), now())
     </insert>
 
     <update id="updateData" parameterType="chat">
         update chat set
-        chat_kind = #{chatKind},
         chat_body = #{chatBody},
         update_date = now()
-        where chat_id = 1
+        <if test="checkDate != null">
+        where insert_date = #{checkDate}
+        </if>
     </update>
 
     <delete id="deleteData" parameterType="chat">

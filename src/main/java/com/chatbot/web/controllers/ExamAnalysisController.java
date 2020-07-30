@@ -22,7 +22,7 @@ public class ExamAnalysisController {
     @PostMapping("/v1/kakao/subject/code")
     public Map<String, Object> subjectCodeCheck(@RequestBody Map<String, Object> jsonParams) throws IOException {
         parser.chatDataParser(jsonParams);
-        analyst.examAnalysis();
+//        analyst.examAnalysis();
         return serializer.subjectCodeSer();
     }
 
