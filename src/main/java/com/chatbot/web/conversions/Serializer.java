@@ -25,6 +25,8 @@ public class Serializer {
         innerObj = new JSONObject();
         mostInnerObj = new JSONObject();
 
+        //파라미터값으로 판별
+//        if()
         mostInnerObj.put("text", "챗봇이 종료됩니다. 감사합니다.");
         innerObj.put("simpleText", mostInnerObj);
         arr.add(innerObj);

@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public class Parser {
             chat.setChatBody(chatBody);
 
             //update 로직 변경
-            if(chat.getInsertDate() == toDate){
+            if(chat.getInsertDate() != toDate){
                 chatMapper.insertData(chat);
             }else{
                 chat.setCheckDate(uDate);
