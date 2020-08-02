@@ -9,6 +9,13 @@
         values (100020001, #{chatBody}, now(), now())
     </insert>
 
+<!--  insert_date 조건 추가해야 함  -->
+    <select id="selectList" parameterType="chat" resultType="hashMap">
+        select insert_date as insertDate
+        from chat
+        where user_code = 100020001
+    </select>
+
     <update id="updateData" parameterType="chat">
         update chat set
         chat_body = #{chatBody},

@@ -8,6 +8,11 @@
         values (#{chatId}, #{userInfo}, #{chatKind}, #{chatBody}, now())
     </insert>
 
+    <select id="selectList" parameterType="chatHistory" resultType="hashMap">
+        select user_info as userInfo
+        from chathistory;
+    </select>
+
     <update id="updateData" parameterType="chatHistory">
         update chathistory set
         user_info = #{userInfo},

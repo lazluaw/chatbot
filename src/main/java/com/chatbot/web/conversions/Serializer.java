@@ -1,39 +1,91 @@
 package com.chatbot.web.conversions;
 
+import com.chatbot.web.domains.Chat;
 import com.chatbot.web.domains.ChatHistory;
+import com.chatbot.web.domains.Exam;
 import com.chatbot.web.mappers.ChatHistoryMapper;
+import com.chatbot.web.mappers.ChatMapper;
+import com.chatbot.web.mappers.ExamMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @Service
 public class Serializer {
-    @Autowired ChatHistoryMapper chatHistoryMapper;
+    @Autowired Chat chat;
     @Autowired ChatHistory chatHistory;
+    @Autowired Exam exam;
+    @Autowired ChatMapper chatMapper;
+    @Autowired ChatHistoryMapper chatHistoryMapper;
+    @Autowired ExamMapper examMapper;
     private JSONObject obj, arrObj, innerObj, middleObj, outsideObj, mostInnerObj, mostInnerObj1, getMostInnerObj2,
             innerObj1, innerObj2, innerObj3, innerObj4, innerObj5, innerObj6, innerObj7, innerObj8, innerObj9;
     private JSONArray arr, arr1, arr2;
+    private ObjectMapper mapper;
+    private JSONParser parser;
 
-    public Map<String, Object> exitSer() {
+    public Map<String, Object> commonSer(Map<String, Object> jsonParams) throws JsonProcessingException {
+        mapper = new ObjectMapper();
+        String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
+        parser = new JSONParser();
+        SimpleDateFormat sDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
         obj = new JSONObject();
         arrObj = new JSONObject();
         arr = new JSONArray();
         innerObj = new JSONObject();
         mostInnerObj = new JSONObject();
 
-        //파라미터값으로 판별
-//        if()
-        mostInnerObj.put("text", "챗봇이 종료됩니다. 감사합니다.");
-        innerObj.put("simpleText", mostInnerObj);
-        arr.add(innerObj);
-        arrObj.put("outputs", arr);
-        obj.put("template", arrObj);
-        obj.put("version", "2.0");
+        try {
+            JSONObject objJson = (JSONObject) parser.parse(jsonStr);
+            //userInfo
+            JSONObject userRequest = (JSONObject) objJson.get("userRequest");
+            String chatBody = (String) userRequest.get("utterance");
+            String userInfo = userRequest.toString();
+            //block name
+            JSONObject action = (JSONObject) objJson.get("action");
+            String block = (String) action.get("name");
+            //date
+            String uDate = sDate.format(new Date()); //날짜 지정
+            Date toDate = sDate.parse(uDate);
 
+            chat.setChatBody(chatBody);
+            System.out.println(block);
+
+            //fomat
+            if(block.contains("start")){
+            }else if(block.contains("exit")){
+            }
+
+            //insert, update 조건문
+            chatMapper.insertData(chat);
+
+            chatHistory.setChatId(chat.getId());
+            System.out.println(chat.getId());
+            chatHistory.setChatKind("C");
+            chatHistory.setUserInfo(userInfo);
+            chatHistory.setChatBody(chatBody);
+            chatHistoryMapper.insertData(chatHistory);
+
+            mostInnerObj.put("text", "챗봇이 종료됩니다. 감사합니다.");
+            innerObj.put("simpleText", mostInnerObj);
+            arr.add(innerObj);
+            arrObj.put("outputs", arr);
+            obj.put("template", arrObj);
+            obj.put("version", "2.0");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return obj;
     }
 
@@ -167,10 +219,60 @@ public class Serializer {
         getMostInnerObj2.put("label", "챗봇종료");
         getMostInnerObj2.put("action", "message");
 
-        arrObj.put("outputs", arr);
-        obj.put("template", arrObj);
-        obj.put("version", "2.0");
-
         return obj;
+    }
+
+    public void chatDataParser(Map<String, Object> jsonParams) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
+        JSONParser parser = new JSONParser();
+        SimpleDateFormat sDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); //날짜 포맷 지정
+
+        try {
+            JSONObject obj = (JSONObject) parser.parse(jsonStr);
+            JSONObject userRequest = (JSONObject) obj.get("userRequest");
+            String chatBody = (String) userRequest.get("utterance");
+//            JSONObject block = (JSONObject) userRequest.get("block");
+//            String name = (String) block.get("name"); //block's name
+            String userInfo = userRequest.toString();
+
+            String uDate = sDate.format(new Date()); //날짜 지정
+            Date toDate = sDate.parse(uDate);
+
+            chat.setChatBody(chatBody);
+
+            //update 로직 변경
+            if(chat.getInsertDate() != toDate){
+                chatMapper.insertData(chat);
+            }else{
+                chat.setCheckDate(uDate);
+                chatMapper.updateData(chat);
+            }
+
+            chatHistory.setChatId(chat.getId());
+            System.out.println(chat.getId());
+            chatHistory.setChatKind("C");
+            chatHistory.setUserInfo(userInfo);
+            chatHistory.setChatBody(chatBody);
+            chatHistoryMapper.insertData(chatHistory);
+        } catch (ParseException | java.text.ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void examAnalysisParser(Map<String, Object> jsonData) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonData);
+        JSONParser parser = new JSONParser();
+
+        try {
+            JSONObject obj = (JSONObject) parser.parse(jsonStr);
+            JSONObject userRequest = (JSONObject) obj.get("userRequest");
+            String subjectCode = (String) userRequest.get("utterance");
+//            System.out.println("subjectCode: " + subjectCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

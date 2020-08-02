@@ -1,0 +1,4 @@
+spring:
+  redis:
+    port: 6268
+    host: 211.186.44.249

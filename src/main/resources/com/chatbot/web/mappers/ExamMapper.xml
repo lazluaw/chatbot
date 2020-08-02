@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ExamMapper">
     <select id="selectList" parameterType="exam"
-            resultType="list">
+            resultType="hashMap">
         select exam_kind as examKind,
         exam_num as examNum,
         exam_question as examQuestion,
