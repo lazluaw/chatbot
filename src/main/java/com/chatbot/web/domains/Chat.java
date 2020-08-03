@@ -18,6 +18,7 @@ import java.util.Date;
 @MappedTypes(LocalDate.class)
 public class Chat {
     private int id, userCode;
+    //chatDate 어떻게 처리할 지 고민
     private String chatBody, checkDate;
     private Date insertDate, updateDate;
 }

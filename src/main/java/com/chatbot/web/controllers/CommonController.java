@@ -12,6 +12,10 @@ import java.util.Map;
 @RequestMapping("/common")
 public class CommonController {
     @Autowired Serializers serializers;
+    @PostMapping("/v1/kakao/menu")
+    public Map<String, Object> menu(@RequestBody Map<String, Object> jsonParams) {
+        return serializers.menuSer(jsonParams);
+    }
     @PostMapping("/v1/kakao/fallback")
     public Map<String, Object> fallback(@RequestBody Map<String, Object> jsonParams) {
         return serializers.fallbackSer(jsonParams);

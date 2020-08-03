@@ -18,7 +18,9 @@
         user_info = #{userInfo},
         chat_kind = #{chatKind},
         chat_body = #{chatBody},
-        updat_date = now()
+        <if test="checkDate != null">
+            where insert_date = #{checkDate}
+        </if>
     </update>
 
     <delete id="deleteData" parameterType="chatHistory">

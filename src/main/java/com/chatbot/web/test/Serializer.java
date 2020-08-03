@@ -1,4 +1,4 @@
-package com.chatbot.web.conversions;
+package com.chatbot.web.test;
 
 import com.chatbot.web.domains.Chat;
 import com.chatbot.web.domains.ChatHistory;

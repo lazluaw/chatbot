@@ -3,9 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.UserMapper">
-    <select id="selectList" parameterType="user" resultType="hashMap">
+    <select id="selectId" parameterType="int" resultType="string">
         select user_id as userId
         from user
-        where user_id = "v204ap"
+        where user_code = 100020001
+    </select>
+
+    <select id="selectPw" parameterType="int" resultType="string">
+        select user_pw as userPw
+        from user
+        where user_code = 100020001
     </select>
 </mapper>

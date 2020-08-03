@@ -1,18 +1,81 @@
 package com.chatbot.web.conversions;
 
-import com.chatbot.web.domains.Chat;
-import com.chatbot.web.domains.ChatHistory;
-import com.chatbot.web.domains.Exam;
-import com.chatbot.web.domains.ExamAnalysis;
+import com.chatbot.web.domains.*;
+import com.chatbot.web.mappers.ChatHistoryMapper;
+import com.chatbot.web.mappers.ChatMapper;
+import com.chatbot.web.mappers.ExamMapper;
+import com.chatbot.web.mappers.UserMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class Analyst {
+    @Autowired
+    User user;
     @Autowired Chat chat;
     @Autowired ChatHistory chatHistory;
-    @Autowired Exam exam;
-    @Autowired ExamAnalysis examAnalysis;
+    @Autowired
+    ChatMapper chatMapper;
+    @Autowired
+    ChatHistoryMapper chatHistoryMapper;
+    @Autowired
+    ExamMapper examMapper;
+    @Autowired
+    UserMapper userMapper;
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
+    private ObjectMapper mapper;
+    private JSONParser parser;
+    private String jsonStr;
+    private JSONObject obj, obj1, obj2, obj3, obj4, obj5, obj6, arrObj;
+    private JSONArray arr, arr2;
+    private ValueOperations<String, Object> vop;
+
+    //현재 테스트 : 아이디체크
+    public void test(Map<String, Object> jsonParams) {
+        mapper = new ObjectMapper();
+        parser = new JSONParser();
+        obj = new JSONObject();
+        obj1 = new JSONObject();
+        obj2 = new JSONObject();
+        obj3 = new JSONObject();
+        obj4 = new JSONObject();
+        obj5 = new JSONObject();
+        arrObj = new JSONObject();
+        arr = new JSONArray();
+        arr2 = new JSONArray();
+        try {
+            vop = redisTemplate.opsForValue();
+            jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
+            JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
+            JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
+            String chatBody = (String) userRequest.get("utterance");
+
+            JSONObject user = (JSONObject) userRequest.get("user");
+            JSONObject properties = (JSONObject) user.get("properties");
+            String botUserKey = (String) properties.get("botUserKey");
+            vop.set(botUserKey, chat.getId());
+            int userKey = (int) vop.get(botUserKey);
+
+            if (chatBody.equals(userMapper.selectId())) {
+                System.out.println("아이디 일치");
+            } else {
+                System.out.println("AUTH ERROR");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
     public void examAnalysis() {
         System.out.println("---chat---");
         System.out.println("id: "+chat.getId());
@@ -43,4 +106,5 @@ public class Analyst {
         System.out.println(examAnalysis.getSubjectCode());
         System.out.println(examAnalysis.getWrongAnswer());
     }
+     */
 }
