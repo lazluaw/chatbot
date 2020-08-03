@@ -12,25 +12,31 @@
     <select id="selectIDate" parameterType="int" resultType="string">
         select insert_date as insertDate
         from  chat
-        where chat_id = #{chatId}
+        where chat_id = #{id}
     </select>
 
     <select id="selectUDate" parameterType="int" resultType="string">
         select update_date as updateDate
         from chat
-        where chat_id = #{chatId}
+        where chat_id = #{id}
     </select>
 
-    <update id="updateData" parameterType="chat">
+    <update id="updateData" parameterType="chat"
+            useGeneratedKeys="true" keyProperty="id">
         update chat set
         chat_body = #{chatBody},
         update_date = now()
+        where chat_id = #{id}
+    </update>
+
+<!--
         <if test="checkDate != null">
         where insert_date = #{checkDate}
         </if>
-    </update>
+-->
 
     <delete id="deleteData" parameterType="chat">
-        delete from chat where chat_id = #{chatId}
+        delete from chat
+        where chat_id = #{id}
     </delete>
 </mapper>

@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Service
-public class Serializer {
+public class LegacySerializer {
     @Autowired Chat chat;
     @Autowired ChatHistory chatHistory;
     @Autowired Exam exam;

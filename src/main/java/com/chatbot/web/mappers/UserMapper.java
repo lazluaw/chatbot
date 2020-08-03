@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 public interface UserMapper {
     public String selectId();
     public String selectPw();
+    public String selectName();
 }

@@ -14,4 +14,11 @@
         from user
         where user_code = 100020001
     </select>
+
+    <select id="selectName" parameterType="int" resultType="string">
+        select name
+        from user
+        where user_code = 100020001
+    </select>
+
 </mapper>

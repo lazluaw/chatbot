@@ -18,10 +18,14 @@
         user_info = #{userInfo},
         chat_kind = #{chatKind},
         chat_body = #{chatBody},
+        where chat_id = #{chatId}
+    </update>
+
+<!--
         <if test="checkDate != null">
             where insert_date = #{checkDate}
         </if>
-    </update>
+-->
 
     <delete id="deleteData" parameterType="chatHistory">
         delete from chathistory where chatBody = #{chatBody};

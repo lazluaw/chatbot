@@ -1,4 +1,4 @@
-package com.chatbot.web.conversions;
+package com.chatbot.web.test;
 
 import com.chatbot.web.domains.*;
 import com.chatbot.web.mappers.ChatHistoryMapper;
@@ -13,11 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-
 import java.util.Map;
 
 @Service
-public class Analyst {
+public class Test {
     @Autowired
     User user;
     @Autowired Chat chat;
