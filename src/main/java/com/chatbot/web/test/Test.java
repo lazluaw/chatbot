@@ -38,42 +38,6 @@ public class Test {
     private JSONArray arr, arr2;
     private ValueOperations<String, Object> vop;
 
-    //현재 테스트 : 아이디체크
-    public void test(Map<String, Object> jsonParams) {
-        mapper = new ObjectMapper();
-        parser = new JSONParser();
-        obj = new JSONObject();
-        obj1 = new JSONObject();
-        obj2 = new JSONObject();
-        obj3 = new JSONObject();
-        obj4 = new JSONObject();
-        obj5 = new JSONObject();
-        arrObj = new JSONObject();
-        arr = new JSONArray();
-        arr2 = new JSONArray();
-        try {
-            vop = redisTemplate.opsForValue();
-            jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
-            JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
-            JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
-            String chatBody = (String) userRequest.get("utterance");
-
-            JSONObject user = (JSONObject) userRequest.get("user");
-            JSONObject properties = (JSONObject) user.get("properties");
-            String botUserKey = (String) properties.get("botUserKey");
-            vop.set(botUserKey, chat.getId());
-            int userKey = (int) vop.get(botUserKey);
-
-            if (chatBody.equals(userMapper.selectId())) {
-                System.out.println("아이디 일치");
-            } else {
-                System.out.println("AUTH ERROR");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /*
     public void examAnalysis() {
         System.out.println("---chat---");

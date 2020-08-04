@@ -11,7 +11,6 @@ import java.util.Map;
 public class ExamAnalysisController {
 //시험종류 - 과목종류 - user,admin
 //모의고사 9과목이 지필과 동일해서 컬럼명을 추가할지 말지 고민중
-
     @Autowired
     Serializer serializer;
     @PostMapping("/v1/kakao/exam/kind")
@@ -20,7 +19,7 @@ public class ExamAnalysisController {
     }
 
     @PostMapping("/v1/kakao/subject/code")
-    public Map<String, Object> subjectCodeCheck(@RequestBody Map<String, Object> jsonParams) throws IOException {
+    public Map<String, Object> subjectCode(@RequestBody Map<String, Object> jsonParams) throws IOException {
         return serializer.examSer(jsonParams);
     }
 

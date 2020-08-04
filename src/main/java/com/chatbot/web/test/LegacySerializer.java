@@ -242,7 +242,7 @@ public class LegacySerializer {
             chat.setChatBody(chatBody);
 
             //update 로직 변경
-            if(chat.getInsertDate() != toDate){
+            if(chat.getInsertDate() != null){
                 chatMapper.insertData(chat);
             }else{
                 chat.setCheckDate(uDate);

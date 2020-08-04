@@ -18,6 +18,7 @@
         user_info = #{userInfo},
         chat_kind = #{chatKind},
         chat_body = #{chatBody},
+        update_date = now()
         where chat_id = #{chatId}
     </update>
 

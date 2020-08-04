@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserMapper {
-    public String selectId();
-    public String selectPw();
-    public String selectName();
+    public String selectAdminId();
+    public String selectAdminPw();
+    public String selectAdminName();
+    public String selectUserId();
+    public String selectUserPw();
+    public String selectUserName();
 }

@@ -16,9 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.Map;
 
-//login : v204ap,l7hi3x0e
 @Service
 public class Serializer {
     @Autowired User user;
@@ -38,18 +39,18 @@ public class Serializer {
     private ValueOperations<String, Object> vop;
 
     public Map<String, Object> fallbackSer(Map<String, Object> jsonParams) {
-        mapper = new ObjectMapper();
-        parser = new JSONParser();
-        obj = new JSONObject();
-        obj1 = new JSONObject();
-        obj2 = new JSONObject();
-        obj3 = new JSONObject();
-        obj4 = new JSONObject();
-        obj5 = new JSONObject();
-        arrObj = new JSONObject();
-        arr = new JSONArray();
-        arr2 = new JSONArray();
         try {
+            mapper = new ObjectMapper();
+            parser = new JSONParser();
+            obj = new JSONObject();
+            obj1 = new JSONObject();
+            obj2 = new JSONObject();
+            obj3 = new JSONObject();
+            obj4 = new JSONObject();
+            obj5 = new JSONObject();
+            arrObj = new JSONObject();
+            arr = new JSONArray();
+            arr2 = new JSONArray();
             vop = redisTemplate.opsForValue();
             jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
             JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
@@ -64,6 +65,7 @@ public class Serializer {
             JSONObject user = (JSONObject) userRequest.get("user");
             JSONObject properties = (JSONObject) user.get("properties");
             String botUserKey = (String) properties.get("botUserKey");
+
             vop.set(botUserKey, chat.getId());
             int userKey = (int) vop.get(botUserKey);
 
@@ -87,9 +89,12 @@ public class Serializer {
             if(chatBody.contains(",")) {
                 loginInfo = chatBody.split(",");
                 System.out.println("id: " + loginInfo[0] + "\npw: " + loginInfo[1]);
-                if (loginInfo[0].equals(userMapper.selectId()) && loginInfo[1].equals((userMapper.selectPw())) || chatBody.contains(" ")) {
+                if (loginInfo[0].equals(userMapper.selectUserId()) && loginInfo[1].equals((userMapper.selectUserPw()))
+                        || chatBody.contains(" ")
+                || loginInfo[0].equals(userMapper.selectAdminId()) && loginInfo[1].equals(userMapper.selectAdminPw())) {
                     System.out.println("로그인 성공");
                     this.menuSer(jsonParams);
+                    return obj;
                 } else {
                     return fallback.fallbackForm();
                 }
@@ -98,23 +103,23 @@ public class Serializer {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return obj;
     }
 
     public Map<String, Object> loginSer(Map<String, Object> jsonParams) {
-        mapper = new ObjectMapper();
-        parser = new JSONParser();
-        obj = new JSONObject();
-        obj1 = new JSONObject();
-        obj2 = new JSONObject();
-        obj3 = new JSONObject();
-        obj4 = new JSONObject();
-        obj5 = new JSONObject();
-        arrObj = new JSONObject();
-        arr = new JSONArray();
-        arr2 = new JSONArray();
         try {
+            mapper = new ObjectMapper();
+            parser = new JSONParser();
+            obj = new JSONObject();
+            obj1 = new JSONObject();
+            obj2 = new JSONObject();
+            obj3 = new JSONObject();
+            obj4 = new JSONObject();
+            obj5 = new JSONObject();
+            arrObj = new JSONObject();
+            arr = new JSONArray();
+            arr2 = new JSONArray();
             vop = redisTemplate.opsForValue();
             jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
             JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
@@ -154,29 +159,31 @@ public class Serializer {
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody("id,pw");
                 chatHistoryMapper.insertData(chatHistory);
+                return obj;
             } else {
                 System.out.println("AUTH ERROR");
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return obj;
     }
 
     public Map<String, Object> menuSer(Map<String, Object> jsonParams) {
-        mapper = new ObjectMapper();
-        parser = new JSONParser();
-        obj = new JSONObject();
-        obj1 = new JSONObject();
-        obj2 = new JSONObject();
-        obj3 = new JSONObject();
-        obj4 = new JSONObject();
-        obj5 = new JSONObject();
-        obj6 = new JSONObject();
-        arrObj = new JSONObject();
-        arr = new JSONArray();
-        arr2 = new JSONArray();
         try {
+            mapper = new ObjectMapper();
+            parser = new JSONParser();
+            obj = new JSONObject();
+            obj1 = new JSONObject();
+            obj2 = new JSONObject();
+            obj3 = new JSONObject();
+            obj4 = new JSONObject();
+            obj5 = new JSONObject();
+            obj6 = new JSONObject();
+            arrObj = new JSONObject();
+            arr = new JSONArray();
+            arr2 = new JSONArray();
             vop = redisTemplate.opsForValue();
             jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
             JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
@@ -206,26 +213,49 @@ public class Serializer {
             chatHistory.setChatBody(chatBody);
             chatHistoryMapper.insertData(chatHistory);
 
-            String userFunc = "오답노트";
-            String adminFunc = "시험분석";
-
+            String[] loginInfo = null;
+            if(chatBody.contains(",")) {
+                loginInfo = chatBody.split(",");
+            } else {
+                System.out.println("id, pw 판별 오류");
+            }
             obj.put("version", "2.0");
             obj.put("template", arrObj);
             arrObj.put("outputs", arr);
             arr.add(obj1);
             obj1.put("basicCard", obj2);
-            obj2.put("description", userMapper.selectName() + "님, 반갑습니다.\n챗봇 메뉴를 선택해주세요 :3");
+
+
+            //user: v204ap, l7hi3x0e
+            //admin(test): p5tl7h, 5aetcbz8
+
+
+
+            String analysis = "";
+            String attendance = "";
+            String img = "";
+            if(loginInfo[0].equals(userMapper.selectAdminId())) {
+                analysis = "시험분석";
+                attendance = "출결관리";
+                img = "https://i.pinimg.com/564x/f3/05/6b/f3056b47a9140e43b733a1aa625ef145.jpg";
+                obj2.put("description", userMapper.selectAdminName() + "님, 반갑습니다.\n챗봇 메뉴를 선택해주세요 :3");
+            } else if(loginInfo[0].equals(userMapper.selectUserId())) {
+                analysis = "오답노트";
+                attendance = "출석체크";
+                img = "https://i.pinimg.com/564x/12/26/21/1226211697ae4b6b630ffb0ce8a230af.jpg";
+                obj2.put("description", userMapper.selectUserName() + "님, 반갑습니다.\n챗봇 메뉴를 선택해주세요 :3");
+            }
             obj2.put("thumbnail", obj3);
-            obj3.put("imageUrl", "https://i.pinimg.com/564x/fe/b7/2d/feb72dfa16dfd4781c26b550edd88255.jpg");
+            obj3.put("imageUrl", img);
             obj2.put("buttons", arr2);
             arr2.add(obj4);
             arr2.add(obj5);
             arr2.add(obj6);
-            obj4.put("messageText", "스트리밍");
-            obj4.put("label", "스트리밍 들으러가기");
+            obj4.put("messageText", attendance);
+            obj4.put("label", attendance);
             obj4.put("action", "message");
-            obj5.put("messageText", userFunc);
-            obj5.put("label", userFunc);
+            obj5.put("messageText", analysis);
+            obj5.put("label", analysis);
             obj5.put("action", "message");
             obj6.put("messageText", "챗봇종료");
             obj6.put("label", "챗봇종료");
@@ -234,30 +264,30 @@ public class Serializer {
             chatHistory.setChatKind("B");
             chatHistory.setChatBody(obj2.get("description").toString());
             chatHistoryMapper.insertData(chatHistory);
+            return obj;
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return obj;
     }
 
     //로그인한 사람만 해당 발화에 반응하게끔 로직을 짜줘야 함
     public Map<String, Object> examSer(Map<String, Object> jsonParams) {
-        mapper = new ObjectMapper();
-        parser = new JSONParser();
-        JSONObject imgObj = new JSONObject();
-        obj = new JSONObject();
-        obj1 = new JSONObject();
-        obj2 = new JSONObject();
-        obj3 = new JSONObject();
-        obj4 = new JSONObject();
-        obj5 = new JSONObject();
-        obj6 = new JSONObject();
-        arrObj = new JSONObject();
-        arr = new JSONArray();
-        arr2 = new JSONArray();
-        JSONArray arr3 = new JSONArray();
-
         try  {
+            mapper = new ObjectMapper();
+            parser = new JSONParser();
+            JSONObject imgObj = new JSONObject();
+            obj = new JSONObject();
+            obj1 = new JSONObject();
+            obj2 = new JSONObject();
+            obj3 = new JSONObject();
+            obj4 = new JSONObject();
+            obj5 = new JSONObject();
+            obj6 = new JSONObject();
+            arrObj = new JSONObject();
+            arr = new JSONArray();
+            arr2 = new JSONArray();
+            JSONArray arr3 = new JSONArray();
             vop = redisTemplate.opsForValue();
             jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
             JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
@@ -290,77 +320,74 @@ public class Serializer {
             chatHistoryMapper.insertData(chatHistory);
             
             //1. 시험종류(사용자 이름 가져와야 함..) l7hi3x0e
-            if (chatBody != null) {
+            if (chatBody.equals("시험종류")) {
                 System.out.println("시험분석 메뉴");
+
                 obj.put("version", "2.0");
                 obj.put("template", arrObj);
                 arrObj.put("outputs", arr);
                 arr.add(obj1);
-                for(int i = 0; i < 4; i++) {
-                    obj1.put("carousel", obj2);
-                    obj2.put("type", "basicCard");
-                    obj2.put("items", arr2);
-                    arr2.add(obj3);
-                    obj3.put("title", "[user_name]님, 안녕하세요!\n시험 종류를 선택해주세요.");
-                    obj3.put("thumbnail", imgObj);
-                    obj3.put("buttons", arr3);
-                    imgObj.put("imageUrl", "https://i.pinimg.com/564x/71/f0/93/71f0937147bc7621ebc0856f95e4bc15.jpg");
-                    //오류나는 부분
-                    arr3.add(obj4);
-                    arr3.add(obj5);
-                    obj4.put("messageText", "1학기 중간고사");
-                    obj4.put("label", "1학기 중간고사");
-                    obj4.put("action", "message");
-                    obj5.put("messageText", "1학기 기말고사");
-                    obj5.put("label", "1학기 기말고사");
-                    obj5.put("action", "message");
-                }
+                obj1.put("carousel", obj2);
+                obj2.put("type", "basicCard");
+                obj2.put("items", arr2);
+                arr2.add(obj3);
+                obj3.put("title", "[user_name]님, 안녕하세요!\n시험 종류를 선택해주세요.");
+                obj3.put("thumbnail", imgObj);
+                obj3.put("buttons", arr3);
+                imgObj.put("imageUrl", "https://i.pinimg.com/564x/71/f0/93/71f0937147bc7621ebc0856f95e4bc15.jpg");
+                //오류나는 부분
+                arr3.add(obj4);
+                arr3.add(obj5);
+                obj4.put("messageText", "1학기 중간고사");
+                obj4.put("label", "1학기 중간고사");
+                obj4.put("action", "message");
+                obj5.put("messageText", "1학기 기말고사");
+                obj5.put("label", "1학기 기말고사");
+                obj5.put("action", "message");
+                return obj;
+
                 //2. 과목구분
             } else if(chatBody.contains("고사")) {
                 obj.put("version", "2.0");
                 obj.put("template", arrObj);
                 arrObj.put("outputs", arr);
                 arr.add(obj1);
-                for(int i = 0; i < 4; i++) {
-                    obj1.put("carousel", obj2);
-                    obj2.put("type", "basicCard");
-                    obj2.put("items", arr2);
-                    arr2.add(obj3);
-                    obj3.put("title", "과목 종류를 선택해주세요.");
-                    obj3.put("thumbnail", imgObj);
-                    obj3.put("buttons", arr3);
-                    imgObj.put("imageUrl", "https://i.pinimg.com/564x/69/bb/22/69bb22e2f8afc4706c62f5d0f73f39c1.jpg");
-                    arr3.add(obj4);
-                    arr3.add(obj5);
-                    arr3.add(obj6);
-                    obj4.put("messageText", "국어");
-                    obj4.put("label", "국어");
-                    obj4.put("action", "message");
-                    obj5.put("messageText", "영어");
-                    obj5.put("label", "영어");
-                    obj5.put("action", "message");
-                    obj6.put("messageText", "수학");
-                    obj6.put("label", "수학");
-                    obj6.put("action", "message");
-                }
+                obj1.put("carousel", obj2);
+                obj2.put("type", "basicCard");
+                obj2.put("items", arr2);
+                arr2.add(obj3);
+                obj3.put("title", "과목 종류를 선택해주세요.");
+                obj3.put("thumbnail", imgObj);
+                obj3.put("buttons", arr3);
+                imgObj.put("imageUrl", "https://i.pinimg.com/564x/69/bb/22/69bb22e2f8afc4706c62f5d0f73f39c1.jpg");
+                arr3.add(obj4);
+                arr3.add(obj5);
+                arr3.add(obj6);
+                obj4.put("messageText", "국어");
+                obj4.put("label", "국어");
+                obj4.put("action", "message");
+                obj5.put("messageText", "영어");
+                obj5.put("label", "영어");
+                obj5.put("action", "message");
+                obj6.put("messageText", "수학");
+                obj6.put("label", "수학");
+                obj6.put("action", "message");
+                return obj;
+
                 //3. admin_func
             } else if(chatBody.equals("국어") || chatBody.equals("영어") || chatBody.equals("수학")) {
                 obj.put("version", "2.0");
                 obj.put("template", arrObj);
                 arrObj.put("outputs", arr);
                 arr.add(obj1);
-
                 obj1.put("carousel", obj2);
                 obj2.put("type", "basicCard");
                 obj2.put("items", arr2);
-
                 arr2.add(obj3);
-
                 obj3.put("title", "[학생들이 가장 많이 틀린 문제]: [시험문제 번호]");
                 obj3.put("description", "[정답], [학생들이 가장 많이 선택한 오답]\n[시험문제 질문]\n[시험문제 내용]");
                 obj3.put("thumbnail", obj4);
                 obj4.put("imageUrl", "https://i.pinimg.com/564x/69/5b/41/695b41f9077d5871b40452679c5b796a.jpg");
-
                 obj3.put("buttons", arr3);
                 arr3.add(obj5);
                 arr3.add(obj6);
@@ -370,6 +397,7 @@ public class Serializer {
                 obj6.put("messageText", "챗봇종료");
                 obj6.put("label", "챗봇종료");
                 obj6.put("action", "message");
+                return obj;
 
                 //4. user_func
             } else if(chatBody.equals("학생")) {
@@ -377,18 +405,14 @@ public class Serializer {
                 obj.put("template", arrObj);
                 arrObj.put("outputs", arr);
                 arr.add(obj1);
-
                 obj1.put("carousel", obj2);
                 obj2.put("type", "basicCard");
                 obj2.put("items", arr2);
-
                 arr2.add(obj3);
-
                 obj3.put("title", "[시험문제 번호]\n[시험문제 질문]");
                 obj3.put("description", "정답: [시험문제 정답]\n선택한 답: [오답]\n[시험문제 내용]");
                 obj3.put("thumbnail", obj4);
                 obj4.put("imageUrl", "https://i.pinimg.com/564x/b4/e0/df/b4e0df7b3b0e571a3fa61d4369f3ad31.jpg");
-
                 obj3.put("buttons", arr3);
                 arr3.add(obj5);
                 arr3.add(obj6);
@@ -398,12 +422,14 @@ public class Serializer {
                 obj6.put("messageText", "챗봇종료");
                 obj6.put("label", "챗봇종료");
                 obj6.put("action", "message");
+                return obj;
             } else {
                 System.out.println("EXAM ERROR");
+                return fallbackSer(jsonParams);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return obj;
     }
 }
