@@ -12,7 +12,9 @@ build/
 ### DB ###
 *.properties
 *.yml
+*.xml
 !**/src/main/resources/
+!**/src/main/resources/static/datas
 
 ### STS ###
 .apt_generated
@@ -24,7 +26,7 @@ build/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.gradle
+*.gradle
 .idea
 *.iws
 *.iml

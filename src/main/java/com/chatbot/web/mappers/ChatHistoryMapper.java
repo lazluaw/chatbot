@@ -8,7 +8,7 @@ import java.util.List;
 @Repository
 public interface ChatHistoryMapper {
     public void insertData(ChatHistory chatHistory);
-    public List<ChatHistory> selectList();
+    public String selectLogin();
     public void updateData(ChatHistory chatHistory);
     public void deleteData(ChatHistory chatHistory);
 }

@@ -8,9 +8,11 @@
         values (#{chatId}, #{userInfo}, #{chatKind}, #{chatBody}, now())
     </insert>
 
-    <select id="selectList" parameterType="chatHistory" resultType="hashMap">
-        select user_info as userInfo
-        from chathistory;
+    <select id="selectLogin" parameterType="chatHistory" resultType="string">
+        select chat_kind as chatKind
+        from chathistory
+        where chat_id = #{chatId}
+        and chat_body = "로그인성공"
     </select>
 
     <update id="updateData" parameterType="chatHistory">

@@ -24,18 +24,18 @@
     <select id="selectAdminId" parameterType="int" resultType="string">
         select user_id as userId
         from user
-        where user_code = 100020002
+        where user_code = 100000002
     </select>
 
     <select id="selectAdminPw" parameterType="int" resultType="string">
         select user_pw as userPw
         from user
-        where user_code = 100020002
+        where user_code = 100000002
     </select>
 
     <select id="selectAdminName" parameterType="int" resultType="string">
         select name
         from user
-        where user_code = 100020002
+        where user_code = 100000002
     </select>
 </mapper>
