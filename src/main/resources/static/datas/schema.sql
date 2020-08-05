@@ -65,8 +65,9 @@ COLLATE=utf8_general_ci;
 CREATE TABLE user
 (
     `id`                INT            NOT NULL    AUTO_INCREMENT,
-    `user_code`         INT            NOT NULL UNIQUE,
+    `user_code`         INT            NOT NULL,
     `school_code`       INT            NOT NULL,
+    `school_name`       VARCHAR(60)    NULL,
     `cur_grade`         INT            NULL,
     `home_class`        INT            NULL,
     `name`              VARCHAR(9)     NOT NULL,
@@ -82,5 +83,5 @@ CREATE TABLE user
     `update_date`       DATETIME       NULL,
     PRIMARY KEY (id)
 )ENGINE=InnoDB
-DEFAULT CHARSET=utf8
-COLLATE=utf8_general_ci;
+ DEFAULT CHARSET=utf8
+ COLLATE=utf8_general_ci;
