@@ -87,16 +87,13 @@ public class Serializer {
             logger.trace("updateDate: "+chatMapper.selectUDate());
 
 
-
             if (chatHistoryMapper.selectLogin() == null) {
                 if (chatBody.contains(",")) {
                     String[] loginInfo = null;
                     loginInfo = chatBody.split(",");
-                    System.out.println("id: " + loginInfo[0] + "\npw: " + loginInfo[1]);
                     if (loginInfo[0].equals(userMapper.selectUserId()) && loginInfo[1].equals((userMapper.selectUserPw()))
                             || chatBody.contains(" ")
                             || loginInfo[0].equals(userMapper.selectAdminId()) && loginInfo[1].equals(userMapper.selectAdminPw())) {
-                        System.out.println("로그인 성공");
                         //차후에 로그인 확인 용도로 쓰기 위함공
                         chatHistory.setChatKind("S");
                         chatHistory.setChatBody("로그인성공");
