@@ -3,8 +3,7 @@ create table chat (
 chat_id int auto_increment primary key,
 user_code int not null,
 insert_date datetime not null,
-update_date datetime not null,
-chat_kind varchar(1) not null,
+update_date datetime null,
 chat_body text not null,
 constraint chat_fk foreign key (user_code) references user(user_code)
 )
@@ -17,8 +16,9 @@ history_id int auto_increment primary key,
 chat_id int null,
 user_info varchar(1000) not null,
 chat_body text not null,
+chat_kind varchar(1) not null,
 insert_date datetime not null,
-update_date datetime not null,
+update_date datetime null,
 constraint history_fk foreign key (chat_id) references chat(chat_id)
 )
 ENGINE=InnoDB

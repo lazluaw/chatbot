@@ -29,41 +29,40 @@ public class Exit {
     private JSONObject obj, obj1, obj2, obj3, arrObj;
     private JSONArray arr;
     private ValueOperations<String, Object> vop;
-    public void systemExit(Map<String, Object> jsonParams) {
-        try {
-            //test: 인서트, 업데이트 데이트
-            System.out.println("insert: "+chatMapper.selectIDate());
-            System.out.println("update: "+chatMapper.selectUDate());
-//            System.out.println("chatId: "+vop.get(botUserKey));
-
-            if (chatMapper.selectUDate() == null) {
-                System.out.println("insertDate: " + chatMapper.selectIDate());
-                // == null : insert_date -> 72시간 경과 여부 (259200초)
-//                if(chatMapper.selectIDate() )
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody("챗봇종료");
-                chatHistoryMapper.insertData(chatHistory);
-
-//                vop.set(botUserKey, 0);
-                chat.setId(0);
-            } else if (chatMapper.selectUDate() != null) {
-                System.out.println("updateDate: " + chatMapper.selectUDate());
-                // != null : update_date -> 72시간 경과 여부 (259200초)
-//                if(chatMapper.updateData())
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody("챗봇종료");
-                chatHistoryMapper.insertData(chatHistory);
-
-//                vop.set(botUserKey, 0);
-                chat.setId(0);
-            } else {
-                System.out.println("systemExit 로직 ERROR catch print");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("systemExit 클래스 ERROR");
-        }
-    }
+//    public void systemExit(Map<String, Object> jsonParams) {
+//        try {
+//            //test: 인서트, 업데이트 데이트
+//            System.out.println("insert: "+chatMapper.selectDate());
+////            System.out.println("chatId: "+vop.get(botUserKey));
+//
+//            if (chatMapper.selectDate() == null) {
+//                System.out.println("insertDate: " + chatMapper.selectDate());
+//                // == null : insert_date -> 72시간 경과 여부 (259200초)
+////                if(chatMapper.selectIDate() )
+//                chatHistory.setChatKind("B");
+//                chatHistory.setChatBody("챗봇종료");
+//                chatHistoryMapper.insertData(chatHistory);
+//
+////                vop.set(botUserKey, 0);
+//                chat.setId(0);
+//            } else if (chatMapper.selectDate() != null) {
+//                System.out.println("updateDate: " + chatMapper.selectDate());
+//                // != null : update_date -> 72시간 경과 여부 (259200초)
+////                if(chatMapper.updateData())
+//                chatHistory.setChatKind("B");
+//                chatHistory.setChatBody("챗봇종료");
+//                chatHistoryMapper.insertData(chatHistory);
+//
+////                vop.set(botUserKey, 0);
+//                chat.setId(0);
+//            } else {
+//                System.out.println("systemExit 로직 ERROR catch print");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println("systemExit 클래스 ERROR");
+//        }
+//    }
 
     public Map<String, Object> userExit(Map<String, Object> jsonParams) {
         try {
@@ -83,8 +82,7 @@ public class Exit {
             String userInfo = userRequest.toString();
 
             //test: 인서트, 업데이트 데이트
-            System.out.println("insert: "+chatMapper.selectIDate());
-            System.out.println("update: "+chatMapper.selectUDate());
+            System.out.println("insert: "+chatMapper.selectDate());
 
             JSONObject user = (JSONObject) userRequest.get("user");
             JSONObject properties = (JSONObject) user.get("properties");

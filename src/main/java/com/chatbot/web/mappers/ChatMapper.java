@@ -6,8 +6,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChatMapper {
     public void insertData(Chat chat);
-    public String selectIDate();
-    public String selectUDate();
+    public Chat selectDate();
     public void updateData(Chat chat);
     public void deleteData(Chat chat);
 }

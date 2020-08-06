@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 
+
+//userInfo 값... 넣어줘야 함...
+
+
 @Component @Lazy
 public class Fallback {
     @Autowired ChatHistory chatHistory;

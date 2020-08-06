@@ -76,12 +76,6 @@ public class Serializer {
                 System.out.println("fallback ERROR");
             }
 
-
-            //test : updateDate, insertDate
-            logger.trace("insertDate: "+chatMapper.selectIDate());
-            logger.trace("updateDate: "+chatMapper.selectUDate());
-
-
             if (chatHistoryMapper.selectLogin() == null) {
                 if (chatBody.contains(",")) {
                     String[] loginInfo = null;
@@ -90,16 +84,33 @@ public class Serializer {
                             || chatBody.contains(" ")
                             || loginInfo[0].equals(userMapper.selectAdminId()) && loginInfo[1].equals(userMapper.selectAdminPw())) {
                         //차후에 로그인 확인 용도로 쓰기 위함
+                        chatHistory.setChatId(chat.getId());
+                        chatHistory.setUserInfo(userInfo);
                         chatHistory.setChatKind("S");
                         chatHistory.setChatBody("로그인성공");
                         chatHistoryMapper.insertData(chatHistory);
                         return this.menuSer(jsonParams);
                     } else {
+                        chatHistory.setChatId(chat.getId());
+                        chatHistory.setUserInfo(userInfo);
+                        chatHistory.setChatKind("X");
+                        chatHistory.setChatBody("S오류지점");
+                        chatHistoryMapper.insertData(chatHistory);
                         return fallback.fallbackForm();
                     }
                 } else if(chatBody.contains("로그인") || chatBody.contains("login")) {
+                    chatHistory.setChatId(chat.getId());
+                    chatHistory.setUserInfo(userInfo);
+                    chatHistory.setChatKind("X");
+                    chatHistory.setChatBody("S오류지점");
+                    chatHistoryMapper.insertData(chatHistory);
                     return loginSer(jsonParams);
                 } else {
+                    chatHistory.setChatId(chat.getId());
+                    chatHistory.setUserInfo(userInfo);
+                    chatHistory.setChatKind("X");
+                    chatHistory.setChatBody("S오류지점");
+                    chatHistoryMapper.insertData(chatHistory);
                     return fallback.fallbackForm();
                 }
                 //작동하고 있지 않음

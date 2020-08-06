@@ -9,15 +9,10 @@
         values (100020001, #{chatBody}, now(), now())
     </insert>
 
-    <select id="selectIDate" parameterType="int" resultType="string">
-        select insert_date as insertDate
+    <select id="selectDate" parameterType="chat" resultType="chat">
+        select insert_date as insertDate,
+        update_date as updateDate
         from  chat
-        where chat_id = #{id}
-    </select>
-
-    <select id="selectUDate" parameterType="int" resultType="string">
-        select update_date as updateDate
-        from chat
         where chat_id = #{id}
     </select>
 
