@@ -75,11 +75,6 @@ public class Serializer {
             } else {
                 System.out.println("fallback ERROR");
             }
-            chatHistory.setChatId(chat.getId());
-            chatHistory.setChatKind("C");
-            chatHistory.setUserInfo(userInfo);
-            chatHistory.setChatBody(chatBody);
-            chatHistoryMapper.insertData(chatHistory);
 
 
             //test : updateDate, insertDate
@@ -94,7 +89,7 @@ public class Serializer {
                     if (loginInfo[0].equals(userMapper.selectUserId()) && loginInfo[1].equals((userMapper.selectUserPw()))
                             || chatBody.contains(" ")
                             || loginInfo[0].equals(userMapper.selectAdminId()) && loginInfo[1].equals(userMapper.selectAdminPw())) {
-                        //차후에 로그인 확인 용도로 쓰기 위함공
+                        //차후에 로그인 확인 용도로 쓰기 위함
                         chatHistory.setChatKind("S");
                         chatHistory.setChatBody("로그인성공");
                         chatHistoryMapper.insertData(chatHistory);
@@ -107,6 +102,7 @@ public class Serializer {
                 } else {
                     return fallback.fallbackForm();
                 }
+                //작동하고 있지 않음
             } else if (chatHistoryMapper.selectLogin() == "S") {
                 if(chatBody.contains("로그인") || chatBody.contains("login")) {
                     obj.put("version", "2.0");
@@ -126,8 +122,15 @@ public class Serializer {
                     obj5.put("messageText", "챗봇종료");
                     obj5.put("label", "챗봇종료");
                     obj5.put("action", "message");
+
+                    chatHistory.setChatId(chat.getId());
+                    chatHistory.setChatKind("C");
+                    chatHistory.setUserInfo(userInfo);
+                    chatHistory.setChatBody(chatBody);
+                    chatHistoryMapper.insertData(chatHistory);
+
                     chatHistory.setChatKind("B");
-                    chatHistory.setChatBody("로그인");
+                    chatHistory.setChatBody("로그인중복");
                     chatHistoryMapper.insertData(chatHistory);
                     return obj;
                 } else if (chatBody.contains("메뉴") || chatBody.contains("menu")) {
