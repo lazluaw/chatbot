@@ -81,6 +81,13 @@ public class Serializer {
             chatHistory.setChatBody(chatBody);
             chatHistoryMapper.insertData(chatHistory);
 
+
+            //test : updateDate, insertDate
+            logger.trace("insertDate: "+chatMapper.selectIDate());
+            logger.trace("updateDate: "+chatMapper.selectUDate());
+
+
+
             if (chatHistoryMapper.selectLogin() == null) {
                 if (chatBody.contains(",")) {
                     String[] loginInfo = null;
