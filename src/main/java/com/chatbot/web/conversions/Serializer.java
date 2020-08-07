@@ -23,24 +23,15 @@ import java.util.Map;
 
 @Service
 public class Serializer {
-    @Autowired
-    User user;
-    @Autowired
-    Chat chat;
-    @Autowired
-    ChatHistory chatHistory;
-    @Autowired
-    ChatMapper chatMapper;
-    @Autowired
-    ChatHistoryMapper chatHistoryMapper;
-    @Autowired
-    ExamMapper examMapper;
-    @Autowired
-    UserMapper userMapper;
-    @Autowired
-    Fallback fallback;
-    @Autowired
-    RedisTemplate<String, Object> redisTemplate;
+    @Autowired User user;
+    @Autowired Chat chat;
+    @Autowired ChatHistory chatHistory;
+    @Autowired ChatMapper chatMapper;
+    @Autowired ChatHistoryMapper chatHistoryMapper;
+    @Autowired ExamMapper examMapper;
+    @Autowired UserMapper userMapper;
+    @Autowired Fallback fallback;
+    @Autowired RedisTemplate<String, Object> redisTemplate;
     private ObjectMapper mapper;
     private JSONParser parser;
     private String jsonStr;
@@ -59,7 +50,6 @@ public class Serializer {
     private String adminAnImg = "https://i.pinimg.com/564x/e7/c3/cc/e7c3cc68c94b5828e347c0e35255425d.jpg";
     private String userMImg = "https://i.pinimg.com/564x/cc/8e/08/cc8e083f2c13532a94038138a6713ec1.jpg";
     private String userAnImg = "https://i.pinimg.com/564x/7e/0a/70/7e0a70b7dc579def017a4cd56ad826f9.jpg";
-
     public Map<String, Object> fallbackSer(Map<String, Object> jsonParams) {
         try {
             mapper = new ObjectMapper();
