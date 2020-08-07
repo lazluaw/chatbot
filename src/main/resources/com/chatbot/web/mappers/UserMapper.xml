@@ -3,39 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.UserMapper">
-    <select id="selectUserId" parameterType="int" resultType="string">
-        select user_id as userId
+    <select id="selectLoginList" parameterType="int" resultType="user">
+        select user_id as userId,
+        user_pw as userPw
         from user
-        where user_code = 100020001
+        where user_code = #{userCode}
     </select>
 
-    <select id="selectUserPw" parameterType="int" resultType="string">
-        select user_pw as userPw
-        from user
-        where user_code = 100020001
-    </select>
-
-    <select id="selectUserName" parameterType="int" resultType="string">
+    <select id="selectNameList" parameterType="int" resultType="user">
         select name
         from user
-        where user_code = 100020001
-    </select>
-
-    <select id="selectAdminId" parameterType="int" resultType="string">
-        select user_id as userId
-        from user
-        where user_code = 100000002
-    </select>
-
-    <select id="selectAdminPw" parameterType="int" resultType="string">
-        select user_pw as userPw
-        from user
-        where user_code = 100000002
-    </select>
-
-    <select id="selectAdminName" parameterType="int" resultType="string">
-        select name
-        from user
-        where user_code = 100000002
+        where user_code = #{userCode}
     </select>
 </mapper>
+

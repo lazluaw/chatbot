@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Component @Lazy
-@Data
+@Component
+@Lazy @Data
 @Alias("user")
 @MappedTypes(LocalDate.class)
 public class User {
-    private Long id;
+    private int id;
     private int userCode, schoolCode, curGrade, homeClass, positionChecker;
     private String name, userId, userPw, email, phone, gardianPhone, gardianRelation, gender;
     private LocalDateTime insertDate, updateDate;

@@ -1,7 +1,7 @@
 -- 기본 --
 create table chat (
 chat_id int auto_increment primary key,
-user_code int not null,
+user_code int null,
 insert_date datetime not null,
 update_date datetime null,
 chat_body text not null,

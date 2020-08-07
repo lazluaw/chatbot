@@ -1,5 +1,6 @@
 package com.chatbot.web.proxy;
 
+import com.chatbot.web.domains.Chat;
 import com.chatbot.web.domains.ChatHistory;
 import com.chatbot.web.domains.Exam;
 import com.chatbot.web.mappers.ChatHistoryMapper;
@@ -12,18 +13,20 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 
-
-//userInfo 값... 넣어줘야 함...
-
-
 @Component @Lazy
 public class Fallback {
+    @Autowired Chat chat;
     @Autowired ChatHistory chatHistory;
     @Autowired ChatHistoryMapper chatHistoryMapper;
+    private ObjectMapper mapper;
+    private JSONParser parser;
+    private String jsonStr;
     private JSONObject obj, obj1, obj2, obj3, obj4, obj5, arrObj;
     private JSONArray arr, arr2;
-    public Map<String, Object> fallbackForm() {
+    public Map<String, Object> fallbackForm(Map<String, Object> jsonParams) {
         try {
+            mapper = new ObjectMapper();
+            parser = new JSONParser();
             obj = new JSONObject();
             obj1 = new JSONObject();
             obj2 = new JSONObject();
@@ -33,6 +36,11 @@ public class Fallback {
             arrObj = new JSONObject();
             arr = new JSONArray();
             arr2 = new JSONArray();
+
+            jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
+            JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
+            JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
+            String userInfo = userRequest.toString();
 
             obj.put("version", "2.0");
             obj.put("template", arrObj);
@@ -45,12 +53,15 @@ public class Fallback {
             obj2.put("buttons", arr2);
             arr2.add(obj4);
             arr2.add(obj5);
-            obj4.put("messageText", "본인인증");
+            obj4.put("messageText", "로그인하기");
             obj4.put("label", "로그인하기");
             obj4.put("action", "message");
             obj5.put("messageText", "챗봇종료");
             obj5.put("label", "챗봇종료");
             obj5.put("action", "message");
+
+            chatHistory.setChatId(chat.getId());
+            chatHistory.setUserInfo(userInfo);
             chatHistory.setChatKind("B");
             chatHistory.setChatBody("폴백");
             chatHistoryMapper.insertData(chatHistory);
