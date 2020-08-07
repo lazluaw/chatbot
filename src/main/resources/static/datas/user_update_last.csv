@@ -1,4 +1,4 @@
-user_code, email, gardian_phone, gardian_relation, gender, cur_grade, home_class, insert_date, name, phone, position_checker, school_code, school_name, update_date, user_id, user_pw
+user_code, email, guardian_phone, guardian_relation, gender, cur_grade, home_class, insert_date, name, phone, position_checker, school_code, school_name, update_date, user_id, user_pw
 100000001,teacher1@school.com,null,null,F,3,1,null,허지회,010-1542-3654,0,1000,선유고등학교,null,pickle,pickle123
 100000002,teacher2@school.com,null,null,F,3,2,null,윤나영,010-1577-1328,0,1000,선유고등학교,null,cucumber,cucumber123
 100000003,teacher3@school.com,null,null,F,3,3,null,이주아,010-7894-1254,0,1000,선유고등학교,null,aaa,aaa123

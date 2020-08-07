@@ -15,6 +15,6 @@ import java.time.LocalDateTime;
 public class User {
     private int id;
     private int userCode, schoolCode, curGrade, homeClass, positionChecker;
-    private String name, userId, userPw, email, phone, gardianPhone, gardianRelation, gender;
+    private String name, userId, userPw, email, phone, guardianPhone, guardianRelation, gender;
     private LocalDateTime insertDate, updateDate;
 }

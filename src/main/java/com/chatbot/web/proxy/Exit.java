@@ -36,6 +36,7 @@ public class Exit {
     private JSONArray arr;
     private ValueOperations<String, Object> vop;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private String exitImg = "https://i.pinimg.com/564x/37/a2/6b/37a26b5b2b879c5280cbe4457d0d4649.jpg";
     public Map<String, Object> exit(Map<String, Object> jsonParams) {
         try {
             mapper = new ObjectMapper();
@@ -61,13 +62,20 @@ public class Exit {
 
             chat.setChatBody(chatBody);
             if (userKey == 0) {
-                System.out.println("exit insert");
+                logger.info("exit insert");
                 chatMapper.insertData(chat);
             } else if (userKey != 0) {
-                System.out.println("exit update");
-                chatMapper.updateData(chat);
+                if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
+                    chat.setUserCode(100000002);
+                    chatMapper.updateData(chat);
+                } else if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100020001) {
+                    chat.setUserCode(10002000);
+                    chatMapper.updateData(chat);
+                } else {
+                    logger.error("update ERROR");
+                }
             } else {
-                System.out.println("fallback ERROR");
+                logger.error("fallback ERROR");
             }
             chatHistory.setChatId(chat.getId());
             chatHistory.setChatKind("C");
@@ -84,7 +92,7 @@ public class Exit {
                 obj2.put("title", "챗봇이 종료됩니다. 감사합니다.");
                 obj2.put("description", "항상 앞으로 나아가는 피클 서비스, 피클봇이 되겠습니다.");
                 obj2.put("thumbnail", obj3);
-                obj3.put("imageUrl", "https:i.pinimg.com/564x/37/a2/6b/37a26b5b2b879c5280cbe4457d0d4649.jpg");
+                obj3.put("imageUrl", exitImg);
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody("챗봇종료");
                 chatHistoryMapper.insertData(chatHistory);

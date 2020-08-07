@@ -65,7 +65,7 @@ COLLATE=utf8_general_ci;
 CREATE TABLE user
 (
     `id`                INT            NOT NULL    AUTO_INCREMENT,
-    `user_code`         INT            NOT NULL,
+    `user_code`         INT            NOT NULL unique key,
     `school_code`       INT            NOT NULL,
     `school_name`       VARCHAR(60)    NULL,
     `cur_grade`         INT            NULL,
@@ -75,8 +75,8 @@ CREATE TABLE user
     `user_pw`           VARCHAR(20)    NOT NULL,
     `email`             VARCHAR(50)    NULL,
     `phone`             VARCHAR(13)    NULL,
-    `gardian_phone`     VARCHAR(13)    NULL,
-    `gardian_relation`  VARCHAR(2)     NULL,
+    `guardian_phone`     VARCHAR(13)    NULL,
+    `guardian_relation`  VARCHAR(2)     NULL,
     `gender`            VARCHAR(1)     NULL,
     `position_checker`  int            NOT NULL,
     `insert_date`       DATETIME       NULL,

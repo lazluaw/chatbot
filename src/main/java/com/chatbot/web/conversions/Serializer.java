@@ -40,8 +40,6 @@ public class Serializer {
     private ValueOperations<String, Object> vop;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private String entryImg = "https://i.pinimg.com/564x/f4/62/c9/f462c9fc876243221c6ee36c3fb97b32.jpg";
-    private String fallbackImg = "https://i.pinimg.com/564x/fe/b7/2d/feb72dfa16dfd4781c26b550edd88255.jpg";
-    private String exitImg = "https://i.pinimg.com/564x/37/a2/6b/37a26b5b2b879c5280cbe4457d0d4649.jpg";
     private String streamImg = "https://i.pinimg.com/564x/df/9b/65/df9b65458c037b6f9eac74e9035c62ad.jpg";
     private String examKindImg = "https://i.pinimg.com/564x/81/21/12/8121120d992f697528c3ca99d9af4baa.jpg";
     private String subjectCodeImg = "https://i.pinimg.com/564x/9a/48/f4/9a48f4460b011bf688e50c03165dadd6.jpg";
@@ -74,28 +72,41 @@ public class Serializer {
             JSONObject properties = (JSONObject) user.get("properties");
             String botUserKey = (String) properties.get("botUserKey");
             vop.set(botUserKey, chat.getId());
+
+            System.out.println(vop.get(botUserKey));
+
             int userKey = (int) vop.get(botUserKey);
             chat.setChatBody(chatBody);
-            if (userKey == 0) {
-                System.out.println("fallback/auth insert");
-                chat.setUserCode(100020375);
-                chatMapper.insertData(chat);
-            } else if (userKey != 0) {
-                System.out.println("fallback/auth update");
-                chatMapper.updateData(chat);
-            } else {
-                System.out.println("fallback ERROR");
-            }
 
+            System.out.println(chat.getChatBody());
+
+            if (userKey == 0) {
+                logger.info("fallback/auth insert");
+                chatMapper.insertData(chat);
+                chatHistory.setChatId(chat.getId());
+            } else if (userKey != 0) {
+                if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
+                    logger.info("fallback/auth update");
+                    chat.setUserCode(100000002);
+                    chatMapper.updateData(chat);
+                } else if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100020001) {
+                    logger.info("fallback/auth update");
+                    chat.setUserCode(10002000);
+                    chatMapper.updateData(chat);
+                } else {
+                    logger.error("update ERROR");
+                }
+            } else {
+                logger.error("fallback ERROR");
+            }
             if (chatHistoryMapper.selectLogin(chat.getId()) == null) {
-                if (chatBody.contains(",")) {
+                if (chatBody.contains("로그인") || chatBody.contains("login")) {
+                    return this.loginSer(jsonParams);
+                    //여기 안됨
+                } else if (chatBody.contains(",")) {
                     if (chatBody.contains(" ") || chatBody.equals(userMapper.selectLoginList(100000002)) || chatBody.contains(" ")) {
                         chat.setUserCode(100000002);
                         chatMapper.updateData(chat);
-
-                        //test
-                        System.out.println("admin: " + chatMapper.selectUserCode(chat.getId()).getUserCode());
-
                         chatHistory.setChatId(chat.getId());
                         chatHistory.setUserInfo(userInfo);
                         chatHistory.setChatKind("S");
@@ -105,10 +116,6 @@ public class Serializer {
                     } else if (chatBody.contains(" ") || chatBody.equals(userMapper.selectLoginList(100020001)) || chatBody.contains(" ")) {
                         chat.setUserCode(100020001);
                         chatMapper.updateData(chat);
-
-                        //test
-                        System.out.println("user: " + chatMapper.selectUserCode(chat.getId()).getUserCode());
-
                         chatHistory.setChatId(chat.getId());
                         chatHistory.setUserInfo(userInfo);
                         chatHistory.setChatKind("S");
@@ -116,17 +123,17 @@ public class Serializer {
                         chatHistoryMapper.insertData(chatHistory);
                         return this.menuSer(jsonParams);
                     } else {
-                        System.out.println("사용자 판별 오류");
+                        logger.error("사용자 판별 오류");
                         return fallback.fallbackForm(jsonParams);
                     }
                 } else {
-                    System.out.println("null인데 else 가장자리일 때 진입");
+                    logger.error("로그인 안 된 상태서 fallback 처리");
                     return fallback.fallbackForm(jsonParams);
                 }
             } else if (chatHistoryMapper.selectLogin(chat.getId()) != null) {
-                System.out.println("S일때, if 전에 진입...");
+                logger.info("S일때, if 전에 진입...");
                 if (chatBody.contains("로그인") || chatBody.contains("login")) {
-                    System.out.println("로그인했음에도 또 로그인 하려고 할 때 진입");
+                    logger.info("로그인중복블록 진입");
                     obj.put("version", "2.0");
                     obj.put("template", arrObj);
                     arrObj.put("outputs", arr);
@@ -165,15 +172,14 @@ public class Serializer {
                     return fallback.fallbackForm(jsonParams);
                 }
             } else {
-                logger.error("enduser division ERROR");
-                return null;
+                logger.error("나머지는 다 폴백");
+                return fallback.fallbackForm(jsonParams);
             }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("fallback ERROR CATCH");
             return null;
         }
-
     }
 
     public Map<String, Object> loginSer(Map<String, Object> jsonParams) {
@@ -201,14 +207,23 @@ public class Serializer {
 
             chat.setChatBody(chatBody);
             if (userKey == 0) {
-                System.out.println("auth insert");
-                chat.setUserCode(100020375);
+                logger.info("auth insert");
                 chatMapper.insertData(chat);
+                chatHistory.setChatId(chat.getId());
             } else if (userKey != 0) {
-                System.out.println("auth update");
-                chatMapper.updateData(chat);
+                if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
+                    logger.info("auth update");
+                    chat.setUserCode(100000002);
+                    chatMapper.updateData(chat);
+                } else if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100020001) {
+                    logger.info("auth update");
+                    chat.setUserCode(10002000);
+                    chatMapper.updateData(chat);
+                } else {
+                    logger.error("update ERROR");
+                }
             } else {
-                System.out.println("CHAT DB ERROR");
+                logger.error("chat db ERROR");
             }
             chatHistory.setChatId(chat.getId());
             chatHistory.setChatKind("C");
@@ -262,14 +277,23 @@ public class Serializer {
 
             chat.setChatBody(chatBody);
             if (userKey == 0) {
-                System.out.println("menu/exit insert");
-                chat.setUserCode(100020375);
+                logger.info("menu/exit insert");
                 chatMapper.insertData(chat);
+                chatHistory.setChatId(chat.getId());
             } else if (userKey != 0) {
-                System.out.println("menu/exit update");
-                chatMapper.updateData(chat);
+                if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
+                    logger.info("menu/exit update");
+                    chat.setUserCode(100000002);
+                    chatMapper.updateData(chat);
+                } else if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100020001) {
+                    logger.info("menu/exit update");
+                    chat.setUserCode(10002000);
+                    chatMapper.updateData(chat);
+                } else {
+                    logger.error("update ERROR");
+                }
             } else {
-                System.out.println("menu/exit ERROR");
+                logger.error("menu/exit ERROR");
             }
             chatHistory.setChatId(chat.getId());
             chatHistory.setChatKind("C");
@@ -285,11 +309,11 @@ public class Serializer {
 
             //user : v204ap, l7hi3x0e
             //admin: cucumber, cucumber123
-
             String analysis = "";
             String attendance = "";
             String img = "";
             String desc = "님, 반갑습니다.\n챗봇 메뉴를 선택해주세요 :3\n챗봇을 종료하시려면 '종료'를 입력해주세요.";
+            String description = userMapper.selectNameList(chat.getUserCode()).getName().concat(desc);
             if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
                 attendance = "출결관리";
                 analysis = "시험분석";
@@ -299,7 +323,7 @@ public class Serializer {
                 analysis = "오답노트";
                 img = userMImg;
             }
-            obj2.put("description", userMapper.selectNameList(chat.getUserCode()) + desc);
+            obj2.put("description", description);
             obj2.put("thumbnail", obj3);
             obj3.put("imageUrl", img);
             obj2.put("buttons", arr2);
@@ -317,7 +341,7 @@ public class Serializer {
             obj6.put("action", "webLink");
 
             chatHistory.setChatKind("B");
-            chatHistory.setChatBody(obj2.get("description").toString());
+            chatHistory.setChatBody("메뉴선택");
             chatHistoryMapper.insertData(chatHistory);
             return obj;
         } catch (Exception e) {
@@ -356,14 +380,23 @@ public class Serializer {
 
             chat.setChatBody(chatBody);
             if (userKey == 0) {
-                System.out.println("menu/exit insert");
-                chat.setUserCode(100020375);
+                logger.info("class insert");
                 chatMapper.insertData(chat);
+                chatHistory.setChatId(chat.getId());
             } else if (userKey != 0) {
-                System.out.println("menu/exit update");
-                chatMapper.updateData(chat);
+                if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
+                    logger.info("class update");
+                    chat.setUserCode(100000002);
+                    chatMapper.updateData(chat);
+                } else if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100020001) {
+                    logger.info("class update");
+                    chat.setUserCode(10002000);
+                    chatMapper.updateData(chat);
+                } else {
+                    logger.error("update ERROR");
+                }
             } else {
-                System.out.println("menu/exit ERROR");
+                logger.error("class ERROR");
             }
             chatHistory.setChatId(chat.getId());
             chatHistory.setChatKind("C");
@@ -371,12 +404,13 @@ public class Serializer {
             chatHistory.setChatBody(chatBody);
             chatHistoryMapper.insertData(chatHistory);
 
+            obj.put("version", "2.0");
+            obj.put("template", arrObj);
+            arrObj.put("outputs", arr);
+            arr.add(obj1);
+            obj1.put("basicCard", obj2);
+
             if (chatBody.contains("스트리밍") || chatBody.contains("교육") || chatBody.contains("강의")) {
-                obj.put("version", "2.0");
-                obj.put("template", arrObj);
-                arrObj.put("outputs", arr);
-                arr.add(obj1);
-                obj1.put("basicCard", obj2);
                 obj2.put("title", "스트리밍 메뉴");
                 obj2.put("description", "화상교육 시작해볼까요~?");
                 obj2.put("thumbnail", obj3);
@@ -396,16 +430,8 @@ public class Serializer {
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
             } else if (chatBody.contains("출석") || chatBody.contains("출결") || chatBody.contains("추럭")) {
-
-                obj.put("version", "2.0");
-                obj.put("template", arrObj);
-                arrObj.put("outputs", arr);
-                arr.add(obj1);
-                obj1.put("basicCard", obj2);
-
                 String attendance = "";
                 String title = attendance + " 메뉴";
-                //나중에 url 전달 받으면 사용자 구분에 따라 다르게 처리
                 String atUrl = "https://www.daum.net";
                 if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
                     attendance = "출결관리";
@@ -480,15 +506,28 @@ public class Serializer {
             int userKey = (int) vop.get(botUserKey);
             chat.setChatBody(chatBody);
 
+            String analyses = "";
+
             if (userKey == 0) {
-                System.out.println("func insert");
-                chat.setUserCode(100020375);
+                logger.info("exam insert");
+                chatHistory.setChatId(chat.getId());
                 chatMapper.insertData(chat);
             } else if (userKey != 0) {
-                System.out.println("func update");
-                chatMapper.updateData(chat);
+                if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
+                    logger.info("exam update");
+                    chat.setUserCode(100000002);
+                    analyses = "시험분석";
+                    chatMapper.updateData(chat);
+                } else if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100020001) {
+                    logger.info("exam update");
+                    chat.setUserCode(10002000);
+                    analyses = "오답노트";
+                    chatMapper.updateData(chat);
+                } else {
+                    logger.error("update ERROR");
+                }
             } else {
-                System.out.println("CHAT DB ERROR");
+                logger.error("chat db ERROR");
             }
             chatHistory.setChatId(chat.getId());
             chatHistory.setChatKind("C");
@@ -504,7 +543,8 @@ public class Serializer {
             obj2.put("type", "basicCard");
             obj2.put("items", arr2);
             arr2.add(obj3);
-            if (chatBody.contains("시험분석") || chatBody.contains("오답노트")) {
+
+            if (chatBody.contains(analyses)) {
                 obj3.put("title", "시험종류 선택");
                 obj3.put("description", "시험종류를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.");
                 obj3.put("thumbnail", imgObj);
@@ -539,14 +579,12 @@ public class Serializer {
                 chatHistory.setChatBody(obj3.get("title").toString());
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
-            } else if (chatBody.contains("1학기 중간고사") && chatBody.contains("오답노트")
-                    || chatBody.contains("2학기 중간고사") && chatBody.contains("오답노트")
-                    || chatBody.contains("1학기 기말고사") && chatBody.contains("오답노트")
-                    || chatBody.contains("2학기 기말고사") && chatBody.contains("오답노트")
-                    || chatBody.contains("1학기 중간고사") && chatBody.contains("시험분석")
-                    || chatBody.contains("2학기 중간고사") && chatBody.contains("시험분석")
-                    || chatBody.contains("1학기 기말고사") && chatBody.contains("시험분석")
-                    || chatBody.contains("2학기 기말고사") && chatBody.contains("시험분석")) {
+            } else if (chatBody.equals("1학기 중간고사") || chatBody.equals("2학기 중간고사")
+                    || chatBody.equals("2학기 중간고사") || chatBody.equals("2학기 기말고사")
+                    || chatBody.contains("1학기 중간고사") && chatBody.contains(analyses)
+                    || chatBody.contains("2학기 중간고사") && chatBody.contains(analyses)
+                    || chatBody.contains("1학기 기말고사") && chatBody.contains(analyses)
+                    || chatBody.contains("2학기 기말고사") && chatBody.contains(analyses)) {
                 obj3.put("title", "과목종류 선택");
                 obj3.put("description", "과목종류를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.");
                 obj3.put("thumbnail", imgObj);
@@ -556,13 +594,13 @@ public class Serializer {
                 arr3.add(obj5);
                 arr3.add(obj6);
                 obj4.put("messageText", "국어");
-                obj4.put("label", "국어");
+                obj4.put("label", chatBody+" 국어");
                 obj4.put("action", "message");
                 obj5.put("messageText", "영어");
-                obj5.put("label", "영어");
+                obj5.put("label", chatBody+" 영어");
                 obj5.put("action", "message");
                 obj6.put("messageText", "수학");
-                obj6.put("label", "수학");
+                obj6.put("label", chatBody+" 수학");
                 obj6.put("action", "message");
 
                 arr2.add(obj7);
@@ -573,14 +611,14 @@ public class Serializer {
                 arr4.add(obj8);
                 arr4.add(obj9);
                 arr4.add(obj10);
-                obj8.put("messageText", "생활과 윤리");
-                obj8.put("label", "생활과 윤리");
+                obj8.put("messageText", "생활과윤리");
+                obj8.put("label", chatBody+" 생활과윤리");
                 obj8.put("action", "message");
                 obj9.put("messageText", "지리");
-                obj9.put("label", "지리");
+                obj9.put("label", chatBody+" 지리");
                 obj9.put("action", "message");
                 obj10.put("messageText", "경제");
-                obj10.put("label", "경제");
+                obj10.put("label", chatBody+" 경제");
                 obj10.put("action", "message");
 
                 arr2.add(obj11);
@@ -607,14 +645,14 @@ public class Serializer {
                 chatHistory.setChatBody(obj3.get("title").toString());
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
-            } else if (chatBody.contains("1학기 중간고사") && chatBody.contains("시험분석") && chatBody.contains("국어")
-                    || chatBody.contains("2학기 중간고사") && chatBody.contains("시험분석") && chatBody.contains("국어")
-                    || chatBody.contains("1학기 기말고사") && chatBody.contains("시험분석") && chatBody.contains("국어")
-                    || chatBody.contains("2학기 기말고사") && chatBody.contains("시험분석") && chatBody.contains("국어")
-                    || chatBody.contains("1학기 중간고사") && chatBody.contains("시험분석") && chatBody.contains("국어")
-                    || chatBody.contains("2학기 중간고사") && chatBody.contains("시험분석") && chatBody.contains("국어")
-                    || chatBody.contains("1학기 기말고사") && chatBody.contains("시험분석") && chatBody.contains("국어")
-                    || chatBody.contains("2학기 기말고사") && chatBody.contains("시험분석") && chatBody.contains("국어")) {
+            } else if ((chatBody.contains("1학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
+                    || (chatBody.contains("2학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
+                    || (chatBody.contains("1학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
+                    || (chatBody.contains("2학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
+                    || (chatBody.contains("1학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
+                    || (chatBody.contains("2학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
+                    || (chatBody.contains("1학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
+                    || (chatBody.contains("2학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)) {
                 obj3.put("title", "[학생들이 가장 많이 틀린 문제]: [시험문제 번호]");
                 obj3.put("description", "[정답], [학생들이 가장 많이 선택한 오답]\n[시험문제 질문]\n[시험문제 내용]");
                 obj3.put("thumbnail", obj4);
@@ -636,14 +674,14 @@ public class Serializer {
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
                 //추가하기
-            } else if (chatBody.contains("1학기 중간고사") && chatBody.contains("오답노트") && chatBody.contains("국어")
-                    || chatBody.contains("2학기 중간고사") && chatBody.contains("오답노트") && chatBody.contains("국어")
-                    || chatBody.contains("1학기 기말고사") && chatBody.contains("오답노트") && chatBody.contains("국어")
-                    || chatBody.contains("2학기 기말고사") && chatBody.contains("오답노트") && chatBody.contains("국어")
-                    || chatBody.contains("1학기 중간고사") && chatBody.contains("오답노트") && chatBody.contains("국어")
-                    || chatBody.contains("2학기 중간고사") && chatBody.contains("오답노트") && chatBody.contains("국어")
-                    || chatBody.contains("1학기 기말고사") && chatBody.contains("오답노트") && chatBody.contains("국어")
-                    || chatBody.contains("2학기 기말고사") && chatBody.contains("오답노트") && chatBody.contains("국어")) {
+            } else if (chatBody.contains("1학기 중간고사") && chatBody.contains(analyses) && chatBody.contains("국어")
+                    || chatBody.contains("2학기 중간고사") && chatBody.contains(analyses) && chatBody.contains("국어")
+                    || chatBody.contains("1학기 기말고사") && chatBody.contains(analyses) && chatBody.contains("국어")
+                    || chatBody.contains("2학기 기말고사") && chatBody.contains(analyses) && chatBody.contains("국어")
+                    || chatBody.contains("1학기 중간고사") && chatBody.contains(analyses) && chatBody.contains("국어")
+                    || chatBody.contains("2학기 중간고사") && chatBody.contains(analyses) && chatBody.contains("국어")
+                    || chatBody.contains("1학기 기말고사") && chatBody.contains(analyses) && chatBody.contains("국어")
+                    || chatBody.contains("2학기 기말고사") && chatBody.contains(analyses) && chatBody.contains("국어")) {
 
                 obj3.put("title", "[시험문제 번호]\n[시험문제 질문]");
                 obj3.put("description", "정답: [시험문제 정답]\n선택한 답: [오답]\n[시험문제 내용]");

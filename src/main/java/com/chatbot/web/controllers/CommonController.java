@@ -19,43 +19,36 @@ public class CommonController {
 
     @PostMapping("/v1/kakao/login")
     public Map<String, Object> login(@RequestBody Map<String, Object> jsonParams) {
-        exit.exit(jsonParams);
         return serializer.loginSer(jsonParams);
     }
 
     @PostMapping("/v1/kakao/fallback")
     public Map<String, Object> fallback(@RequestBody Map<String, Object> jsonParams) {
-        exit.exit(jsonParams);
         return serializer.fallbackSer(jsonParams);
     }
 
     @PostMapping("/v1/kakao/exit")
     public Map<String, Object> exit(@RequestBody Map<String, Object> jsonParams) {
-        exit.exit(jsonParams);
         return exit.exit(jsonParams);
     }
 
     @PostMapping("/v1/kakao/menu")
     public Map<String, Object> menu(@RequestBody Map<String, Object> jsonParams) {
-        exit.exit(jsonParams);
         return serializer.menuSer(jsonParams);
     }
 
     @PostMapping("/v1/kakao/stream")
     public Map<String, Object> stream(@RequestBody Map<String, Object> jsonParams) {
-        exit.exit(jsonParams);
         return serializer.classSer(jsonParams);
     }
 
     @PostMapping("/v1/kakao/admin/attendance")
     public Map<String, Object> adminAt(@RequestBody Map<String, Object> jsonParams) {
-        exit.exit(jsonParams);
         return serializer.classSer(jsonParams);
     }
 
     @PostMapping("/v1/kakao/user/attendance")
     public Map<String, Object> userAt(@RequestBody Map<String, Object> jsonParams) {
-        exit.exit(jsonParams);
         return serializer.classSer(jsonParams);
     }
 }
