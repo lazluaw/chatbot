@@ -6,7 +6,7 @@
     <insert id="insertData" parameterType="chat"
             useGeneratedKeys="true" keyProperty="id">
         insert into chat (user_code, chat_body, insert_date, update_date)
-            values (100020375, #{chatBody}, now(), now())
+            values (#{userCode}, #{chatBody}, now(), now())
     </insert>
 
     <select id="selectDateList" parameterType="int" resultType="chat">
@@ -16,16 +16,9 @@
         where chat_id = #{id}
     </select>
 
-    <select id="selectUserCode" parameterType="int" resultType="chat">
-        select user_code as userCode
-        from chat
-        where chat_id = #{chatId}
-    </select>
-
     <update id="updateData" parameterType="chat"
             useGeneratedKeys="true" keyProperty="id">
         update chat set
-        user_code = ${userCode},
         chat_body = #{chatBody},
         update_date = now()
         where chat_id = #{id}

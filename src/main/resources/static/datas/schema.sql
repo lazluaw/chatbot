@@ -1,7 +1,7 @@
 -- 기본 --
 create table chat (
 chat_id int auto_increment primary key,
-user_code int null,
+user_code int not null,
 insert_date datetime not null,
 update_date datetime null,
 chat_body text not null,
@@ -13,7 +13,7 @@ COLLATE=utf8_general_ci;
 
 create table chathistory (
 history_id int auto_increment primary key,
-chat_id int null,
+chat_id int not null,
 user_info varchar(1000) not null,
 chat_body text not null,
 chat_kind varchar(1) not null,

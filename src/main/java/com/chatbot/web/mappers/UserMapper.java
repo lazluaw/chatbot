@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserMapper {
-    public User selectLoginList(int user);
-    public User selectNameList(int user);
+    public User selectList(int user);
 }

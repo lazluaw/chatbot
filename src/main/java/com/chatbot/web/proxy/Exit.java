@@ -57,26 +57,9 @@ public class Exit {
             JSONObject user = (JSONObject) userRequest.get("user");
             JSONObject properties = (JSONObject) user.get("properties");
             String botUserKey = (String) properties.get("botUserKey");
-            vop.set(botUserKey, chat.getId());
-            int userKey = (int) vop.get(botUserKey);
 
             chat.setChatBody(chatBody);
-            if (userKey == 0) {
-                logger.info("exit insert");
-                chatMapper.insertData(chat);
-            } else if (userKey != 0) {
-                if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100000002) {
-                    chat.setUserCode(100000002);
-                    chatMapper.updateData(chat);
-                } else if (chatMapper.selectUserCode(chat.getId()).getUserCode() == 100020001) {
-                    chat.setUserCode(10002000);
-                    chatMapper.updateData(chat);
-                } else {
-                    logger.error("update ERROR");
-                }
-            } else {
-                logger.error("fallback ERROR");
-            }
+            chatMapper.updateData(chat);
             chatHistory.setChatId(chat.getId());
             chatHistory.setChatKind("C");
             chatHistory.setUserInfo(userInfo);
