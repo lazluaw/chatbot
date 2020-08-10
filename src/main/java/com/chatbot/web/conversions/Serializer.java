@@ -89,12 +89,6 @@ public class Serializer {
                     chat.setChatBody(chatBody);
                     chat.setUserCode(Integer.parseInt(vop.get("adminCode").toString()));
                     chatMapper.insertData(chat);
-                    chatHistory.setChatId(chat.getId());
-                    chatHistory.setUserInfo(userInfo);
-                    chatHistory.setChatKind("C");
-                    chatHistory.setChatBody(chatBody);
-                    chatHistoryMapper.insertData(chatHistory);
-                    //test : 이 기능이 작동하지 않음
                     vop.set("loginSuccess", "S");
                     return this.menuSer(jsonParams);
                 } else if (chatBody.equals(vop.get("userLogin"))) {
@@ -102,16 +96,8 @@ public class Serializer {
                     chat.setChatBody(chatBody);
                     chat.setUserCode(Integer.parseInt(vop.get("userCode").toString()));
                     chatMapper.insertData(chat);
-                    chatHistory.setChatId(chat.getId());
-                    chatHistory.setUserInfo(userInfo);
-                    chatHistory.setChatKind("C");
-                    chatHistory.setChatBody(chatBody);
-                    chatHistoryMapper.insertData(chatHistory);
-                    //test : 이 기능이 작동하지 않음
                     vop.set("loginSuccess", "S");
-
-                    //test : this.menuSer(jsonParams);
-                    return exit.exit(jsonParams);
+                    return this.menuSer(jsonParams);
                 } else {
                     logger.error("로그인실패");
                     return fallback.fallback(jsonParams);
@@ -219,9 +205,8 @@ public class Serializer {
             JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
             String chatBody = (String) userRequest.get("utterance");
             String userInfo = userRequest.toString();
-            vop.set("adminCheck", String.valueOf(userMapper.selectList(392).getPositionChecker()));
-            vop.set("userCheck", String.valueOf(userMapper.selectList(1186).getPositionChecker()));
 
+            //chat: 로그인 후에 바로 메뉴에 왔을 때 데이터가 이중으로 저장되어도 어쩔 수 없..을까?
             chat.setChatBody(chatBody);
             chatMapper.updateData(chat);
             chatHistory.setChatId(chat.getId());
@@ -229,30 +214,32 @@ public class Serializer {
             chatHistory.setUserInfo(userInfo);
             chatHistory.setChatBody(chatBody);
             chatHistoryMapper.insertData(chatHistory);
+
+
             String analysis = "";
             String attendance = "";
             String img = "";
             String url = "";
             String description = "";
             String desc = "님, 반갑습니다.\n메뉴를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.";
-            obj.put("version", "2.0");
-            obj.put("template", arrObj);
-            arrObj.put("outputs", arr);
-            arr.add(obj1);
-            obj1.put("basicCard", obj2);
-            if (vop.get("adminCheck").equals("0")) {
+            if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 attendance = "출결관리";
                 analysis = "시험분석";
                 img = adminMImg;
                 url = "https://www.naver.com";
                 description = userMapper.selectList(392).getName() + desc;
-            } else if (vop.get("userCheck").equals("1")) {
+            } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                 attendance = "출석체크";
                 analysis = "오답노트";
                 img = userMImg;
                 url = "https://www.naver.com";
                 description = userMapper.selectList(1186).getName() + desc;
             }
+            obj.put("version", "2.0");
+            obj.put("template", arrObj);
+            arrObj.put("outputs", arr);
+            arr.add(obj1);
+            obj1.put("basicCard", obj2);
             obj2.put("description", description);
             obj2.put("thumbnail", obj3);
             obj3.put("imageUrl", img);
@@ -268,7 +255,7 @@ public class Serializer {
             obj5.put("action", "message");
             obj6.put("webLinkUrl", "https://www.naver.com");
             obj6.put("label", "스트리밍");
-            obj6.put("action", "webLink");
+            obj6.put("action", "webLink");obj.put("version", "2.0");
 
             chatHistory.setChatKind("B");
             chatHistory.setChatBody("메뉴선택");
@@ -338,10 +325,10 @@ public class Serializer {
             } else if (chatBody.contains("출석") || chatBody.contains("출결") || chatBody.contains("추럭")) {
                 String title = "";
                 String atUrl = "";
-                if (vop.get("adminCheck").equals("0")) {
+                if (vop.get("adminCode").equals(chat.getUserCode())) {
                     title = "출결관리";
                     atUrl = "https://www.daum.net";
-                } else if (vop.get("userCheck").equals("1")) {
+                } else if (vop.get("userCode").equals(chat.getUserCode())) {
                     title = "출석";
                     atUrl = "https://www.naver.com";
                 }
@@ -532,7 +519,7 @@ public class Serializer {
                     || (chatBody.contains("2학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
                     || (chatBody.contains("1학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
                     || (chatBody.contains("2학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)) {
-                if (vop.get("adminCheck").equals("0")) {
+                if (vop.get("adminCode").equals(chat.getUserCode())) {
                     obj3.put("title", "[학생들이 가장 많이 틀린 문제]: [시험문제 번호]");
                     obj3.put("description", "[정답], [학생들이 가장 많이 선택한 오답]\n[시험문제 질문]\n[시험문제 내용]");
                     obj3.put("thumbnail", obj4);
@@ -551,7 +538,7 @@ public class Serializer {
                     chatHistory.setChatBody("시험분석");
                     chatHistoryMapper.insertData(chatHistory);
                     return obj;
-                } else if (vop.get("userCheck").equals("1")) {
+                } else if (vop.get("userCode").equals(chat.getUserCode())) {
                     obj3.put("title", "[시험문제 번호]\n[시험문제 질문]");
                     obj3.put("description", "정답: [시험문제 정답]\n선택한 답: [오답]\n[시험문제 내용]");
                     obj3.put("thumbnail", obj4);

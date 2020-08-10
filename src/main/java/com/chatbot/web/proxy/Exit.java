@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+//S로 저장된 DB 값을 삭제해야 함.
+
 @Component @Lazy
 @MappedTypes(LocalDate.class)
 public class Exit {
@@ -83,7 +85,7 @@ public class Exit {
                 chatHistory.setChatBody("챗봇종료");
                 chatHistoryMapper.insertData(chatHistory);
 
-                vop.set(botUserKey, 0);
+                vop.set(botUserKey, "0");
                 chat.setId(0);
                 return obj;
             } else {
@@ -97,7 +99,7 @@ public class Exit {
                     chatHistory.setChatBody("챗봇종료");
                     chatHistoryMapper.insertData(chatHistory);
 
-                    vop.set(botUserKey, 0);
+                    vop.set(botUserKey, "0");
                     chat.setId(0);
                     return null;
                 } else if(updateDate != null) {
@@ -106,7 +108,7 @@ public class Exit {
                     chatHistory.setChatBody("챗봇종료");
                     chatHistoryMapper.insertData(chatHistory);
 
-                    vop.set(botUserKey, 0);
+                    vop.set(botUserKey, "0");
                     chat.setId(0);
                     return null;
                 }

@@ -57,8 +57,8 @@ public class Fallback {
             arr.add(obj1);
             obj1.put("basicCard", obj2);
 
-            System.out.println(vop.get("loginSuccess"));
             if (vop.get("loginSuccess") == null) {
+                logger.info("로그인실패 fallback");
                 obj2.put("title", "로그인에 실패하였습니다.");
                 obj2.put("description", "아이디와 비밀번호를 정확히 입력해 주세요.\n(형식 : 아이디,비밀번호)");
                 obj2.put("thumbnail", obj3);
@@ -71,6 +71,7 @@ public class Fallback {
                 obj5.put("action", "message");
                 return obj;
             } else if (vop.get("loginSuccess") != null) {
+                logger.info("로그인O fallback");
                 obj2.put("title", "무슨 의미인지 모르겠어요!");
                 obj2.put("description", "챗봇을 이용하시려면 '메뉴' 버튼을,\n종료하시려면 '종료' 버튼을 눌러주세요.");
                 obj2.put("thumbnail", obj3);
@@ -91,9 +92,13 @@ public class Fallback {
                 String chatBody = (String) userRequest.get("utterance");
                 String userInfo = userRequest.toString();
 
+                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
+                    chat.setUserCode(Integer.valueOf(vop.get("adminCode").toString()));
+                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
+                    chat.setUserCode(Integer.valueOf(vop.get("userCode").toString()));
+                }
                 logger.info("로그인O 폴백");
                 chat.setChatBody(chatBody);
-                chat.setUserCode(chat.getUserCode());
                 chatMapper.insertData(chat);
                 chatHistory.setChatId(chat.getId());
                 chatHistory.setUserInfo(userInfo);
@@ -102,6 +107,7 @@ public class Fallback {
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
             } else {
+                logger.info("로그인X fallback");
                 obj2.put("title", "로그인 후에 챗봇을 이용할 수 있습니다.");
                 obj2.put("description", "챗봇을 이용하시려면 '로그인' 버튼을,\n종료하시려면 '종료' 버튼을 눌러주세요.");
                 obj2.put("thumbnail", obj3);
