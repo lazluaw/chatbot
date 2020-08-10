@@ -54,6 +54,9 @@ public class Exit {
             String chatBody = (String) userRequest.get("utterance");
             String userInfo = userRequest.toString();
 
+            //test
+            System.out.println(vop.get("loginSuccess"));
+
             JSONObject user = (JSONObject) userRequest.get("user");
             JSONObject properties = (JSONObject) user.get("properties");
             String botUserKey = (String) properties.get("botUserKey");

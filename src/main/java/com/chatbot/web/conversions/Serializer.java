@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-//user : v204ap, l7hi3x0e   392
-//admin: cucumber, cucumber123   1186
+//user : v204ap, l7hi3x0e
+//admin: cucumber, cucumber123
 @Service
 public class Serializer {
     @Autowired User user;
@@ -75,32 +75,19 @@ public class Serializer {
             JSONObject properties = (JSONObject) user.get("properties");
             String botUserKey = (String) properties.get("botUserKey");
 
-            vop.set(botUserKey, chat.getId());
-            vop.set("adminCode", userMapper.selectList(392).getUserCode());
-            vop.set("userCode", userMapper.selectList(1186).getUserCode());
-            vop.set("adminId", userMapper.selectList(392).getUserId());
-            vop.set("userId", userMapper.selectList(1186).getUserId());
-            vop.set("adminPw", userMapper.selectList(392).getUserPw());
-            vop.set("userPw", userMapper.selectList(1186).getUserPw());
-            int userKey = (int) vop.get(botUserKey);
-            int adminCode = (int) vop.get("adminCode");
-            int userCode = (int) vop.get("userCode");
-            String adminId = (String) vop.get("adminId");
-            String userId = (String) vop.get("userId");
-            String adminPw = (String) vop.get("adminPw");
-            String userPw = (String) vop.get("userPw");
+            vop.set(botUserKey, String.valueOf(chat.getId()));
+            vop.set("adminCode", String.valueOf(userMapper.selectList(392).getUserCode()));
+            vop.set("userCode", String.valueOf(userMapper.selectList(1186).getUserCode()));
+            vop.set("adminLogin", userMapper.selectList(392).getUserId()+", "+userMapper.selectList(392).getUserPw());
+            vop.set("userLogin", userMapper.selectList(1186).getUserId()+", "+userMapper.selectList(1186).getUserPw());
 
-            if (userKey == 0) {
+            if (vop.get(botUserKey).equals("0")) {
                 if (chatBody.contains("로그인") || chatBody.contains("login")) {
                     return this.loginSer();
-                } else if (chatBody.equals(adminId) || chatBody.contains(",") || chatBody.contains(" ") && chatBody.equals(adminPw)) {
-                    //test: issue
-                    System.out.println("로그인입력: "+chatBody);
-                    System.out.println("비교값: "+adminId+","+adminPw);
-
+                } else if (chatBody.equals(vop.get("adminLogin"))) {
                     logger.info("admin login insert");
                     chat.setChatBody(chatBody);
-                    chat.setUserCode(adminCode);
+                    chat.setUserCode(Integer.parseInt(vop.get("adminCode").toString()));
                     chatMapper.insertData(chat);
                     chatHistory.setChatId(chat.getId());
                     chatHistory.setUserInfo(userInfo);
@@ -110,11 +97,11 @@ public class Serializer {
                     //test : 이 기능이 작동하지 않음
                     vop.set("loginSuccess", "S");
                     return this.menuSer(jsonParams);
-                } else if (chatBody.equals(userId) || chatBody.contains(",") || chatBody.contains(" ") && chatBody.equals(userPw)) {
+                } else if (chatBody.equals(vop.get("userLogin"))) {
                     logger.info("user login insert");
                     chat.setChatBody(chatBody);
-                    chat.setUserCode(userCode);
-                    chatMapper.updateData(chat);
+                    chat.setUserCode(Integer.parseInt(vop.get("userCode").toString()));
+                    chatMapper.insertData(chat);
                     chatHistory.setChatId(chat.getId());
                     chatHistory.setUserInfo(userInfo);
                     chatHistory.setChatKind("C");
@@ -122,12 +109,14 @@ public class Serializer {
                     chatHistoryMapper.insertData(chatHistory);
                     //test : 이 기능이 작동하지 않음
                     vop.set("loginSuccess", "S");
-                    return this.menuSer(jsonParams);
+
+                    //test : this.menuSer(jsonParams);
+                    return exit.exit(jsonParams);
                 } else {
                     logger.error("로그인실패");
                     return fallback.fallback(jsonParams);
                 }
-            } else if (userKey != 0) {
+            } else if (vop.get(botUserKey) != "0") {
                 if (chatBody.contains("로그인") || chatBody.contains("login")) {
                     logger.info("로그인O 중복");
                     obj.put("version", "2.0");
@@ -230,11 +219,8 @@ public class Serializer {
             JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
             String chatBody = (String) userRequest.get("utterance");
             String userInfo = userRequest.toString();
-            vop.set("adminCheck", userMapper.selectList(392).getPositionChecker());
-            vop.set("userCheck", userMapper.selectList(1186).getPositionChecker());
-            //지우기
-            int adminCheck = (int) vop.get("adminCheck");
-            int userCheck = (int) vop.get("userCheck");
+            vop.set("adminCheck", String.valueOf(userMapper.selectList(392).getPositionChecker()));
+            vop.set("userCheck", String.valueOf(userMapper.selectList(1186).getPositionChecker()));
 
             chat.setChatBody(chatBody);
             chatMapper.updateData(chat);
@@ -254,13 +240,13 @@ public class Serializer {
             arrObj.put("outputs", arr);
             arr.add(obj1);
             obj1.put("basicCard", obj2);
-            if (adminCheck == 0) {
+            if (vop.get("adminCheck").equals("0")) {
                 attendance = "출결관리";
                 analysis = "시험분석";
                 img = adminMImg;
                 url = "https://www.naver.com";
                 description = userMapper.selectList(392).getName() + desc;
-            } else if (userCheck == 1) {
+            } else if (vop.get("userCheck").equals("1")) {
                 attendance = "출석체크";
                 analysis = "오답노트";
                 img = userMImg;
@@ -316,11 +302,6 @@ public class Serializer {
             JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
             String chatBody = (String) userRequest.get("utterance");
             String userInfo = userRequest.toString();
-            //지우기
-            vop.set("adminCheck", userMapper.selectList(392).getPositionChecker());
-            vop.set("userCheck", userMapper.selectList(1186).getPositionChecker());
-            int adminCheck = (int) vop.get("adminCheck");
-            int userCheck = (int) vop.get("userCheck");
 
             chat.setChatBody(chatBody);
             chatMapper.updateData(chat);
@@ -357,10 +338,10 @@ public class Serializer {
             } else if (chatBody.contains("출석") || chatBody.contains("출결") || chatBody.contains("추럭")) {
                 String title = "";
                 String atUrl = "";
-                if (adminCheck == 0) {
+                if (vop.get("adminCheck").equals("0")) {
                     title = "출결관리";
                     atUrl = "https://www.daum.net";
-                } else if (userCheck == 1) {
+                } else if (vop.get("userCheck").equals("1")) {
                     title = "출석";
                     atUrl = "https://www.naver.com";
                 }
@@ -425,11 +406,6 @@ public class Serializer {
             JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
             String chatBody = (String) userRequest.get("utterance");
             String userInfo = userRequest.toString();
-            //지우기
-            vop.set("adminCheck", userMapper.selectList(392).getPositionChecker());
-            vop.set("userCheck", userMapper.selectList(1186).getPositionChecker());
-            int adminCheck = (int) vop.get("adminCheck");
-            int userCheck = (int) vop.get("userCheck");
 
             chat.setChatBody(chatBody);
             chatMapper.updateData(chat);
@@ -556,7 +532,7 @@ public class Serializer {
                     || (chatBody.contains("2학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
                     || (chatBody.contains("1학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
                     || (chatBody.contains("2학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)) {
-                if (adminCheck == 0) {
+                if (vop.get("adminCheck").equals("0")) {
                     obj3.put("title", "[학생들이 가장 많이 틀린 문제]: [시험문제 번호]");
                     obj3.put("description", "[정답], [학생들이 가장 많이 선택한 오답]\n[시험문제 질문]\n[시험문제 내용]");
                     obj3.put("thumbnail", obj4);
@@ -575,7 +551,7 @@ public class Serializer {
                     chatHistory.setChatBody("시험분석");
                     chatHistoryMapper.insertData(chatHistory);
                     return obj;
-                } else if (userCheck == 1) {
+                } else if (vop.get("userCheck").equals("1")) {
                     obj3.put("title", "[시험문제 번호]\n[시험문제 질문]");
                     obj3.put("description", "정답: [시험문제 정답]\n선택한 답: [오답]\n[시험문제 내용]");
                     obj3.put("thumbnail", obj4);

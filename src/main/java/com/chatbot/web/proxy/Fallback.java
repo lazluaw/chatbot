@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class Fallback {
     @Autowired UserMapper userMapper;
     @Autowired ChatMapper chatMapper;
     @Autowired ChatHistoryMapper chatHistoryMapper;
+    @Autowired RedisTemplate redisTemplate;
     private ObjectMapper mapper;
     private JSONParser parser;
     private String jsonStr;
@@ -47,8 +49,7 @@ public class Fallback {
             arrObj = new JSONObject();
             arr = new JSONArray();
             arr2 = new JSONArray();
-            //얘가 안 됨
-//            vop = redisTemplate.opsForValue();
+            vop = redisTemplate.opsForValue();
 
             obj.put("version", "2.0");
             obj.put("template", arrObj);
@@ -56,6 +57,7 @@ public class Fallback {
             arr.add(obj1);
             obj1.put("basicCard", obj2);
 
+            System.out.println(vop.get("loginSuccess"));
             if (vop.get("loginSuccess") == null) {
                 obj2.put("title", "로그인에 실패하였습니다.");
                 obj2.put("description", "아이디와 비밀번호를 정확히 입력해 주세요.\n(형식 : 아이디,비밀번호)");
