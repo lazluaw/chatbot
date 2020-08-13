@@ -4,28 +4,37 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ChatMapper">
     <insert id="insertData" parameterType="chat"
-            useGeneratedKeys="true" keyProperty="id">
+            useGeneratedKeys="true" keyProperty="chatId">
         insert into chat (user_code, chat_body, insert_date, update_date)
             values (#{userCode}, #{chatBody}, now(), now())
     </insert>
+
+    <select id="selectList" resultType="chat">
+        select user_id as userId,
+        user_pw as userPw,
+        user_code as userCode,
+        name
+        from user
+        where id = #{id}
+    </select>
 
     <select id="selectDateList" parameterType="int" resultType="chat">
         select insert_date as insertDate,
         update_date as updateDate
         from chat
-        where chat_id = #{id}
+        where chat_id = #{chatId}
     </select>
 
     <update id="updateData" parameterType="chat"
-            useGeneratedKeys="true" keyProperty="id">
+            useGeneratedKeys="true" keyProperty="chatId">
         update chat set
         chat_body = #{chatBody},
         update_date = now()
-        where chat_id = #{id}
+        where chat_id = #{chatId}
     </update>
 
     <delete id="deleteData" parameterType="chat">
         delete from chat
-        where chat_id = #{id}
+        where chat_id = #{chatId}
     </delete>
 </mapper>

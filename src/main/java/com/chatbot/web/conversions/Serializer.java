@@ -2,11 +2,9 @@ package com.chatbot.web.conversions;
 
 import com.chatbot.web.domains.Chat;
 import com.chatbot.web.domains.ChatHistory;
-import com.chatbot.web.domains.User;
 import com.chatbot.web.mappers.ChatHistoryMapper;
 import com.chatbot.web.mappers.ChatMapper;
 import com.chatbot.web.mappers.ExamMapper;
-import com.chatbot.web.mappers.UserMapper;
 import com.chatbot.web.proxy.Exit;
 import com.chatbot.web.proxy.Fallback;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,26 +24,14 @@ import java.util.Map;
 //admin: cucumber, cucumber123
 @Service
 public class Serializer {
-    @Autowired
-    User user;
-    @Autowired
-    Chat chat;
-    @Autowired
-    ChatHistory chatHistory;
-    @Autowired
-    ChatMapper chatMapper;
-    @Autowired
-    ChatHistoryMapper chatHistoryMapper;
-    @Autowired
-    ExamMapper examMapper;
-    @Autowired
-    UserMapper userMapper;
-    @Autowired
-    Fallback fallback;
-    @Autowired
-    RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    Exit exit;
+    @Autowired Chat chat;
+    @Autowired ChatHistory chatHistory;
+    @Autowired ChatMapper chatMapper;
+    @Autowired ChatHistoryMapper chatHistoryMapper;
+    @Autowired ExamMapper examMapper;
+    @Autowired Fallback fallback;
+    @Autowired RedisTemplate<String, Object> redisTemplate;
+    @Autowired Exit exit;
     private ObjectMapper mapper;
     private JSONParser parser;
     private String jsonStr;
@@ -86,11 +72,12 @@ public class Serializer {
             JSONObject properties = (JSONObject) user.get("properties");
             String botUserKey = (String) properties.get("botUserKey");
 
-            vop.set(botUserKey, String.valueOf(chat.getId()));
-            vop.set("adminCode", String.valueOf(userMapper.selectList(392).getUserCode()));
-            vop.set("userCode", String.valueOf(userMapper.selectList(1186).getUserCode()));
-            vop.set("adminLogin", userMapper.selectList(392).getUserId() + ", " + userMapper.selectList(392).getUserPw());
-            vop.set("userLogin", userMapper.selectList(1186).getUserId() + ", " + userMapper.selectList(1186).getUserPw());
+            vop.set(botUserKey, String.valueOf(chat.getChatId()));
+            System.out.println("chatId: "+chat.getChatId());
+            vop.set("adminCode", String.valueOf(chatMapper.selectList(392).getUserCode()));
+            vop.set("userCode", String.valueOf(chatMapper.selectList(1186).getUserCode()));
+            vop.set("adminLogin", chatMapper.selectList(392).getUserId() + ", " + chatMapper.selectList(392).getUserPw());
+            vop.set("userLogin", chatMapper.selectList(1186).getUserId() + ", " + chatMapper.selectList(1186).getUserPw());
 
             if (vop.get(botUserKey).equals("0")) {
                 if (chatBody.contains("로그인") || chatBody.contains("login")) {
@@ -114,7 +101,7 @@ public class Serializer {
                     logger.error("비로그인 fallback");
                     return fallback.fallback(jsonParams);
                 }
-            } else if (vop.get(botUserKey).equals("0")) {
+            } else if (vop.get(botUserKey) != "0") {
                 if (chatBody.contains("로그인") || chatBody.contains("login")) {
                     logger.info("로그인O 중복");
                     obj.put("version", "2.0");
@@ -140,7 +127,7 @@ public class Serializer {
                     chat.setUserCode(chat.getUserCode());
                     chatMapper.insertData(chat);
 
-                    chatHistory.setChatId(chat.getId());
+                    chatHistory.setChatId(chat.getChatId());
                     chatHistory.setChatKind("C");
                     chatHistory.setUserInfo(userInfo);
                     chatHistory.setChatBody(chatBody);
@@ -220,30 +207,30 @@ public class Serializer {
             //chat: 로그인 후에 바로 메뉴에 왔을 때 데이터가 이중으로 저장되어도 어쩔 수 없..을까?
             chat.setChatBody(chatBody);
             chatMapper.updateData(chat);
-            chatHistory.setChatId(chat.getId());
+            chatHistory.setChatId(chat.getChatId());
             chatHistory.setChatKind("C");
             chatHistory.setUserInfo(userInfo);
             chatHistory.setChatBody(chatBody);
             chatHistoryMapper.insertData(chatHistory);
 
-            String analysis = "";
-            String attendance = "";
+            String analMenu = "";
+            String attMenu = "";
             String img = "";
             String url = "";
             String description = "";
             String desc = "님, 반갑습니다.\n메뉴를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.";
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                attendance = "출결관리";
-                analysis = "시험분석";
+                attMenu = "출결관리";
+                analMenu = "시험분석";
                 img = adminMImg;
                 url = "https://www.naver.com";
-                description = userMapper.selectList(392).getName() + desc;
+                description = chatMapper.selectList(392).getName() + desc;
             } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                attendance = "출석체크";
-                analysis = "오답노트";
+                attMenu = "출석체크";
+                analMenu = "오답노트";
                 img = userMImg;
                 url = "https://www.naver.com";
-                description = userMapper.selectList(1186).getName() + desc;
+                description = chatMapper.selectList(1186).getName() + desc;
             }
             obj.put("version", "2.0");
             obj.put("template", arrObj);
@@ -258,10 +245,10 @@ public class Serializer {
             arr2.add(obj5);
             arr2.add(obj6);
             obj4.put("webLinkUrl", url);
-            obj4.put("label", attendance);
+            obj4.put("label", attMenu);
             obj4.put("action", "webLink");
-            obj5.put("messageText", analysis);
-            obj5.put("label", analysis);
+            obj5.put("messageText", analMenu);
+            obj5.put("label", analMenu);
             obj5.put("action", "message");
             obj6.put("webLinkUrl", "https://www.naver.com");
             obj6.put("label", "스트리밍");
@@ -303,11 +290,14 @@ public class Serializer {
 
             chat.setChatBody(chatBody);
             chatMapper.updateData(chat);
-            chatHistory.setChatId(chat.getId());
+            chatHistory.setChatId(chat.getChatId());
             chatHistory.setChatKind("C");
             chatHistory.setUserInfo(userInfo);
             chatHistory.setChatBody(chatBody);
             chatHistoryMapper.insertData(chatHistory);
+
+            String title = "";
+            String description = "";
 
             obj.put("version", "2.0");
             obj.put("template", arrObj);
@@ -315,8 +305,15 @@ public class Serializer {
             arr.add(obj1);
             obj1.put("basicCard", obj2);
             if (chatBody.contains("스트리밍") || chatBody.contains("교육") || chatBody.contains("강의")) {
-                obj2.put("title", "스트리밍");
-                obj2.put("description", "화상교육 시작해볼까요~?");
+                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
+                    title = "화상교육";
+                    description = title + "입니다.";
+                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
+                    title = "출석체크 & 화상교육";
+                    description = "화상교육입니다. 입장 시 자동으로 출석 체크됩니다.";
+                }
+                obj2.put("title", title);
+                obj2.put("description", description);
                 obj2.put("thumbnail", obj3);
                 obj3.put("imageUrl", streamImg);
                 obj2.put("buttons", arr2);
@@ -334,33 +331,52 @@ public class Serializer {
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
             } else if (chatBody.contains("출결") || chatBody.contains("출석") || chatBody.contains("추럭")) {
-                String title = "";
-                String atUrl = "";
                 if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                     title = "출결관리";
-                    atUrl = "https://www.daum.net";
+                    description = title + "창으로 이동합니다.";
+                    obj2.put("title", title);
+                    obj2.put("description", description);
+                    obj2.put("thumbnail", obj3);
+                    obj3.put("imageUrl", attendanceImg);
+                    obj2.put("buttons", arr2);
+                    arr2.add(obj4);
+                    arr2.add(obj5);
+                    obj4.put("webLinkUrl", "https://www.daum.net");
+                    obj4.put("label", title);
+                    obj4.put("action", "webLink");
+                    obj5.put("messageText", "챗봇종료");
+                    obj5.put("label", "챗봇종료");
+                    obj5.put("action", "message");
+
+                    chatHistory.setChatKind("B");
+                    chatHistory.setChatBody(title);
+                    chatHistoryMapper.insertData(chatHistory);
+                    return obj;
                 } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                     title = "출석체크";
-                    atUrl = "https://www.naver.com";
-                }
-                obj2.put("title", title);
-                obj2.put("description", title + "하러 가볼까요~?");
-                obj2.put("thumbnail", obj3);
-                obj3.put("imageUrl", attendanceImg);
-                obj2.put("buttons", arr2);
-                arr2.add(obj4);
-                arr2.add(obj5);
-                obj4.put("webLinkUrl", atUrl);
-                obj4.put("label", title);
-                obj4.put("action", "webLink");
-                obj5.put("messageText", "챗봇종료");
-                obj5.put("label", "챗봇종료");
-                obj5.put("action", "message");
+                    description = "출석은 화상교육 창에 진입 시 자동으로 체크됩니다.\n화상교육으로 이동하기";
+                    obj2.put("title", title);
+                    obj2.put("description", description);
+                    obj2.put("thumbnail", obj3);
+                    obj3.put("imageUrl", attendanceImg);
+                    obj2.put("buttons", arr2);
+                    arr2.add(obj4);
+                    arr2.add(obj5);
+                    obj4.put("messageText", "화상교육");
+                    obj4.put("label", "화상교육");
+                    obj4.put("action", "message");
+                    obj5.put("messageText", "챗봇종료");
+                    obj5.put("label", "챗봇종료");
+                    obj5.put("action", "message");
 
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody(title);
-                chatHistoryMapper.insertData(chatHistory);
-                return obj;
+                    chatHistory.setChatKind("B");
+                    chatHistory.setChatBody(title+"전");
+                    chatHistoryMapper.insertData(chatHistory);
+                    return obj;
+                } else {
+                    logger.error("스트리밍/출석출결 logic error");
+                    return null;
+                }
             } else {
                 logger.error("class if 조건절 ERROR");
                 return null;
@@ -407,7 +423,7 @@ public class Serializer {
 
             chat.setChatBody(chatBody);
             chatMapper.updateData(chat);
-            chatHistory.setChatId(chat.getId());
+            chatHistory.setChatId(chat.getChatId());
             chatHistory.setChatKind("C");
             chatHistory.setUserInfo(userInfo);
             chatHistory.setChatBody(chatBody);

@@ -54,19 +54,19 @@ public class Exit {
 
             chat.setChatBody(chatBody);
             chatMapper.updateData(chat);
-            chatHistory.setChatId(chat.getId());
+            chatHistory.setChatId(chat.getChatId());
             chatHistory.setChatKind("C");
             chatHistory.setUserInfo(userInfo);
             chatHistory.setChatBody(chatBody);
             chatHistoryMapper.insertData(chatHistory);
 
             //Test
-            String insertDate = chatMapper.selectDateList(chat.getId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+            String insertDate = chatMapper.selectDateList(chat.getChatId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
             System.out.println(insertDate);
             System.out.println(Integer.parseInt(insertDate));
             System.out.println(Integer.parseInt(insertDate)+30000);
 
-            if(chat.getId() != 0 && chatBody.contains("종료")) {
+            if(chat.getChatId() != 0 && chatBody.contains("종료")) {
                 obj.put("version", "2.0");
                 obj.put("template", arrObj);
                 arrObj.put("outputs", arr);
@@ -80,11 +80,11 @@ public class Exit {
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody("사용자종료");
                 chatHistoryMapper.insertData(chatHistory);
-                chat.setId(0);
+                chat.setChatId(0);
                 return obj;
             } else {
-                insertDate = chatMapper.selectDateList(chat.getId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-                String updateDate = chatMapper.selectDateList(chat.getId()).getUpdateDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+                insertDate = chatMapper.selectDateList(chat.getChatId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+                String updateDate = chatMapper.selectDateList(chat.getChatId()).getUpdateDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
                 SimpleDateFormat format = new SimpleDateFormat("yyyyHHddHHmm");
                 Date date = new Date();
                 String today = format.format(date);
@@ -93,7 +93,7 @@ public class Exit {
                         chatHistory.setChatKind("B");
                         chatHistory.setChatBody("시스템종료");
                         chatHistoryMapper.insertData(chatHistory);
-                        chat.setId(0);
+                        chat.setChatId(0);
                         return null;
                     } else {
                         logger.error("시스템종료 insert ERROR");
@@ -104,7 +104,7 @@ public class Exit {
                         chatHistory.setChatKind("B");
                         chatHistory.setChatBody("시스템종료");
                         chatHistoryMapper.insertData(chatHistory);
-                        chat.setId(0);
+                        chat.setChatId(0);
                         return null;
                     } else {
                         logger.error("시스템종료 update ERROR");

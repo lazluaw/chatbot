@@ -1,10 +1,10 @@
+/*
 package com.chatbot.web.test;
 
 import com.chatbot.web.domains.*;
 import com.chatbot.web.mappers.ChatHistoryMapper;
 import com.chatbot.web.mappers.ChatMapper;
 import com.chatbot.web.mappers.ExamMapper;
-import com.chatbot.web.mappers.UserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import java.util.Map;
 
 @Service
 public class Test {
@@ -69,5 +68,7 @@ public class Test {
         System.out.println(examAnalysis.getSubjectCode());
         System.out.println(examAnalysis.getWrongAnswer());
     }
-     */
+
 }
+
+ */

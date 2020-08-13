@@ -1,3 +1,4 @@
+/*
 package com.chatbot.web.test;
 
 import com.chatbot.web.domains.Chat;
@@ -80,3 +81,5 @@ public class Parser {
         }
     }
 }
+
+ */

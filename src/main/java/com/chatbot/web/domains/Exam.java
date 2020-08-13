@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class Exam {
     private int id;
     private int examKind, examNum;
-    private String examQuestion, examDivision, examChoice1, subejectCode,
+    private String examQuestion, examDivision, examChoice1, subjectCode,
             examChoice2, examChoice3, examChoice4, examChoice5, examAnswer, examContent;
     private LocalDateTime insertDate;
 }

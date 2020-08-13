@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 @Alias("chat")
 @MappedTypes(LocalDate.class)
 public class Chat {
-    private int id, userCode;
-    //chatDate 어떻게 처리할 지 고민
-    private String chatBody, checkDate;
+    private int chatId, userCode, id;
+    private String chatBody, name, userId, userPw;
     private LocalDateTime insertDate, updateDate;
 }

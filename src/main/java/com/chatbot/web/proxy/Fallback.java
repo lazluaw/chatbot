@@ -5,7 +5,6 @@ import com.chatbot.web.domains.Chat;
 import com.chatbot.web.domains.ChatHistory;
 import com.chatbot.web.mappers.ChatHistoryMapper;
 import com.chatbot.web.mappers.ChatMapper;
-import com.chatbot.web.mappers.UserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,7 +23,6 @@ public class Fallback {
     @Autowired Serializer serializer;
     @Autowired Chat chat;
     @Autowired ChatHistory chatHistory;
-    @Autowired UserMapper userMapper;
     @Autowired ChatMapper chatMapper;
     @Autowired ChatHistoryMapper chatHistoryMapper;
     @Autowired RedisTemplate redisTemplate;
@@ -85,7 +83,7 @@ public class Fallback {
                 }
                 chat.setChatBody(chatBody);
                 chatMapper.insertData(chat);
-                chatHistory.setChatId(chat.getId());
+                chatHistory.setChatId(chat.getChatId());
                 chatHistory.setUserInfo(userInfo);
                 chatHistory.setChatKind("S");
                 chatHistory.setChatBody("로그인후폴백");
