@@ -54,7 +54,7 @@ public class Fallback {
             arrObj.put("outputs", arr);
             arr.add(obj1);
             obj1.put("basicCard", obj2);
-            if (vop.get("loginSuccess") == "S") {
+            if (chat.getChatId() != 0) {
                 logger.info("로그인O fallback");
                 obj2.put("title", "무슨 의미인지 모르겠어요!");
                 obj2.put("description", "챗봇을 이용하시려면 '메뉴' 버튼을,\n종료하시려면 '종료' 버튼을 눌러주세요.");
@@ -85,7 +85,7 @@ public class Fallback {
                 chatMapper.insertData(chat);
                 chatHistory.setChatId(chat.getChatId());
                 chatHistory.setUserInfo(userInfo);
-                chatHistory.setChatKind("S");
+                chatHistory.setChatKind("B");
                 chatHistory.setChatBody("로그인후폴백");
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;

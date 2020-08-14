@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-//S로 저장된 DB 값을 삭제해야 함.
 @Component @Lazy
 @MappedTypes(LocalDate.class)
 public class Exit {
@@ -46,50 +45,59 @@ public class Exit {
             obj3 = new JSONObject();
             arrObj = new JSONObject();
             arr = new JSONArray();
-            jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
-            JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
-            JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
-            String chatBody = (String) userRequest.get("utterance");
-            String userInfo = userRequest.toString();
-
-            chat.setChatBody(chatBody);
-            chatMapper.updateData(chat);
-            chatHistory.setChatId(chat.getChatId());
-            chatHistory.setChatKind("C");
-            chatHistory.setUserInfo(userInfo);
-            chatHistory.setChatBody(chatBody);
-            chatHistoryMapper.insertData(chatHistory);
-
             //Test
-            String insertDate = chatMapper.selectDateList(chat.getChatId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-            System.out.println(insertDate);
-            System.out.println(Integer.parseInt(insertDate));
-            System.out.println(Integer.parseInt(insertDate)+30000);
+//            String insertDate = chatMapper.selectDateList(chat.getChatId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+//            System.out.println(insertDate);
+//            System.out.println(Integer.parseInt(insertDate));
+//            System.out.println(Integer.parseInt(insertDate) + 30000);
 
-            if(chat.getChatId() != 0 && chatBody.contains("종료")) {
+            if (chat.getChatId() == 0) {
+                obj.put("version", "2.0");
+                obj.put("template", arrObj);
+                arrObj.put("outputs", arr);
+                arr.add(obj1);
+                obj1.put("simpleText", obj2);
+                obj2.put("text", "피클봇이 종료됩니다. 감사합니다.");
+                return obj;
+            } else if (chat.getChatId() != 0) {
                 obj.put("version", "2.0");
                 obj.put("template", arrObj);
                 arrObj.put("outputs", arr);
                 arr.add(obj1);
                 obj1.put("basicCard", obj2);
-                obj2.put("title", "챗봇이 종료됩니다. 감사합니다.");
+                obj2.put("title", "피클봇이 종료됩니다. 감사합니다.");
                 obj2.put("description", "항상 앞으로 나아가는 피클 서비스, 피클봇이 되겠습니다.");
                 obj2.put("thumbnail", obj3);
                 obj3.put("imageUrl", exitImg);
+
+                jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
+                JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
+                JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
+                String chatBody = (String) userRequest.get("utterance");
+                String userInfo = userRequest.toString();
+
+                chat.setChatBody(chatBody);
+                chatMapper.updateData(chat);
+                chatHistory.setChatId(chat.getChatId());
+                chatHistory.setChatKind("C");
+                chatHistory.setUserInfo(userInfo);
+                chatHistory.setChatBody(chatBody);
+                chatHistoryMapper.insertData(chatHistory);
 
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody("사용자종료");
                 chatHistoryMapper.insertData(chatHistory);
                 chat.setChatId(0);
                 return obj;
+                //로직 바꿔야 함.
             } else {
-                insertDate = chatMapper.selectDateList(chat.getChatId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+                String insertDate = chatMapper.selectDateList(chat.getChatId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
                 String updateDate = chatMapper.selectDateList(chat.getChatId()).getUpdateDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
                 SimpleDateFormat format = new SimpleDateFormat("yyyyHHddHHmm");
                 Date date = new Date();
                 String today = format.format(date);
                 if (updateDate == null) {
-                    if (Integer.parseInt(insertDate)+30000 == Integer.parseInt(today)) {
+                    if (Integer.parseInt(insertDate) + 30000 == Integer.parseInt(today)) {
                         chatHistory.setChatKind("B");
                         chatHistory.setChatBody("시스템종료");
                         chatHistoryMapper.insertData(chatHistory);
@@ -99,8 +107,8 @@ public class Exit {
                         logger.error("시스템종료 insert ERROR");
                         return null;
                     }
-                } else if(updateDate != null) {
-                    if (Integer.parseInt(updateDate)+30000 == Integer.parseInt(today)) {
+                } else if (updateDate != null) {
+                    if (Integer.parseInt(updateDate) + 30000 == Integer.parseInt(today)) {
                         chatHistory.setChatKind("B");
                         chatHistory.setChatBody("시스템종료");
                         chatHistoryMapper.insertData(chatHistory);

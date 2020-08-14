@@ -2,8 +2,11 @@ package com.chatbot.web.conversions;
 
 import com.chatbot.web.domains.Chat;
 import com.chatbot.web.domains.ChatHistory;
+import com.chatbot.web.domains.Exam;
+import com.chatbot.web.domains.ExamAnalysis;
 import com.chatbot.web.mappers.ChatHistoryMapper;
 import com.chatbot.web.mappers.ChatMapper;
+import com.chatbot.web.mappers.ExamAnalysisMapper;
 import com.chatbot.web.mappers.ExamMapper;
 import com.chatbot.web.proxy.Exit;
 import com.chatbot.web.proxy.Fallback;
@@ -18,6 +21,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Map;
 
 //user : v204ap, l7hi3x0e
@@ -27,8 +32,11 @@ public class Serializer {
     @Autowired Chat chat;
     @Autowired ChatHistory chatHistory;
     @Autowired ChatMapper chatMapper;
+    @Autowired Exam exam;
+    @Autowired ExamAnalysis examAnalysis;
     @Autowired ChatHistoryMapper chatHistoryMapper;
     @Autowired ExamMapper examMapper;
+    @Autowired ExamAnalysisMapper examAnalysisMapper;
     @Autowired Fallback fallback;
     @Autowired RedisTemplate<String, Object> redisTemplate;
     @Autowired Exit exit;
@@ -39,6 +47,7 @@ public class Serializer {
     private JSONArray arr, arr2;
     private ValueOperations<String, Object> vop;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private String img;
     private String entryImg = "https://i.pinimg.com/564x/f4/62/c9/f462c9fc876243221c6ee36c3fb97b32.jpg";
     private String streamImg = "https://i.pinimg.com/564x/df/9b/65/df9b65458c037b6f9eac74e9035c62ad.jpg";
     private String examKindImg = "https://i.pinimg.com/564x/81/21/12/8121120d992f697528c3ca99d9af4baa.jpg";
@@ -48,7 +57,7 @@ public class Serializer {
     private String adminAnImg = "https://i.pinimg.com/564x/e7/c3/cc/e7c3cc68c94b5828e347c0e35255425d.jpg";
     private String userMImg = "https://i.pinimg.com/564x/cc/8e/08/cc8e083f2c13532a94038138a6713ec1.jpg";
     private String userAnImg = "https://i.pinimg.com/564x/7e/0a/70/7e0a70b7dc579def017a4cd56ad826f9.jpg";
-
+    private String[] subjects = {"국어", "영어", "수학", "경제", "생활과윤리", "지리", "지구과학", "생명과학", "물리"};
     public Map<String, Object> fallbackSer(Map<String, Object> jsonParams) {
         try {
             mapper = new ObjectMapper();
@@ -71,15 +80,13 @@ public class Serializer {
             JSONObject user = (JSONObject) userRequest.get("user");
             JSONObject properties = (JSONObject) user.get("properties");
             String botUserKey = (String) properties.get("botUserKey");
-
             vop.set(botUserKey, String.valueOf(chat.getChatId()));
-            System.out.println("chatId: "+chat.getChatId());
-            vop.set("adminCode", String.valueOf(chatMapper.selectList(392).getUserCode()));
-            vop.set("userCode", String.valueOf(chatMapper.selectList(1186).getUserCode()));
-            vop.set("adminLogin", chatMapper.selectList(392).getUserId() + ", " + chatMapper.selectList(392).getUserPw());
-            vop.set("userLogin", chatMapper.selectList(1186).getUserId() + ", " + chatMapper.selectList(1186).getUserPw());
 
             if (vop.get(botUserKey).equals("0")) {
+                vop.set("adminCode", String.valueOf(chatMapper.selectList(392).getUserCode()));
+                vop.set("userCode", String.valueOf(chatMapper.selectList(1186).getUserCode()));
+                vop.set("adminLogin", chatMapper.selectList(392).getUserId() + ", " + chatMapper.selectList(392).getUserPw());
+                vop.set("userLogin", chatMapper.selectList(1186).getUserId() + ", " + chatMapper.selectList(1186).getUserPw());
                 if (chatBody.contains("로그인") || chatBody.contains("login")) {
                     return this.loginSer();
                 } else if (chatBody.equals(vop.get("adminLogin"))) {
@@ -140,9 +147,10 @@ public class Serializer {
                 } else if (chatBody.contains("메뉴") || chatBody.contains("menu")) {
                     return this.menuSer(jsonParams);
                 } else if (chatBody.contains("스트리밍") || chatBody.contains("교육") || chatBody.contains("강의")
-                        || chatBody.contains("출석") || chatBody.contains("출결") || chatBody.contains("추럭")) {
+                        || chatBody.contains("출석") || chatBody.contains("출결")) {
                     return this.classSer(jsonParams);
-                } else if (chatBody.contains("오답노트") || chatBody.contains("시험분석") || chatBody.contains("고사")) {
+                } else if (chatBody.contains("오답노트") || chatBody.contains("시험분석")
+                        || chatBody.contains("고사") || Arrays.asList(subjects).contains(chatBody)) {
                     return this.examSer(jsonParams);
                 } else if (chatBody.contains("종료")) {
                     return exit.exit(jsonParams);
@@ -215,18 +223,21 @@ public class Serializer {
 
             String analMenu = "";
             String attMenu = "";
-            String img = "";
             String url = "";
             String description = "";
-            String desc = "님, 반갑습니다.\n메뉴를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.";
+            String desc = "님, 반갑습니다.\n메뉴를 선택해주세요.\n피클봇을 종료하시려면 '종료'를 입력해주세요.";
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 attMenu = "출결관리";
                 analMenu = "시험분석";
                 img = adminMImg;
                 url = "https://www.naver.com";
                 description = chatMapper.selectList(392).getName() + desc;
+                arr2.add(obj6);
+                obj6.put("webLinkUrl", "https://www.naver.com");
+                obj6.put("label", "화상교육");
+                obj6.put("action", "webLink");
             } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                attMenu = "출석체크";
+                attMenu = "출석체크 & 화상교육";
                 analMenu = "오답노트";
                 img = userMImg;
                 url = "https://www.naver.com";
@@ -243,17 +254,12 @@ public class Serializer {
             obj2.put("buttons", arr2);
             arr2.add(obj4);
             arr2.add(obj5);
-            arr2.add(obj6);
             obj4.put("webLinkUrl", url);
             obj4.put("label", attMenu);
             obj4.put("action", "webLink");
             obj5.put("messageText", analMenu);
             obj5.put("label", analMenu);
             obj5.put("action", "message");
-            obj6.put("webLinkUrl", "https://www.naver.com");
-            obj6.put("label", "스트리밍");
-            obj6.put("action", "webLink");
-            obj.put("version", "2.0");
 
             chatHistory.setChatKind("B");
             chatHistory.setChatBody("메뉴선택");
@@ -298,89 +304,48 @@ public class Serializer {
 
             String title = "";
             String description = "";
-
+            if (chatBody.contains("스트리밍") || chatBody.contains("교육") || chatBody.contains("강의")) {
+                img = streamImg;
+                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
+                    title = "화상교육";
+                    description = title + "입니다.";
+                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
+                    title = "출석체크&화상교육";
+                    description = title + "입니다. 입장 시 자동으로 출석 체크됩니다.";
+                }
+            } else if (chatBody.contains("출결") || chatBody.contains("출석")) {
+                img = attendanceImg;
+                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
+                    title = "출결관리";
+                    description = title + "창으로 이동합니다.";
+                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
+                    title = "출석체크 & 화상교육";
+                    description = "출석은 화상교육 창에 진입 시 자동으로 체크됩니다.\n화상교육으로 이동하기";
+                }
+            }
             obj.put("version", "2.0");
             obj.put("template", arrObj);
             arrObj.put("outputs", arr);
             arr.add(obj1);
             obj1.put("basicCard", obj2);
-            if (chatBody.contains("스트리밍") || chatBody.contains("교육") || chatBody.contains("강의")) {
-                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                    title = "화상교육";
-                    description = title + "입니다.";
-                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                    title = "출석체크 & 화상교육";
-                    description = "화상교육입니다. 입장 시 자동으로 출석 체크됩니다.";
-                }
-                obj2.put("title", title);
-                obj2.put("description", description);
-                obj2.put("thumbnail", obj3);
-                obj3.put("imageUrl", streamImg);
-                obj2.put("buttons", arr2);
-                arr2.add(obj4);
-                arr2.add(obj5);
-                obj4.put("webLinkUrl", "https://www.naver.com");
-                obj4.put("label", "스트리밍");
-                obj4.put("action", "webLink");
-                obj5.put("messageText", "챗봇종료");
-                obj5.put("label", "챗봇종료");
-                obj5.put("action", "message");
+            obj2.put("title", title);
+            obj2.put("description", description);
+            obj2.put("thumbnail", obj3);
+            obj3.put("imageUrl", img);
+            obj2.put("buttons", arr2);
+            arr2.add(obj4);
+            arr2.add(obj6);
+            obj4.put("webLinkUrl", "https://www.naver.com");
+            obj4.put("label", title);
+            obj4.put("action", "webLink");
+            obj6.put("messageText", "챗봇종료");
+            obj6.put("label", "챗봇종료");
+            obj6.put("action", "message");
 
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody(obj2.get("title").toString());
-                chatHistoryMapper.insertData(chatHistory);
-                return obj;
-            } else if (chatBody.contains("출결") || chatBody.contains("출석") || chatBody.contains("추럭")) {
-                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                    title = "출결관리";
-                    description = title + "창으로 이동합니다.";
-                    obj2.put("title", title);
-                    obj2.put("description", description);
-                    obj2.put("thumbnail", obj3);
-                    obj3.put("imageUrl", attendanceImg);
-                    obj2.put("buttons", arr2);
-                    arr2.add(obj4);
-                    arr2.add(obj5);
-                    obj4.put("webLinkUrl", "https://www.daum.net");
-                    obj4.put("label", title);
-                    obj4.put("action", "webLink");
-                    obj5.put("messageText", "챗봇종료");
-                    obj5.put("label", "챗봇종료");
-                    obj5.put("action", "message");
-
-                    chatHistory.setChatKind("B");
-                    chatHistory.setChatBody(title);
-                    chatHistoryMapper.insertData(chatHistory);
-                    return obj;
-                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                    title = "출석체크";
-                    description = "출석은 화상교육 창에 진입 시 자동으로 체크됩니다.\n화상교육으로 이동하기";
-                    obj2.put("title", title);
-                    obj2.put("description", description);
-                    obj2.put("thumbnail", obj3);
-                    obj3.put("imageUrl", attendanceImg);
-                    obj2.put("buttons", arr2);
-                    arr2.add(obj4);
-                    arr2.add(obj5);
-                    obj4.put("messageText", "화상교육");
-                    obj4.put("label", "화상교육");
-                    obj4.put("action", "message");
-                    obj5.put("messageText", "챗봇종료");
-                    obj5.put("label", "챗봇종료");
-                    obj5.put("action", "message");
-
-                    chatHistory.setChatKind("B");
-                    chatHistory.setChatBody(title+"전");
-                    chatHistoryMapper.insertData(chatHistory);
-                    return obj;
-                } else {
-                    logger.error("스트리밍/출석출결 logic error");
-                    return null;
-                }
-            } else {
-                logger.error("class if 조건절 ERROR");
-                return null;
-            }
+            chatHistory.setChatKind("B");
+            chatHistory.setChatBody(title);
+            chatHistoryMapper.insertData(chatHistory);
+            return obj;
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("class logic ERROR");
@@ -446,8 +411,9 @@ public class Serializer {
             obj2.put("type", "basicCard");
             obj2.put("items", arr2);
             arr2.add(obj3);
-            if (chatBody.contains(analyses)) {
-                System.out.println(analyses);
+            if (chatBody.equals(analyses)) {
+
+
                 obj3.put("title", "시험종류선택");
                 obj3.put("description", "시험종류를 선택해주세요.");
                 obj3.put("thumbnail", imgObj);
@@ -496,14 +462,14 @@ public class Serializer {
                 arr3.add(obj4);
                 arr3.add(obj5);
                 arr3.add(obj6);
-                obj4.put("messageText", "국어");
-                obj4.put("label", "국어");
+                obj4.put("messageText", subjects[0]);
+                obj4.put("label", subjects[0]);
                 obj4.put("action", "message");
-                obj5.put("messageText", "영어");
-                obj5.put("label", "영어");
+                obj5.put("messageText", subjects[1]);
+                obj5.put("label", subjects[1]);
                 obj5.put("action", "message");
-                obj6.put("messageText", "수학");
-                obj6.put("label", "수학");
+                obj6.put("messageText", subjects[2]);
+                obj6.put("label", subjects[2]);
                 obj6.put("action", "message");
 
                 arr2.add(obj7);
@@ -515,14 +481,14 @@ public class Serializer {
                 arr4.add(obj8);
                 arr4.add(obj9);
                 arr4.add(obj10);
-                obj8.put("messageText", "생활과윤리");
-                obj8.put("label", "생활과윤리");
+                obj8.put("messageText", subjects[3]);
+                obj8.put("label", subjects[3]);
                 obj8.put("action", "message");
-                obj9.put("messageText", "지리");
-                obj9.put("label", "지리");
+                obj9.put("messageText", subjects[4]);
+                obj9.put("label", subjects[4]);
                 obj9.put("action", "message");
-                obj10.put("messageText", "경제");
-                obj10.put("label", "경제");
+                obj10.put("messageText", subjects[5]);
+                obj10.put("label", subjects[5]);
                 obj10.put("action", "message");
 
                 arr2.add(obj11);
@@ -533,31 +499,32 @@ public class Serializer {
                 arr5.add(obj12);
                 arr5.add(obj13);
                 arr5.add(obj14);
-                obj12.put("messageText", "물리");
-                obj12.put("label", "물리");
+                obj12.put("messageText", subjects[6]);
+                obj12.put("label", subjects[6]);
                 obj12.put("action", "message");
-                obj13.put("messageText", "생명과학");
-                obj13.put("label", "생명과학");
+                obj13.put("messageText", subjects[7]);
+                obj13.put("label", subjects[7]);
                 obj13.put("action", "message");
-                obj14.put("messageText", "지구과학");
-                obj14.put("label", "지구과학");
+                obj14.put("messageText", subjects[8]);
+                obj14.put("label", subjects[8]);
                 obj14.put("action", "message");
 
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody(obj3.get("title").toString());
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
-            } else if ((chatBody.contains("1학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
-                    || (chatBody.contains("2학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
-                    || (chatBody.contains("1학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
-                    || (chatBody.contains("2학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
-                    || (chatBody.contains("1학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
-                    || (chatBody.contains("2학기 중간고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
-                    || (chatBody.contains("1학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)
-                    || (chatBody.contains("2학기 기말고사") && chatBody.contains("국어")) || chatBody.contains(analyses)) {
+            } else if (Arrays.asList(subjects).contains(chatBody)
+                    || (chatBody.contains("1학기 중간고사") && Arrays.asList(subjects).contains(chatBody)) && chatBody.contains(analyses)
+                    || (chatBody.contains("2학기 중간고사") && Arrays.asList(subjects).contains(chatBody)) && chatBody.contains(analyses)
+                    || (chatBody.contains("1학기 기말고사") && Arrays.asList(subjects).contains(chatBody)) && chatBody.contains(analyses)
+                    || (chatBody.contains("2학기 기말고사") && Arrays.asList(subjects).contains(chatBody)) && chatBody.contains(analyses)) {
                 if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                    obj3.put("title", "[학생들이 가장 많이 틀린 문제]: [시험문제 번호]");
-                    obj3.put("description", "[정답], [학생들이 가장 많이 선택한 오답]\n[시험문제 질문]\n[시험문제 내용]");
+                    //test: 버튼으로 왔을 때 vs 발화로 왔을 때를 구분해주어야 함(if)
+                    //틀린 개수가 몇 개인지 세어봐야 하고 두 개 이상일 때에는 반복문 로직이 추가되어야 함
+                    Exam examList = examMapper.selectList();
+                    ExamAnalysis wEList = examAnalysisMapper.selectList(Integer.parseInt(vop.get("adminCode").toString()));
+                    obj3.put("title", "1학기 중간고사 국어 14번");
+                    obj3.put("description", "[정답: 4번]\n-학생들이 가장 많이 선택한 오답: 2번\n어휘의 형성 체계가 가장 다른 것은?\n1. 손쉽다   2. 맛나다\n3. 시름없다   4. 남다르다");
                     obj3.put("thumbnail", obj4);
                     obj4.put("imageUrl", adminAnImg);
                     obj3.put("buttons", arr3);
@@ -575,8 +542,10 @@ public class Serializer {
                     chatHistoryMapper.insertData(chatHistory);
                     return obj;
                 } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                    obj3.put("title", "[시험문제 번호]\n[시험문제 질문]");
-                    obj3.put("description", "정답: [시험문제 정답]\n선택한 답: [오답]\n[시험문제 내용]");
+                    Exam examList = examMapper.selectList();
+                    ExamAnalysis wEList = examAnalysisMapper.selectList(Integer.parseInt(vop.get("userCode").toString()));
+                    obj3.put("title", ("1학기 기말고사 국어" + examList.getExamNum() + "번"));
+                    obj3.put("description", ("[정답: 2, 4번]\n-내가 선택한 오답: 3번\n잘못 짝지어진 것은?\n1. 들: ㄷㄹ-   2. 뜻: ㄷㅇㅅ-\n3. 생각: ㅅ-   4. 뿐: ㅈㅂㄹ-"));
                     obj3.put("thumbnail", obj4);
                     obj4.put("imageUrl", userAnImg);
                     obj3.put("buttons", arr3);
