@@ -8,7 +8,7 @@
         values (#{chatId}, #{userInfo}, #{chatKind}, #{chatBody}, now())
     </insert>
 
-    <select id="selectList" parameterType="int" resultType="arraylist">
+    <select id="selectList" parameterType="int" resultType="chatHistory">
         select chat_body as chatBody
         from chathistory
         where chat_id = #{chatId}

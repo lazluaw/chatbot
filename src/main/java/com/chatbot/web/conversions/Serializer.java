@@ -21,6 +21,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -56,7 +57,8 @@ public class Serializer {
     private String adminAnImg = "https://i.pinimg.com/564x/e7/c3/cc/e7c3cc68c94b5828e347c0e35255425d.jpg";
     private String userMImg = "https://i.pinimg.com/564x/cc/8e/08/cc8e083f2c13532a94038138a6713ec1.jpg";
     private String userAnImg = "https://i.pinimg.com/564x/7e/0a/70/7e0a70b7dc579def017a4cd56ad826f9.jpg";
-    private String[] exams = {"1학기 중간고사", "1학기 기말고사", "2학기 중간고사", "2학기 기말고사"};
+    private String[] semesters = {"1학기", "2학기"};
+    private String[] exams = {"중간고사", "기말고사"};
     private String[] subjects = {"국어", "영어", "수학", "경제", "생활과윤리", "지리", "지구과학", "생명과학", "물리"};
     public Map<String, Object> fallbackSer(Map<String, Object> jsonParams) {
         try {
@@ -107,7 +109,8 @@ public class Serializer {
                     return fallback.fallback(jsonParams);
                 }
             } else if (vop.get(botUserKey) != "0") {
-                if (chatBody.contains("로그인") || chatBody.contains("login")) {
+                if (chatBody.contains("로그인") || chatBody.contains("login")
+                        || chatBody.equals(vop.get("adminLogin")) || chatBody.equals(vop.get("userLogin"))) {
                     logger.info("로그인O 중복");
                     obj.put("version", "2.0");
                     obj.put("template", arrObj);
@@ -148,7 +151,7 @@ public class Serializer {
                         || chatBody.contains("출석") || chatBody.contains("출결")) {
                     return this.classSer(jsonParams);
                 } else if (chatBody.contains("오답노트") || chatBody.contains("시험분석")
-                        || chatBody.contains("고사") || Arrays.asList(subjects).contains(chatBody)) {
+                        || Arrays.asList(semesters).contains(chatBody) || Arrays.asList(exams).contains(chatBody)) {
                     return this.examSer(jsonParams);
                 } else if (chatBody.contains("종료")) {
                     return exit.exit(jsonParams);
@@ -412,11 +415,11 @@ public class Serializer {
                 obj4.put("imageUrl", img);
                 arr3.add(obj5);
                 arr3.add(obj6);
-                obj5.put("messageText", "1학기 중간고사");
-                obj5.put("label", "1학기 중간고사");
+                obj5.put("messageText", semesters[0] + exams[0]);
+                obj5.put("label", semesters[0] + exams[0]);
                 obj5.put("action", "message");
-                obj6.put("messageText", "1학기 기말고사");
-                obj6.put("label", "1학기 기말고사");
+                obj6.put("messageText", semesters[0] + exams[1]);
+                obj6.put("label", semesters[0] + exams[1]);
                 obj6.put("action", "message");
 
                 arr2.add(obj7);
@@ -427,20 +430,18 @@ public class Serializer {
                 obj4.put("imageUrl", img);
                 arr4.add(obj8);
                 arr4.add(obj9);
-                obj8.put("messageText", "2학기 중간고사");
-                obj8.put("label", "2학기 중간고사");
+                obj8.put("messageText", semesters[1] + exams[0]);
+                obj8.put("label", semesters[1] + exams[0]);
                 obj8.put("action", "message");
-                obj9.put("messageText", "2학기 기말고사");
-                obj9.put("label", "2학기 기말고사");
+                obj9.put("messageText", semesters[1] + exams[1]);
+                obj9.put("label", semesters[1] + exams[1]);
                 obj9.put("action", "message");
-
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody(title);
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
-
-            } else if (Arrays.asList(exams).contains(chatBody)
-                    || Arrays.asList(exams).contains(chatBody) && chatBody.contains(analyses)) {
+                //에러지점
+            } else if (Arrays.asList(semesters).contains(chatBody) && Arrays.asList(semesters).contains(chatBody) && chatBody.contains(analyses)) {
                 title = "과목종류선택";
                 description = "과목종류를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.";
                 img = subjectCodeImg;
@@ -499,24 +500,44 @@ public class Serializer {
                 obj15.put("messageText", subjects[8]);
                 obj15.put("label", subjects[8]);
                 obj15.put("action", "message");
-
-                Iterator<ChatHistory> list = chatHistoryMapper.selectList(chat.getChatId()).iterator();
-                ChatHistory listObj = list.next();
-                //test
-                System.out.println(listObj.toString());
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody(title);
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
-            } else if (Arrays.asList(subjects).contains(chatBody)
-                    || Arrays.asList(exams).contains(chatBody) && Arrays.asList(subjects).contains(chatBody)
-                    && chatBody.contains(analyses)) {
-                if (Arrays.asList(subjects).contains(chatHistoryMapper.selectList(chat.getChatId()))
-                        && Arrays.asList(exams).contains(chatHistoryMapper.selectList(chat.getChatId()))) {
-                    Exam examList = examMapper.selectList();
-                    //발화내용 null 여부 확인
+            } else if (Arrays.asList(subjects).contains(chatBody) && Arrays.asList(exams).contains(chatBody) && chatBody.contains(analyses)) {
+                System.out.println("진입완료.......?");
+                ArrayList<ChatHistory> histories = chatHistoryMapper.selectList(chat.getChatId());
+                Iterator itr = histories.iterator();
+                while (itr.hasNext()) {
+                    System.out.println("진입..");
+                    int i = 0;
+                    if (String.valueOf(histories.get(i)).contains(subjects[i])
+                            && String.valueOf(histories.get(i + 1)).contains(exams[i + 1])) {
+                        chatBody = String.valueOf(histories.get(i)) + String.valueOf(histories.get(i + 1));
+                        System.out.println(chatBody);
+                    } else {
+                        logger.error("훔");
+                    }
+                    break;
+                }
+
+                if (Arrays.asList(subjects).contains(chatHistoryMapper.selectList(chat.getChatId()))) {
+                    System.out.println("진입완료...");
+                    ArrayList<ChatHistory> history = chatHistoryMapper.selectList(chat.getChatId());
+/*
+                    for (ChatHistory i : history) {
+                        if(String.valueOf(history.get(i)).contains(subjects[i])
+                                && String.valueOf(history.get(i+1)).contains(exams[i+1])) {
+                            chatBody = String.valueOf(history.get(i)) + String.valueOf(history.get(i+1));
+                            break;
+                        } else {
+                            logger.error("시험종류 chatBody 찾기 실패");
+                        }
+                    }
+ */
                     if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                        title = "1학기 중간고사 국어 14번";
+//                        Exam examList = examMapper.selectList();
+//                        title = chatBody + examList.getExamNum();
                         description = "[정답: 4번]\n-학생들이 가장 많이 선택한 오답: 2번\n어휘의 형성 체계가 가장 다른 것은?\n1. 손쉽다   2. 맛나다\n3. 시름없다   4. 남다르다";
                         img = adminAnImg;
                         obj.put("version", "2.0");

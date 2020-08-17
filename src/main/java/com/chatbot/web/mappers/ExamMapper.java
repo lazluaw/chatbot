@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ExamMapper {
-    public Exam selectList();
+    public Exam selectList(String exam);
 }

@@ -18,15 +18,11 @@
         where id = #{id}
     </select>
 
-    <select id="selectDateList" resultType="chat">
-        select update_date as updateDate,
-        from chat
-    </select>
-
     <select id="selectList" resultType="chat">
         select chat_body as chatBody,
-        datediff(update_date, now()) as updateDate,
-        datediff(insert_date, now()) as insertDate
+        datediff(update_date, now()) as updateDateDiffCnt,
+        datediff(insert_date, now()) as insertDateDiffCnt,
+        update_date as updateDate
         from chat
     </select>
 

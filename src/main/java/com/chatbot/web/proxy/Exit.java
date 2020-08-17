@@ -83,12 +83,14 @@ public class Exit {
                 chatHistory.setChatBody("사용자종료");
                 chatHistoryMapper.insertData(chatHistory);
                 chat.setChatId(0);
+
+                System.out.println(Integer.parseInt(chatMapper.selectList().getInsertDateDiffCnt().toString()) == -3);
                 return obj;
                 //고려사항
             } else {
                 if (chatMapper.selectList().getChatBody() != "챗봇종료") {
-                    if (chatMapper.selectDateList().getUpdateDate() == null) {
-                        if (Integer.parseInt(chatMapper.selectList().getInsertDate().toString()) == -3) {
+                    if (chatMapper.selectList().getUpdateDate() == null) {
+                        if (Integer.parseInt(chatMapper.selectList().getInsertDateDiffCnt().toString()) == -3) {
                             chatHistory.setChatKind("B");
                             chatHistory.setChatBody("시스템종료");
                             chatHistoryMapper.insertData(chatHistory);
@@ -98,8 +100,8 @@ public class Exit {
                             logger.error("시스템종료 insert ERROR");
                             return null;
                         }
-                    } else if (chatMapper.selectDateList().getUpdateDate() != null) {
-                        if (Integer.parseInt(chatMapper.selectList().getUpdateDate().toString()) == -3) {
+                    } else if (chatMapper.selectList().getUpdateDate() != null) {
+                        if (Integer.parseInt(chatMapper.selectList().getUpdateDateDiffCnt().toString()) == -3) {
                             chatHistory.setChatKind("B");
                             chatHistory.setChatBody("시스템종료");
                             chatHistoryMapper.insertData(chatHistory);
