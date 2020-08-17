@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 
 //user : v204ap, l7hi3x0e
@@ -384,9 +385,6 @@ public class Serializer {
             chatHistoryMapper.insertData(chatHistory);
 
             String analyses = "";
-            title = "시험종류선택";
-            description = "시험종류를 선택해주세요.";
-            img = examKindImg;
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 analyses = "시험분석";
             } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
@@ -404,6 +402,9 @@ public class Serializer {
             obj2.put("items", arr2);
             arr2.add(obj3);
             if (chatBody.equals(analyses)) {
+                title = "시험종류선택";
+                description = "시험종류를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.";
+                img = examKindImg;
                 obj3.put("title", title);
                 obj3.put("description", description);
                 obj3.put("thumbnail", img);
@@ -420,7 +421,7 @@ public class Serializer {
 
                 arr2.add(obj7);
                 obj7.put("title", "시험종류선택");
-                obj7.put("description", "챗봇을 종료하시려면 '종료'를 입력해주세요.");
+                obj7.put("description", description);
                 obj7.put("thumbnail", obj4);
                 obj7.put("buttons", arr4);
                 obj4.put("imageUrl", img);
@@ -441,7 +442,7 @@ public class Serializer {
             } else if (Arrays.asList(exams).contains(chatBody)
                     || Arrays.asList(exams).contains(chatBody) && chatBody.contains(analyses)) {
                 title = "과목종류선택";
-                description = "과목종류를 선택해주세요.";
+                description = "과목종류를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.";
                 img = subjectCodeImg;
                 obj3.put("title", title);
                 obj3.put("description", description);
@@ -482,6 +483,7 @@ public class Serializer {
 
                 arr2.add(obj12);
                 obj12.put("title", title);
+                obj12.put("description", description);
                 obj12.put("thumbnail", obj4);
                 obj12.put("buttons", arr5);
                 obj4.put("imageUrl", subjectCodeImg);
@@ -498,55 +500,61 @@ public class Serializer {
                 obj15.put("label", subjects[8]);
                 obj15.put("action", "message");
 
+                Iterator<ChatHistory> list = chatHistoryMapper.selectList(chat.getChatId()).iterator();
+                ChatHistory listObj = list.next();
+                //test
+                System.out.println(listObj.toString());
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody(title);
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
-
-                //test: 버튼으로 왔을 때 vs 발화로 왔을 때를 구분해주어야 함(if)
             } else if (Arrays.asList(subjects).contains(chatBody)
                     || Arrays.asList(exams).contains(chatBody) && Arrays.asList(subjects).contains(chatBody)
                     && chatBody.contains(analyses)) {
-                Exam examList = examMapper.selectList();
-                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                    //틀린 개수가 몇 개인지 세어봐야 하고 두 개 이상일 때에는 반복문 로직이 추가되어야 함
-                    title = "1학기 중간고사 국어 14번";
-                    description = "[정답: 4번]\n-학생들이 가장 많이 선택한 오답: 2번\n어휘의 형성 체계가 가장 다른 것은?\n1. 손쉽다   2. 맛나다\n3. 시름없다   4. 남다르다";
-                    img = adminAnImg;
-//                    ExamAnalysis wEList = examAnalysisMapper.selectList(Integer.parseInt(vop.get("adminCode").toString()));
-                    obj.put("version", "2.0");
-                    obj.put("template", arrObj);
-                    arrObj.put("outputs", arr);
-                    arr.add(obj1);
-                    obj1.put("basicCard", obj3);
-                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-//                    ExamAnalysis wEList = examAnalysisMapper.selectList(Integer.parseInt(vop.get("userCode").toString()));
-//                    title = "1학기 기말고사 국어\n" + examList.getExamNum() + "번";
-                    description = "[정답: 2, 4번]\n-내가 선택한 오답: 3번\n잘못 짝지어진 것은?\n1. 들: ㄷㄹ-   2. 뜻: ㄷㅇㅅ-\n3. 생각: ㅅ-   4. 뿐: ㅈㅂㄹ-";
-                    img = userAnImg;
-                }
-                obj3.put("title", title);
-                obj3.put("description", description);
-                obj3.put("thumbnail", img);
-                obj3.put("buttons", arr3);
-                obj4.put("imageUrl", img);
-                arr3.add(obj5);
-                arr3.add(obj6);
-                obj5.put("messageText", "처음으로");
-                obj5.put("label", "처음으로");
-                obj5.put("action", "message");
-                obj6.put("messageText", "챗봇종료");
-                obj6.put("label", "챗봇종료");
-                obj6.put("action", "message");
+                if (Arrays.asList(subjects).contains(chatHistoryMapper.selectList(chat.getChatId()))
+                        && Arrays.asList(exams).contains(chatHistoryMapper.selectList(chat.getChatId()))) {
+                    Exam examList = examMapper.selectList();
+                    //발화내용 null 여부 확인
+                    if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
+                        title = "1학기 중간고사 국어 14번";
+                        description = "[정답: 4번]\n-학생들이 가장 많이 선택한 오답: 2번\n어휘의 형성 체계가 가장 다른 것은?\n1. 손쉽다   2. 맛나다\n3. 시름없다   4. 남다르다";
+                        img = adminAnImg;
+                        obj.put("version", "2.0");
+                        obj.put("template", arrObj);
+                        arrObj.put("outputs", arr);
+                        arr.add(obj1);
+                        obj1.put("basicCard", obj3);
+                    } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
+                        title = "";
+                        description = "[정답: 2, 4번]\n-내가 선택한 오답: 3번\n잘못 짝지어진 것은?\n1. 들: ㄷㄹ-   2. 뜻: ㄷㅇㅅ-\n3. 생각: ㅅ-   4. 뿐: ㅈㅂㄹ-";
+                        img = userAnImg;
+                    }
+                    obj3.put("title", title);
+                    obj3.put("description", description);
+                    obj3.put("thumbnail", img);
+                    obj3.put("buttons", arr3);
+                    obj4.put("imageUrl", img);
+                    arr3.add(obj5);
+                    arr3.add(obj6);
+                    obj5.put("messageText", "처음으로");
+                    obj5.put("label", "처음으로");
+                    obj5.put("action", "message");
+                    obj6.put("messageText", "챗봇종료");
+                    obj6.put("label", "챗봇종료");
+                    obj6.put("action", "message");
 
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody(analyses);
-                chatHistoryMapper.insertData(chatHistory);
-                return obj;
+                    chatHistory.setChatKind("B");
+                    chatHistory.setChatBody(analyses);
+                    chatHistoryMapper.insertData(chatHistory);
+                    return obj;
+                } else {
+                    logger.error("analyses logic ERROR");
+                    return null;
+                }
             } else {
-                logger.error("analyses logic ERROR");
-                return null;
-            }
+                logger.info("analysis 발화 부족으로 fallback");
+                return fallback.fallback(jsonParams);
+                }
         } catch (Exception e) {
             logger.error("analysis logic ERROR");
             e.printStackTrace();
