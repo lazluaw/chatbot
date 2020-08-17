@@ -9,7 +9,7 @@
             values (#{userCode}, #{chatBody}, now(), now())
     </insert>
 
-    <select id="selectList" resultType="chat">
+    <select id="selectUserList" resultType="chat">
         select user_id as userId,
         user_pw as userPw,
         user_code as userCode,
@@ -18,11 +18,16 @@
         where id = #{id}
     </select>
 
-    <select id="selectDateList" parameterType="int" resultType="chat">
-        select insert_date as insertDate,
-        update_date as updateDate
+    <select id="selectDateList" resultType="chat">
+        select update_date as updateDate,
         from chat
-        where chat_id = #{chatId}
+    </select>
+
+    <select id="selectList" resultType="chat">
+        select chat_body as chatBody,
+        datediff(update_date, now()) as updateDate,
+        datediff(insert_date, now()) as insertDate
+        from chat
     </select>
 
     <update id="updateData" parameterType="chat"

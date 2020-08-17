@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ExamMapper">
-    <select id="selectList" parameterType="exam"
+    <select id="examList" parameterType="exam"
             resultType="exam">
         select exam_kind as examKind,
         exam_num as examNum,
@@ -17,6 +17,6 @@
         exam_answer as examAnswer,
         exam_content as examContent
         from exam
-        where exam_id = 1
+        where exam_id = #{id}
     </select>
 </mapper>

@@ -21,7 +21,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -40,13 +39,13 @@ public class Serializer {
     @Autowired Fallback fallback;
     @Autowired RedisTemplate<String, Object> redisTemplate;
     @Autowired Exit exit;
-    private ObjectMapper mapper;
-    private JSONParser parser;
-    private String jsonStr, img, title, description;
+    private static ObjectMapper mapper = new ObjectMapper();
+    private JSONParser parser = new JSONParser();
     private JSONObject obj, obj1, obj2, obj3, obj4, obj5, obj6, arrObj;
     private JSONArray arr, arr2;
     private ValueOperations<String, Object> vop;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private String jsonStr, img, title, description;
     private String entryImg = "https://i.pinimg.com/564x/f4/62/c9/f462c9fc876243221c6ee36c3fb97b32.jpg";
     private String streamImg = "https://i.pinimg.com/564x/df/9b/65/df9b65458c037b6f9eac74e9035c62ad.jpg";
     private String examKindImg = "https://i.pinimg.com/564x/81/21/12/8121120d992f697528c3ca99d9af4baa.jpg";
@@ -56,11 +55,10 @@ public class Serializer {
     private String adminAnImg = "https://i.pinimg.com/564x/e7/c3/cc/e7c3cc68c94b5828e347c0e35255425d.jpg";
     private String userMImg = "https://i.pinimg.com/564x/cc/8e/08/cc8e083f2c13532a94038138a6713ec1.jpg";
     private String userAnImg = "https://i.pinimg.com/564x/7e/0a/70/7e0a70b7dc579def017a4cd56ad826f9.jpg";
+    private String[] exams = {"1학기 중간고사", "1학기 기말고사", "2학기 중간고사", "2학기 기말고사"};
     private String[] subjects = {"국어", "영어", "수학", "경제", "생활과윤리", "지리", "지구과학", "생명과학", "물리"};
     public Map<String, Object> fallbackSer(Map<String, Object> jsonParams) {
         try {
-            mapper = new ObjectMapper();
-            parser = new JSONParser();
             obj = new JSONObject();
             obj1 = new JSONObject();
             obj2 = new JSONObject();
@@ -82,10 +80,10 @@ public class Serializer {
             vop.set(botUserKey, String.valueOf(chat.getChatId()));
 
             if (vop.get(botUserKey).equals("0")) {
-                vop.set("adminCode", String.valueOf(chatMapper.selectList(392).getUserCode()));
-                vop.set("userCode", String.valueOf(chatMapper.selectList(1186).getUserCode()));
-                vop.set("adminLogin", chatMapper.selectList(392).getUserId() + ", " + chatMapper.selectList(392).getUserPw());
-                vop.set("userLogin", chatMapper.selectList(1186).getUserId() + ", " + chatMapper.selectList(1186).getUserPw());
+                vop.set("adminCode", String.valueOf(chatMapper.selectUserList(392).getUserCode()));
+                vop.set("userCode", String.valueOf(chatMapper.selectUserList(1186).getUserCode()));
+                vop.set("adminLogin", chatMapper.selectUserList(392).getUserId() + ", " + chatMapper.selectUserList(392).getUserPw());
+                vop.set("userLogin", chatMapper.selectUserList(1186).getUserId() + ", " + chatMapper.selectUserList(1186).getUserPw());
                 if (chatBody.contains("로그인") || chatBody.contains("login")) {
                     return this.loginSer();
                 } else if (chatBody.equals(vop.get("adminLogin"))) {
@@ -191,8 +189,6 @@ public class Serializer {
 
     public Map<String, Object> menuSer(Map<String, Object> jsonParams) {
         try {
-            mapper = new ObjectMapper();
-            parser = new JSONParser();
             obj = new JSONObject();
             obj1 = new JSONObject();
             obj2 = new JSONObject();
@@ -228,7 +224,7 @@ public class Serializer {
                 analMenu = "시험분석";
                 img = adminMImg;
                 url = "https://www.naver.com";
-                description = chatMapper.selectList(392).getName() + desc;
+                description = chatMapper.selectUserList(392).getName() + desc;
                 arr2.add(obj6);
                 obj6.put("webLinkUrl", "https://www.naver.com");
                 obj6.put("label", "화상교육");
@@ -238,7 +234,7 @@ public class Serializer {
                 analMenu = "오답노트";
                 img = userMImg;
                 url = "https://www.naver.com";
-                description = chatMapper.selectList(1186).getName() + desc;
+                description = chatMapper.selectUserList(1186).getName() + desc;
             }
             obj.put("version", "2.0");
             obj.put("template", arrObj);
@@ -271,8 +267,6 @@ public class Serializer {
 
     public Map<String, Object> classSer(Map<String, Object> jsonParams) {
         try {
-            mapper = new ObjectMapper();
-            parser = new JSONParser();
             obj = new JSONObject();
             obj1 = new JSONObject();
             obj2 = new JSONObject();
@@ -347,13 +341,11 @@ public class Serializer {
         }
     }
 
-    public Map<String, Object> addJson(Map<String, Object> jsonParams) {
-    }
+//    public Map<String, Object> addJson(Map<String, Object> jsonParams) {
+//    }
 
     public Map<String, Object> examSer(Map<String, Object> jsonParams) {
         try {
-            mapper = new ObjectMapper();
-            parser = new JSONParser();
             obj = new JSONObject();
             obj1 = new JSONObject();
             obj2 = new JSONObject();
@@ -446,12 +438,8 @@ public class Serializer {
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
 
-            } else if (chatBody.equals("1학기 중간고사") || chatBody.equals("1학기 기말고사")
-                    || chatBody.equals("2학기 중간고사") || chatBody.equals("2학기 기말고사")
-                    || chatBody.contains("1학기 중간고사") && chatBody.contains(analyses)
-                    || chatBody.contains("2학기 중간고사") && chatBody.contains(analyses)
-                    || chatBody.contains("1학기 기말고사") && chatBody.contains(analyses)
-                    || chatBody.contains("2학기 기말고사") && chatBody.contains(analyses)) {
+            } else if (Arrays.asList(exams).contains(chatBody)
+                    || Arrays.asList(exams).contains(chatBody) && chatBody.contains(analyses)) {
                 title = "과목종류선택";
                 description = "과목종류를 선택해주세요.";
                 img = subjectCodeImg;
@@ -514,28 +502,26 @@ public class Serializer {
                 chatHistory.setChatBody(title);
                 chatHistoryMapper.insertData(chatHistory);
                 return obj;
+
+                //test: 버튼으로 왔을 때 vs 발화로 왔을 때를 구분해주어야 함(if)
             } else if (Arrays.asList(subjects).contains(chatBody)
-                    || (chatBody.contains("1학기 중간고사") && Arrays.asList(subjects).contains(chatBody)) && chatBody.contains(analyses)
-                    || (chatBody.contains("1학기 중간고사") && Arrays.asList(subjects).contains(chatBody)) && chatBody.contains(analyses)
-                    || (chatBody.contains("1학기 기말고사") && Arrays.asList(subjects).contains(chatBody)) && chatBody.contains(analyses)
-                    || (chatBody.contains("2학기 기말고사") && Arrays.asList(subjects).contains(chatBody)) && chatBody.contains(analyses)) {
+                    || Arrays.asList(exams).contains(chatBody) && Arrays.asList(subjects).contains(chatBody)
+                    && chatBody.contains(analyses)) {
+                Exam examList = examMapper.selectList();
                 if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                    //test: 버튼으로 왔을 때 vs 발화로 왔을 때를 구분해주어야 함(if)
                     //틀린 개수가 몇 개인지 세어봐야 하고 두 개 이상일 때에는 반복문 로직이 추가되어야 함
                     title = "1학기 중간고사 국어 14번";
                     description = "[정답: 4번]\n-학생들이 가장 많이 선택한 오답: 2번\n어휘의 형성 체계가 가장 다른 것은?\n1. 손쉽다   2. 맛나다\n3. 시름없다   4. 남다르다";
                     img = adminAnImg;
-                    Exam examList = examMapper.selectList();
-                    ExamAnalysis wEList = examAnalysisMapper.selectList(Integer.parseInt(vop.get("adminCode").toString()));
+//                    ExamAnalysis wEList = examAnalysisMapper.selectList(Integer.parseInt(vop.get("adminCode").toString()));
                     obj.put("version", "2.0");
                     obj.put("template", arrObj);
                     arrObj.put("outputs", arr);
                     arr.add(obj1);
                     obj1.put("basicCard", obj3);
                 } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                    Exam examList = examMapper.selectList();
-                    ExamAnalysis wEList = examAnalysisMapper.selectList(Integer.parseInt(vop.get("userCode").toString()));
-                    title = "1학기 기말고사 국어\n" + examList.getExamNum() + "번";
+//                    ExamAnalysis wEList = examAnalysisMapper.selectList(Integer.parseInt(vop.get("userCode").toString()));
+//                    title = "1학기 기말고사 국어\n" + examList.getExamNum() + "번";
                     description = "[정답: 2, 4번]\n-내가 선택한 오답: 3번\n잘못 짝지어진 것은?\n1. 들: ㄷㄹ-   2. 뜻: ㄷㅇㅅ-\n3. 생각: ㅅ-   4. 뿐: ㅈㅂㄹ-";
                     img = userAnImg;
                 }

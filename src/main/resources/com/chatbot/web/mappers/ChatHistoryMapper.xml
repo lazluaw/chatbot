@@ -17,6 +17,7 @@
     </update>
 
     <delete id="deleteData" parameterType="chatHistory">
-        delete from chathistory where chatBody = #{chatBody};
+        delete from chathistory
+        where chatBody = #{chatBody};
     </delete>
 </mapper>

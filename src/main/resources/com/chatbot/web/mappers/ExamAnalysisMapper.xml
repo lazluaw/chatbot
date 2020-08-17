@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ExamAnalysisMapper">
-    <select id="selectList" parameterType="int"
+    <select id="analysisList" parameterType="int"
             resultType="examAnalysis">
         select user_code as userCode,
         subject_code as subjectCode,

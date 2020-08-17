@@ -45,11 +45,6 @@ public class Exit {
             obj3 = new JSONObject();
             arrObj = new JSONObject();
             arr = new JSONArray();
-            //Test
-//            String insertDate = chatMapper.selectDateList(chat.getChatId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-//            System.out.println(insertDate);
-//            System.out.println(Integer.parseInt(insertDate));
-//            System.out.println(Integer.parseInt(insertDate) + 30000);
 
             if (chat.getChatId() == 0) {
                 obj.put("version", "2.0");
@@ -89,33 +84,33 @@ public class Exit {
                 chatHistoryMapper.insertData(chatHistory);
                 chat.setChatId(0);
                 return obj;
-                //로직 바꿔야 함.
+                //고려사항
             } else {
-                String insertDate = chatMapper.selectDateList(chat.getChatId()).getInsertDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-                String updateDate = chatMapper.selectDateList(chat.getChatId()).getUpdateDate().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-                SimpleDateFormat format = new SimpleDateFormat("yyyyHHddHHmm");
-                Date date = new Date();
-                String today = format.format(date);
-                if (updateDate == null) {
-                    if (Integer.parseInt(insertDate) + 30000 == Integer.parseInt(today)) {
-                        chatHistory.setChatKind("B");
-                        chatHistory.setChatBody("시스템종료");
-                        chatHistoryMapper.insertData(chatHistory);
-                        chat.setChatId(0);
-                        return null;
+                if (chatMapper.selectList().getChatBody() != "챗봇종료") {
+                    if (chatMapper.selectDateList().getUpdateDate() == null) {
+                        if (Integer.parseInt(chatMapper.selectList().getInsertDate().toString()) == -3) {
+                            chatHistory.setChatKind("B");
+                            chatHistory.setChatBody("시스템종료");
+                            chatHistoryMapper.insertData(chatHistory);
+                            chat.setChatId(0);
+                            return null;
+                        } else {
+                            logger.error("시스템종료 insert ERROR");
+                            return null;
+                        }
+                    } else if (chatMapper.selectDateList().getUpdateDate() != null) {
+                        if (Integer.parseInt(chatMapper.selectList().getUpdateDate().toString()) == -3) {
+                            chatHistory.setChatKind("B");
+                            chatHistory.setChatBody("시스템종료");
+                            chatHistoryMapper.insertData(chatHistory);
+                            chat.setChatId(0);
+                            return null;
+                        } else {
+                            logger.error("시스템종료 update ERROR");
+                            return null;
+                        }
                     } else {
-                        logger.error("시스템종료 insert ERROR");
-                        return null;
-                    }
-                } else if (updateDate != null) {
-                    if (Integer.parseInt(updateDate) + 30000 == Integer.parseInt(today)) {
-                        chatHistory.setChatKind("B");
-                        chatHistory.setChatBody("시스템종료");
-                        chatHistoryMapper.insertData(chatHistory);
-                        chat.setChatId(0);
-                        return null;
-                    } else {
-                        logger.error("시스템종료 update ERROR");
+                        logger.error("시스템종료 3일 측정 ERROR");
                         return null;
                     }
                 } else {

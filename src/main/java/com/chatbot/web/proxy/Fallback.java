@@ -48,7 +48,6 @@ public class Fallback {
             arr = new JSONArray();
             arr2 = new JSONArray();
             vop = redisTemplate.opsForValue();
-
             obj.put("version", "2.0");
             obj.put("template", arrObj);
             arrObj.put("outputs", arr);
