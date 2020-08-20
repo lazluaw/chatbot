@@ -16,21 +16,30 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
+
 import java.util.Map;
 
-@Component @Lazy
+@Component
+@Lazy
 public class Fallback {
-    @Autowired Serializer serializer;
-    @Autowired Chat chat;
-    @Autowired ChatHistory chatHistory;
-    @Autowired ChatMapper chatMapper;
-    @Autowired ChatHistoryMapper chatHistoryMapper;
-    @Autowired RedisTemplate redisTemplate;
+    @Autowired
+    Serializer serializer;
+    @Autowired
+    Chat chat;
+    @Autowired
+    ChatHistory chatHistory;
+    @Autowired
+    ChatMapper chatMapper;
+    @Autowired
+    ChatHistoryMapper chatHistoryMapper;
+    @Autowired
+    RedisTemplate redisTemplate;
     private ObjectMapper mapper;
     private JSONParser parser;
     private String jsonStr;
     private ValueOperations<String, Object> vop;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public Map<String, Object> fallback(Map<String, Object> jsonParams) {
         try {
             mapper = new ObjectMapper();
@@ -41,27 +50,7 @@ public class Fallback {
             JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
             String chatBody = (String) userRequest.get("utterance");
             String userInfo = userRequest.toString();
-
-            if (chat.getChatId() != 0) {
-                logger.info("로그인O fallback");
-                vop.set("title", "무슨 의미인지 모르겠어요!");
-                vop.set("description", "챗봇을 이용하시려면 '메뉴' 버튼을,\n종료하시려면 '종료' 버튼을 눌러주세요.");
-                vop.set("img", "https://i.pinimg.com/564x/fe/b7/2d/feb72dfa16dfd4781c26b550edd88255.jpg");
-                vop.set("firstMessage", "메뉴로 이동");
-                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                    chat.setUserCode(Integer.valueOf(vop.get("adminCode").toString()));
-                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                    chat.setUserCode(Integer.valueOf(vop.get("userCode").toString()));
-                }
-                chat.setChatBody(chatBody);
-                chatMapper.insertData(chat);
-                chatHistory.setChatId(chat.getChatId());
-                chatHistory.setUserInfo(userInfo);
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody("로그인후폴백");
-                chatHistoryMapper.insertData(chatHistory);
-                return serializer.addJson("bas", "basBut");
-            } else if (chatBody.contains("로그인") || chatBody.equals(vop.get("adminLogin")) || chatBody.equals(vop.get("userLogin"))) {
+            if (chatBody.contains("로그인") || chatBody.equals(vop.get("adminLogin")) || chatBody.equals(vop.get("userLogin"))) {
                 logger.info("로그인O 중복");
                 vop.set("title", "이미 로그인하였습니다!");
                 vop.set("description", "이미 로그인이 되어 있는 상태입니다 :)\n어디로 이동할까요?");
@@ -83,7 +72,24 @@ public class Fallback {
                 chatHistoryMapper.insertData(chatHistory);
                 return serializer.addJson("bas", "basBut");
             } else {
-                return serializer.loginSer();
+                logger.info("로그인O fallback");
+                vop.set("title", "무슨 의미인지 모르겠어요!");
+                vop.set("description", "챗봇을 이용하시려면 '메뉴' 버튼을,\n종료하시려면 '종료' 버튼을 눌러주세요.");
+                vop.set("img", "https://i.pinimg.com/564x/fe/b7/2d/feb72dfa16dfd4781c26b550edd88255.jpg");
+                vop.set("firstMessage", "메뉴로 이동");
+                if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
+                    chat.setUserCode(Integer.valueOf(vop.get("adminCode").toString()));
+                } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
+                    chat.setUserCode(Integer.valueOf(vop.get("userCode").toString()));
+                }
+                chat.setChatBody(chatBody);
+                chatMapper.insertData(chat);
+                chatHistory.setChatId(chat.getChatId());
+                chatHistory.setUserInfo(userInfo);
+                chatHistory.setChatKind("B");
+                chatHistory.setChatBody("로그인후폴백");
+                chatHistoryMapper.insertData(chatHistory);
+                return serializer.addJson("bas", "basBut");
             }
         } catch (Exception e) {
             logger.error("fallback ERROR");
