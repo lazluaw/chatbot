@@ -47,10 +47,10 @@ public class Serializer {
     private JSONArray arr, arr2, arr3, arr4;
     private ValueOperations<String, Object> vop;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private String jsonStr, img, title, description;
-    private String subjectCodeImg = "https://i.pinimg.com/564x/9a/48/f4/9a48f4460b011bf688e50c03165dadd6.jpg";
-    private String adminAnImg = "https://i.pinimg.com/564x/e7/c3/cc/e7c3cc68c94b5828e347c0e35255425d.jpg";
-    private String userAnImg = "https://i.pinimg.com/564x/7e/0a/70/7e0a70b7dc579def017a4cd56ad826f9.jpg";
+    private String jsonStr;
+    //test 지워야 함
+    private String title, description, img;
+
 
     public Map<String, Object> addJson(String format, String button) {
         try {
@@ -68,101 +68,105 @@ public class Serializer {
             arr = new JSONArray();
             arr2 = new JSONArray();
             arr3 = new JSONArray();
+            arr4 = new JSONArray();
             vop = redisTemplate.opsForValue();
             vop.set("exitMessage", "챗봇종료");
-            obj.put("version", "2.0");
-            obj.put("template", arrObj);
-            arrObj.put("outputs", arr);
-            arr.add(obj1);
             if (format.equals("sim")) {
-                obj1.put("simpleText", obj2);
                 obj2.put("text", vop.get("text"));
+                obj1.put("simpleText", obj2);
                 return obj;
+                //test: 챗봇 종료가 안 되는 상황
             } else if (format.equals("bas")) {
                 System.out.println("bas 진입");
-                obj1.put("basicCard", obj2);
-                obj2.put("title", vop.get("title"));
-                obj2.put("description", vop.get("description"));
-                obj2.put("thumbnail", obj3);
                 obj3.put("imageUrl", vop.get("img"));
+                obj2.put("thumbnail", obj3);
+                obj2.put("description", vop.get("description"));
+                obj2.put("title", vop.get("title"));
+                obj1.put("basicCard", obj2);
                 if (button.equals("basBut")) {
-                    obj2.put("buttons", arr2);
-                    arr2.add(obj4);
-                    arr2.add(obj5);
-                    obj4.put("messageText", vop.get("firstMessage"));
-                    obj4.put("label", vop.get("firstMessage"));
+                    System.out.println("basicBut 진입");
+                    obj5.put("action", "message");
+                    obj5.put("label", vop.get("firstMessage"));
+                    obj5.put("messageText", vop.get("firstMessage"));
                     obj4.put("action", "message");
-                    obj5.put("messageText", vop.get("exitMessage"));
-                    obj5.put("label", vop.get("exitMessage"));
-                    obj5.put("action", "message");
-                } else if (button.equals("twoWeb")) {
-                    obj2.put("buttons", arr2);
-                    arr2.add(obj4);
+                    obj4.put("label", vop.get("exitMessage"));
+                    obj4.put("messageText", vop.get("exitMessage"));
                     arr2.add(obj5);
-                    obj4.put("webLinkUrl", vop.get("url"));
-                    obj4.put("label", vop.get("firstMessage"));
-                    obj4.put("action", "webLink");
-                    obj5.put("messageText", vop.get("secondMessage"));
-                    obj5.put("label", vop.get("secondMessage"));
-                    obj5.put("action", "message");
-                } else if (button.equals("threeWeb")) {
-                    obj2.put("buttons", arr2);
                     arr2.add(obj4);
-                    arr2.add(obj5);
-                    arr2.add(obj6);
-                    obj4.put("webLinkUrl", vop.get("url"));
-                    obj4.put("label", vop.get("firstMessage"));
-                    obj4.put("action", "webLink");
-                    obj5.put("messageText", vop.get("secondMessage"));
-                    obj5.put("label", vop.get("secondMessage"));
+                    obj2.put("buttons", arr2);
+                    //test: 고도화 필요
+                } else if (button.equals("web")) {
+                    System.out.println("web진입");
                     obj5.put("action", "message");
-                    obj6.put("webLinkUrl", vop.get("thirdUrl"));
-                    obj6.put("label", vop.get("thirdMessage"));
+                    obj5.put("label", vop.get("firstMessage"));
+                    obj5.put("messageText", vop.get("firstMessage"));
+                    obj4.put("action", "webLink");
+                    obj4.put("label", vop.get("secondMessage"));
+                    obj4.put("webLinkUrl", vop.get("secondUrl"));
+                    arr2.add(obj5);
+                    arr2.add(obj4);
+                    obj2.put("buttons", arr2);
+                } else if (button.equals("addWeb")) {
+                    System.out.println("세번째 메뉴 진입");
                     obj6.put("action", "webLink");
+                    obj6.put("label", vop.get("thirdMessage"));
+                    obj6.put("webLinkUrl", vop.get("thirdUrl"));
+                    obj5.put("action", "message");
+                    obj5.put("label", vop.get("firstMessage"));
+                    obj5.put("messageText", vop.get("firstMessage"));
+                    obj4.put("action", "webLink");
+                    obj4.put("label", vop.get("secondMessage"));
+                    obj4.put("webLinkUrl", vop.get("secondUrl"));
+                    arr2.add(obj6);
+                    arr2.add(obj5);
+                    arr2.add(obj4);
+                    obj2.put("buttons", arr2);
                 }
+                arr.add(obj1);
+                arrObj.put("outputs", arr);
+                obj.put("template", arrObj);
+                obj.put("version", "2.0");
                 return obj;
             } else if (format.equals("car")) {
                 System.out.println("케러셀 진입");
-                obj1.put("carousel", obj2);
-                obj2.put("type", "basicCard");
-                obj2.put("items", arr2);
-                arr2.add(obj3);
-                obj3.put("title", vop.get("title"));
-                obj3.put("description", vop.get("description"));
-                obj3.put("thumbnail", obj4);
-                obj4.put("imageUrl", vop.get("img"));
-                obj3.put("buttons", arr3);
-                arr3.add(obj5);
-                arr3.add(obj6);
-                obj5.put("messageText", vop.get("firstMessage"));
-                obj5.put("label", vop.get("firstMessage"));
-                obj5.put("action", "message");
-                obj6.put("messageText", vop.get("secondMessage"));
-                obj6.put("label", vop.get("secondMessage"));
                 obj6.put("action", "message");
+                obj6.put("label", vop.get("secondMessage"));
+                obj6.put("messageText", vop.get("secondMessage"));
+                obj5.put("action", "message");
+                obj5.put("label", vop.get("firstMessage"));
+                obj5.put("messageText", vop.get("firstMessage"));
+                arr3.add(obj6);
+                arr3.add(obj5);
+                obj3.put("buttons", arr3);
+                obj4.put("imageUrl", vop.get("img"));
+                obj3.put("thumbnail", obj4);
+                obj3.put("description", vop.get("description"));
+                obj3.put("title", vop.get("title"));
+                arr2.add(obj3);
+                obj2.put("items", arr2);
+                obj2.put("type", "basicCard");
+                obj1.put("carousel", obj2);
                 if (button.equals("examKind")) {
-                    arr2.add(obj7);
-                    obj7.put("title", vop.get("title"));
-                    obj7.put("description", vop.get("description"));
+                    System.out.println("examkind");
+                    obj9.put("action", "message");
+                    obj9.put("label", vop.get("fourthMessage"));
+                    obj9.put("messageText", vop.get("fourthMessage"));
+                    obj8.put("action", "message");
+                    obj8.put("label", vop.get("thirdMessage"));
+                    obj8.put("messageText", vop.get("thirdMessage"));
+                    arr4.add(obj9);
+                    arr4.add(obj8);
+                    obj7.put("buttons", arr4);
                     obj7.put("thumbnail", obj4);
                     obj4.put("imageUrl", vop.get("img"));
-                    obj7.put("buttons", arr4);
-                    arr4.add(obj8);
-                    arr4.add(obj9);
-                    obj8.put("messageText", vop.get("thirdMessage"));
-                    obj8.put("label", vop.get("thirdMessage"));
-                    obj8.put("action", "message");
-                    obj9.put("messageText", vop.get("fourthMessage"));
-                    obj9.put("label", vop.get("fourthMessage"));
-                    obj9.put("action", "message");
+                    obj7.put("description", vop.get("description"));
+                    obj7.put("title", vop.get("title"));
+                    arr2.add(obj7);
                 } else if (button.equals("subjectKind")) {
                     System.out.println("준비중");
                 }
-                return obj;
-            } else {
-                logger.error("format logic ERROR");
-                return null;
             }
+            return obj;
         } catch (Exception e) {
             logger.error("format ERROR");
             return null;
@@ -268,23 +272,29 @@ public class Serializer {
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 vop.set("description", (chatMapper.selectUserList(392).getName() + "님, 반갑습니다.\n피클봇을 종료하시려면 '종료'를 입력해주세요."));
                 vop.set("img", "https://i.pinimg.com/564x/c3/d1/42/c3d1428151d94f028e3c9d1e5d86ea8f.jpg");
-                vop.set("firstMessage", "출석관리");
-                vop.set("url", "https://www.naver.com");
-                vop.set("secondMessage", "시험분석");
-                vop.set("thirdUrl", "https://www.naver.com");
+                vop.set("firstMessage", "시험분석");
+                vop.set("secondMessage", "출결관리");
+                vop.set("secondUrl", "https://www.naver.com");
                 vop.set("thirdMessage", "화상교육");
-            } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                vop.set("description", (chatMapper.selectUserList(1186).getName() + "님, 반갑습니다."));
-                vop.set("img", "https://i.pinimg.com/564x/cc/8e/08/cc8e083f2c13532a94038138a6713ec1.jpg");
-                vop.set("firstMessage", "출석체크 & 화상교육");
-                vop.set("url", "https://www.naver.com");
-                vop.set("secondMessage", "오답노트");
-                vop.set("thirdMessage", vop.get("exitMessage"));
+                vop.set("thirdUrl", "https://www.naver.com");
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody("메뉴선택");
                 chatHistoryMapper.insertData(chatHistory);
+                return this.addJson("bas", "addWeb");
+            } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
+                vop.set("description", (chatMapper.selectUserList(1186).getName() + "님, 반갑습니다.\n피클봇을 종료하시려면 '종료'를 입력해주세요."));
+                vop.set("img", "https://i.pinimg.com/564x/cc/8e/08/cc8e083f2c13532a94038138a6713ec1.jpg");
+                vop.set("firstMessage", "오답노트");
+                vop.set("secondMessage", "출석체크 & 화상교육");
+                vop.set("secondUrl", "https://www.naver.com");
+                chatHistory.setChatKind("B");
+                chatHistory.setChatBody("메뉴선택");
+                chatHistoryMapper.insertData(chatHistory);
+                return this.addJson("bas", "web");
+            } else {
+                logger.error("menu ERROR");
+                return null;
             }
-            return this.addJson("bas", "threeWeb");
         } catch (Exception e) {
             logger.error("menu logic ERROR");
             e.printStackTrace();
@@ -336,7 +346,7 @@ public class Serializer {
             chatHistory.setChatKind("B");
             chatHistory.setChatBody(vop.get("title").toString());
             chatHistoryMapper.insertData(chatHistory);
-            return this.addJson("bas", "twoWeb");
+            return this.addJson("bas", "web");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("classSer logic ERROR");
@@ -422,16 +432,16 @@ public class Serializer {
 //                        Exam examList = examMapper.selectList();
 //                        title = chatBody + examList.getExamNum()
                                 description = "[정답: 4번]\n-학생들이 가장 많이 선택한 오답: 2번\n어휘의 형성 체계가 가장 다른 것은?\n1. 손쉽다   2. 맛나다\n3. 시름없다   4. 남다르다";
-                                img = adminAnImg;
+                                img = "https://i.pinimg.com/564x/e7/c3/cc/e7c3cc68c94b5828e347c0e35255425d.jpg";
+
                                 obj.put("version", "2.0");
                                 obj.put("template", arrObj);
                                 arrObj.put("outputs", arr);
                                 arr.add(obj1);
                                 obj1.put("basicCard", obj3);
                             } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                                title = null;
                                 description = "[정답: 2, 4번]\n-내가 선택한 오답: 3번\n잘못 짝지어진 것은?\n1. 들: ㄷㄹ-   2. 뜻: ㄷㅇㅅ-\n3. 생각: ㅅ-   4. 뿐: ㅈㅂㄹ-";
-                                img = userAnImg;
+                                img = "https://i.pinimg.com/564x/7e/0a/70/7e0a70b7dc579def017a4cd56ad826f9.jpg";
                             }
                             obj3.put("title", title);
                             obj3.put("description", description);
@@ -454,7 +464,7 @@ public class Serializer {
                         } else {
                             title = "과목종류선택";
                             description = "과목종류를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.";
-                            img = subjectCodeImg;
+                            img = "https://i.pinimg.com/564x/9a/48/f4/9a48f4460b011bf688e50c03165dadd6.jpg";
                             obj3.put("title", title);
                             obj3.put("description", description);
                             obj3.put("thumbnail", obj4);
@@ -498,7 +508,7 @@ public class Serializer {
                             obj12.put("description", description);
                             obj12.put("thumbnail", obj4);
                             obj12.put("buttons", arr5);
-                            obj4.put("imageUrl", subjectCodeImg);
+                            obj4.put("imageUrl", img);
                             arr5.add(obj13);
                             arr5.add(obj14);
                             arr5.add(obj15);
@@ -519,7 +529,7 @@ public class Serializer {
                     } else {
                         //여기야여기
                         vop.set("title", "시험종류선택");
-                        vop.set("description", "시험종류를 선택해주세요.\n챗봇을 종료하시려면 '종료'를 입력해주세요.");
+                        vop.set("description", "시험종류를 선택해주세요.\n피클봇을 종료하시려면 '종료'를 입력해주세요.");
                         vop.set("img", "https://i.pinimg.com/564x/81/21/12/8121120d992f697528c3ca99d9af4baa.jpg");
                         vop.set("firstMessage", (vop.get("firstSem") + " " + vop.get("midtermExm")));
                         vop.set("secondMessage", (vop.get("firstSem") + " " + vop.get("finalExm")));
