@@ -11,6 +11,7 @@ import com.chatbot.web.mappers.ExamMapper;
 import com.chatbot.web.proxy.Exit;
 import com.chatbot.web.proxy.Fallback;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -41,13 +42,14 @@ public class Serializer {
     @Autowired Fallback fallback;
     @Autowired RedisTemplate<String, Object> redisTemplate;
     @Autowired Exit exit;
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new JsonMapper();
     private JSONParser parser = new JSONParser();
     private JSONObject obj, obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9, obj10, obj11, obj12, obj13, obj14, obj15, arrObj;
-    private JSONArray arr, arr2, arr3, arr4, arr5;
+    private JSONArray arr, arr1, arr2, arr3, arr4, arr5;
     private ValueOperations<String, Object> vop;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private String jsonStr;
+
     public Map<String, Object> addJson(String format, String button) {
         try {
             obj = new JSONObject();
@@ -72,7 +74,7 @@ public class Serializer {
             arr3 = new JSONArray();
             arr4 = new JSONArray();
             arr5 = new JSONArray();
-            vop = redisTemplate.opsForValue();
+
             vop.set("exitMes", "챗봇종료");
             if (format.equals("sim")) {
                 System.out.println("sim 진입");
@@ -125,6 +127,38 @@ public class Serializer {
                     arr2.add(obj4);
                     obj2.put("buttons", arr2);
                 }
+            } else if (format.equals("list")) {
+                System.out.println("list 진입");
+                obj9.put("message", vop.get("exitMes"));
+                obj9.put("label", vop.get("exitMes"));
+                obj9.put("type", "text");
+                arr2.add(obj9);
+                obj1.put("quickReplies", arr2);
+
+                obj8.put("imageUrl", vop.get("thirdImg"));
+                obj8.put("description", vop.get("thirdD"));
+                obj8.put("title", vop.get("thirdT"));
+                arr1.add(obj8);
+
+                obj7.put("web", vop.get("secondUrl"));
+                obj6.put("link", obj7);
+                obj6.put("imageUrl", vop.get("secondImg"));
+                obj6.put("description", vop.get("secondD"));
+                obj6.put("title", vop.get("secondT"));
+                arr1.add(obj6);
+
+                obj5.put("web", vop.get("firstUrl"));
+                obj4.put("link", obj5);
+                obj4.put("imageUrl", vop.get("firstImg"));
+                obj4.put("description", vop.get("firstD"));
+                obj4.put("title", vop.get("firstT"));
+                arr1.add(obj4);
+
+                obj2.put("items", arr1);
+                obj3.put("imageUrl", vop.get("img"));
+                obj3.put("title", vop.get("title"));
+                obj2.put("header", obj3);
+                obj1.put("listCard", obj2);
             } else if (format.equals("car")) {
                 System.out.println("케러셀 진입");
                 obj6.put("action", "message");
@@ -210,6 +244,7 @@ public class Serializer {
             arrObj.put("outputs", arr);
             obj.put("template", arrObj);
             obj.put("version", "2.0");
+            System.out.println(obj);
             return obj;
         } catch (Exception e) {
             logger.error("format ERROR");
@@ -217,10 +252,41 @@ public class Serializer {
         }
     }
 
-    public void addData(String division, String data) {
-        chatHistory.setChatKind("B");
-        chatHistory.setChatBody(data);
-        chatHistoryMapper.insertData(chatHistory);
+    public void addData(Map<String, Object> jsonParams, String division, String data) {
+        try {
+            System.out.println("addData 진입");
+            vop = redisTemplate.opsForValue();
+            mapper = new ObjectMapper();
+            parser = new JSONParser();
+            jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
+            JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
+            JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
+            String chatBody = (String) userRequest.get("utterance");
+            String userInfo = userRequest.toString();
+            if (division.equals("c")) {
+                System.out.println("C addData");
+                chatHistory.setChatId(chat.getChatId());
+                chatHistory.setChatKind("C");
+                chatHistory.setUserInfo(userInfo);
+                chatHistory.setChatBody(chatBody);
+                chatHistoryMapper.insertData(chatHistory);
+            } else if (division.equals("b")) {
+                if (data != null) {
+                    System.out.println("B chatHistory addData");
+                    chatHistory.setChatKind("B");
+                    chatHistory.setChatBody(data);
+                    chatHistoryMapper.insertData(chatHistory);
+                } else {
+                    System.out.println("B chat addData");
+                    chat.setChatBody(chatBody);
+                    chat.setUserCode(chat.getUserCode());
+                    chatMapper.insertData(chat);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("addData ERROR");
+            e.printStackTrace();
+        }
     }
 
     public Map<String, Object> fallbackSer(Map<String, Object> jsonParams) {
@@ -230,7 +296,6 @@ public class Serializer {
             JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
             JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
             String chatBody = (String) userRequest.get("utterance");
-            String userInfo = userRequest.toString();
             JSONObject user = (JSONObject) userRequest.get("user");
             JSONObject properties = (JSONObject) user.get("properties");
             String botUserKey = (String) properties.get("botUserKey");
@@ -264,6 +329,7 @@ public class Serializer {
                 }
             } else if (vop.get(botUserKey) != "0") {
                 if (chatBody.contains("로그인") || chatBody.equals(vop.get("adminLogin")) || chatBody.equals(vop.get("userLogin"))) {
+                    vop.set("overlap", "1");
                     return fallback.fallback(jsonParams);
                 } else if (chatBody.contains("메뉴")) {
                     return this.menuSer(jsonParams);
@@ -275,7 +341,7 @@ public class Serializer {
                 } else if (chatBody.contains("종료")) {
                     return exit.exit(jsonParams);
                 } else {
-                    logger.info("로그인O fallback");
+                    logger.info("로그인 fallback");
                     return fallback.fallback(jsonParams);
                 }
             } else {
@@ -303,48 +369,37 @@ public class Serializer {
     public Map<String, Object> menuSer(Map<String, Object> jsonParams) {
         try {
             vop = redisTemplate.opsForValue();
-            jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
-            JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
-            JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
-            String chatBody = (String) userRequest.get("utterance");
-            String userInfo = userRequest.toString();
-
-            //chat: 로그인 후에 바로 메뉴에 왔을 때 데이터가 이중으로 저장되어도 어쩔 수 없..을까?
-            chat.setChatBody(chatBody);
-            chatMapper.updateData(chat);
-            chatHistory.setChatId(chat.getChatId());
-            chatHistory.setChatKind("C");
-            chatHistory.setUserInfo(userInfo);
-            chatHistory.setChatBody(chatBody);
-            chatHistoryMapper.insertData(chatHistory);
             vop.set("title", "메뉴를 선택해주세요.");
-
+            vop.set("img", "https://cdn.pixabay.com/photo/2014/05/03/00/46/notebook-336634_1280.jpg");
+            vop.set("firstT", "화상교육");
+            vop.set("firstT", "화상교육");
+            vop.set("firstImg", "https://i.pinimg.com/564x/17/c2/26/17c226e8de997e03a5fc49e8de12bfa6.jpg");
+            vop.set("firstUrl", "https://www.naver.com");
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
-                vop.set("description", (chatMapper.selectUserList(392).getName() + "님, 반갑습니다.\n피클봇을 종료하시려면 '종료'를 입력해주세요."));
-                vop.set("img", "https://i.pinimg.com/564x/c3/d1/42/c3d1428151d94f028e3c9d1e5d86ea8f.jpg");
-                vop.set("firstMes", "시험분석");
-                vop.set("secondMes", "출결관리");
+                vop.set("secondT", "출결관리");
+                vop.set("secondT", "출결관리");
+                vop.set("secondImg", "https://i.pinimg.com/564x/3c/02/af/3c02afb940e4aa0e7c9448d75ee0f04f.jpg");
                 vop.set("secondUrl", "https://www.naver.com");
-                vop.set("thirdMes", "화상교육");
-                vop.set("thirdUrl", "https://www.naver.com");
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody("메뉴선택");
-                chatHistoryMapper.insertData(chatHistory);
-                return this.addJson("bas", "addWeb");
+                vop.set("thirdT", "시험분석");
+                vop.set("thirdT", "시험분석");
+                vop.set("thirdImg", "https://i.pinimg.com/564x/59/e0/28/59e0283e88f18b5c35ed59dbdb869b8d.jpg");
             } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                vop.set("description", (chatMapper.selectUserList(1186).getName() + "님, 반갑습니다.\n피클봇을 종료하시려면 '종료'를 입력해주세요."));
-                vop.set("img", "https://i.pinimg.com/564x/cc/8e/08/cc8e083f2c13532a94038138a6713ec1.jpg");
-                vop.set("firstMes", "오답노트");
-                vop.set("secondMes", "출석체크 & 화상교육");
+                vop.set("secondT", "출석체크");
+                vop.set("secondT", "출석체크");
+                vop.set("secondImg", "https://i.pinimg.com/564x/37/78/76/3778761e8c28938f048643c945724cb6.jpg");
                 vop.set("secondUrl", "https://www.naver.com");
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody("메뉴선택");
-                chatHistoryMapper.insertData(chatHistory);
-                return this.addJson("bas", "web");
+                vop.set("thirdT", "오답노트");
+                vop.set("thirdT", "오답노트");
+                vop.set("thirdImg", "https://i.pinimg.com/564x/3f/fb/3b/3ffb3ba83f1be537725827d331452695.jpg");
             } else {
                 logger.error("menu ERROR");
                 return null;
             }
+            //chat: 로그인 후에 바로 메뉴에 왔을 때 데이터가 이중으로 저장되어도 어쩔 수 없..을까?
+            this.addData(jsonParams, "b", null);
+            this.addData(jsonParams, "c", null);
+            this.addData(jsonParams, "b", "대메뉴");
+            return this.addJson("list", "0");
         } catch (Exception e) {
             logger.error("menu logic ERROR");
             e.printStackTrace();
@@ -475,7 +530,7 @@ public class Serializer {
                                 vop.set("description", "[정답: 2, 4번]\n-내가 선택한 오답: 3번\n잘못 짝지어진 것은?\n1. 들: ㄷㄹ-   2. 뜻: ㄷㅇㅅ-\n3. 생각: ㅅ-   4. 뿐: ㅈㅂㄹ-");
                                 vop.set("img", "https://i.pinimg.com/564x/7e/0a/70/7e0a70b7dc579def017a4cd56ad826f9.jpg");
                             }
-                            vop.set("title", (analyses+"분석결과"));
+                            vop.set("title", (analyses + "분석결과"));
                             vop.set("firstMes", "메뉴로 이동");
 
                             chatHistory.setChatKind("B");

@@ -55,16 +55,17 @@ public class Exit {
                 chatHistory.setChatBody(chatBody);
                 chatHistoryMapper.insertData(chatHistory);
 
+                vop.set("title", "피클봇이 종료됩니다. 감사합니다.");
+                vop.set("description", "항상 앞으로 나아가는 피클 서비스, 피클봇이 되겠습니다.");
+                vop.set("img", "https://i.pinimg.com/564x/37/a2/6b/37a26b5b2b879c5280cbe4457d0d4649.jpg");
+
                 chatHistory.setChatKind("B");
                 chatHistory.setChatBody("사용자종료");
                 chatHistoryMapper.insertData(chatHistory);
                 chat.setChatId(0);
-                vop.set("title", "피클봇이 종료됩니다. 감사합니다.");
-                vop.set("description", "항상 앞으로 나아가는 피클 서비스, 피클봇이 되겠습니다.");
-                vop.set("img", "https://i.pinimg.com/564x/37/a2/6b/37a26b5b2b879c5280cbe4457d0d4649.jpg");
-                //로직 안 됨
 //                System.out.println(Integer.parseInt(chatMapper.selectList().getInsertDateDiffCnt().toString()) == -3);
-                return serializer.addJson("bas", null);
+                //null이면 안나옴
+                return serializer.addJson("bas", "");
             } else {
                 if (chatMapper.selectList().getChatBody() != "챗봇종료") {
                     if (chatMapper.selectList().getUpdateDate() == null) {
