@@ -2,13 +2,8 @@ package com.chatbot.web.proxy;
 
 import com.chatbot.web.conversions.Serializer;
 import com.chatbot.web.domains.Chat;
-import com.chatbot.web.domains.ChatHistory;
-import com.chatbot.web.mappers.ChatHistoryMapper;
 import com.chatbot.web.mappers.ChatMapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.ibatis.type.MappedTypes;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,56 +18,30 @@ import java.util.Map;
 @MappedTypes(LocalDate.class)
 public class Exit {
     @Autowired Chat chat;
-    @Autowired ChatHistory chatHistory;
-    @Autowired ChatHistoryMapper chatHistoryMapper;
     @Autowired ChatMapper chatMapper;
     @Autowired Serializer serializer;
     @Autowired RedisTemplate redisTemplate;
-    private ObjectMapper mapper;
-    private JSONParser parser;
-    private String jsonStr;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private ValueOperations<String, Object> vop;
     public Map<String, Object> exit(Map<String, Object> jsonParams) {
         try {
             vop = redisTemplate.opsForValue();
-            mapper = new ObjectMapper();
-            parser = new JSONParser();
+            vop.set("text", "피클봇이 종료됩니다. 감사합니다.");
             if (chat.getChatId() == 0) {
-                vop.set("text", "피클봇이 종료됩니다. 감사합니다.");
-                return serializer.addJson("sim", null);
+                return serializer.addJson("sim", "0");
             } else if (chat.getChatId() != 0) {
-                jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonParams);
-                JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
-                JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
-                String chatBody = (String) userRequest.get("utterance");
-                String userInfo = userRequest.toString();
-                chat.setChatBody(chatBody);
-                chatMapper.updateData(chat);
-                chatHistory.setChatId(chat.getChatId());
-                chatHistory.setChatKind("C");
-                chatHistory.setUserInfo(userInfo);
-                chatHistory.setChatBody(chatBody);
-                chatHistoryMapper.insertData(chatHistory);
-
-                vop.set("title", "피클봇이 종료됩니다. 감사합니다.");
-                vop.set("description", "항상 앞으로 나아가는 피클 서비스, 피클봇이 되겠습니다.");
-                vop.set("img", "https://i.pinimg.com/564x/37/a2/6b/37a26b5b2b879c5280cbe4457d0d4649.jpg");
-
-                chatHistory.setChatKind("B");
-                chatHistory.setChatBody("사용자종료");
-                chatHistoryMapper.insertData(chatHistory);
+                serializer.addData(jsonParams, "b", null);
+                serializer.addData(jsonParams, "c", null);
+                serializer.addData(jsonParams, "b", "사용자종료");
                 chat.setChatId(0);
-//                System.out.println(Integer.parseInt(chatMapper.selectList().getInsertDateDiffCnt().toString()) == -3);
-                //null이면 안나옴
-                return serializer.addJson("bas", "");
+                //test: null이면 안 나오는 이유를 알 수 없음
+                return serializer.addJson("sim", "0");
+                //test: 현재 시스템 종료가 되고 있지 않은 상황
             } else {
-                if (chatMapper.selectList().getChatBody() != "챗봇종료") {
+                if (chatMapper.selectList().getChatBody() != "종료") {
                     if (chatMapper.selectList().getUpdateDate() == null) {
                         if (Integer.parseInt(chatMapper.selectList().getInsertDateDiffCnt().toString()) == -3) {
-                            chatHistory.setChatKind("B");
-                            chatHistory.setChatBody("시스템종료");
-                            chatHistoryMapper.insertData(chatHistory);
+                            serializer.addData(jsonParams, "b", "시스템종료");
                             chat.setChatId(0);
                             return null;
                         } else {
@@ -81,9 +50,7 @@ public class Exit {
                         }
                     } else if (chatMapper.selectList().getUpdateDate() != null) {
                         if (Integer.parseInt(chatMapper.selectList().getUpdateDateDiffCnt().toString()) == -3) {
-                            chatHistory.setChatKind("B");
-                            chatHistory.setChatBody("시스템종료");
-                            chatHistoryMapper.insertData(chatHistory);
+                            serializer.addData(jsonParams, "b", "사용자종료");
                             chat.setChatId(0);
                             return null;
                         } else {
