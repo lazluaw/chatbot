@@ -13,29 +13,26 @@ import java.util.Map;
 
 @Component
 public class Fallback {
-    @Autowired
-    Serializer serializer;
-    @Autowired
-    Chat chat;
-    @Autowired
-    RedisTemplate redisTemplate;
+    @Autowired Serializer serializer;
+    @Autowired Chat chat;
+    @Autowired RedisTemplate redisTemplate;
     private ValueOperations<String, Object> vop;
     private String text;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     public Map<String, Object> fallback(Map<String, Object> jsonParams) {
         try {
             vop = redisTemplate.opsForValue();
             vop.set("firstMes", "화상교육");
+            logger.info("fallback 진입");
             if (chat.getChatId() != 0) {
                 if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                     vop.set("secondMes", "시험분석");
                     vop.set("thirdMes", "출결관리");
-                    chat.setUserCode(Integer.valueOf(vop.get("adminCode").toString()));
+//                    chat.setUserCode(Integer.valueOf(vop.get("adminCode").toString()));
                 } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                     vop.set("secondMes", "오답노트");
-                    vop.set("thirdMes", "춠석체크");
-                    chat.setUserCode(Integer.valueOf(vop.get("userCode").toString()));
+                    vop.set("thirdMes", "출석체크");
+//                    chat.setUserCode(Integer.valueOf(vop.get("userCode").toString()));
                 }
                 if (vop.get("overlap").equals("1")) {
                     logger.info("로그인O 중복");
@@ -64,9 +61,9 @@ public class Fallback {
     public Map<String, Object> failLogin() {
         try {
             vop = redisTemplate.opsForValue();
-            logger.info("로그인실패 fallback");
+            vop.set("lastMes", "");
             vop.set("text", "로그인에 실패하였습니다.\n다시 한 번 정확히 입력해 주세요.\n(형식 : 아이디, 비밀번호)");
-            return serializer.addJson("sim", null);
+            return serializer.addJson("sim", "0");
         } catch (Exception e) {
             logger.info("로그인 실패 logic ERROR");
             e.printStackTrace();

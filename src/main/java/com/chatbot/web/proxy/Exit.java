@@ -1,5 +1,6 @@
 package com.chatbot.web.proxy;
 
+
 import com.chatbot.web.conversions.Serializer;
 import com.chatbot.web.domains.Chat;
 import com.chatbot.web.mappers.ChatMapper;
@@ -26,6 +27,7 @@ public class Exit {
     public Map<String, Object> exit(Map<String, Object> jsonParams) {
         try {
             vop = redisTemplate.opsForValue();
+            vop.set("lastMes", "");
             vop.set("text", "피클봇이 종료됩니다. 감사합니다.");
             if (chat.getChatId() == 0) {
                 return serializer.addJson("sim", "0");

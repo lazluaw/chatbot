@@ -8,7 +8,6 @@ import java.util.ArrayList;
 @Repository
 public interface ChatHistoryMapper {
     public void insertData(ChatHistory chatHistory);
-    public ArrayList<ChatHistory> selectList(int chatHistory);
     public void updateData(ChatHistory chatHistory);
     public void deleteData(ChatHistory chatHistory);
 }

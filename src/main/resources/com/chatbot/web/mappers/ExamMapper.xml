@@ -14,7 +14,8 @@
         exam_choice4 as examChoice4,
         exam_choice5 as examChoice5,
         exam_answer as examAnswer,
-        exam_content as examContent
+        exam_content as examContent,
+        exam_kind as examKind
         from exam
         where exam_kind = #{examKind}
     </select>

@@ -1,24 +1,24 @@
 package com.chatbot.web.controllers;
 
 import com.chatbot.web.conversions.Serializer;
-import com.chatbot.web.domains.Chat;
 import com.chatbot.web.proxy.Exit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+
 @RestController
 @RequestMapping("")
-public class CommonController {
+public class ChatbotController {
     @Autowired Serializer serializer;
     @Autowired Exit exit;
-    @Autowired Chat chat;
+
     @PostMapping("/v1/kakao/login")
     public Map<String, Object> login() { return serializer.loginSer(); }
 
     @PostMapping("/v1/kakao/fallback")
-    public Map<String, Object> fallback(@RequestBody Map<String, Object> jsonParams) { return serializer.fallbackSer(jsonParams); }
+    public Map<String, Object> fallback(@RequestBody Map<String, Object> jsonParams) { return serializer.controlSer(jsonParams); }
 
     @PostMapping("/v1/kakao/exit")
     public Map<String, Object> exit(@RequestBody Map<String, Object> jsonParams) {
@@ -36,4 +36,16 @@ public class CommonController {
 
     @PostMapping("/v1/kakao/user/attendance")
     public Map<String, Object> userAt(@RequestBody Map<String, Object> jsonParams) { return serializer.classSer(jsonParams); }
+
+    @PostMapping("/v1/kakao/exam/kind")
+    public Map<String, Object> examKind(@RequestBody Map<String, Object> jsonParams) { return serializer.examSer(jsonParams); }
+
+    @PostMapping("/v1/kakao/subject/code")
+    public Map<String, Object> subjectCode(@RequestBody Map<String, Object> jsonParams) { return serializer.examSer(jsonParams); }
+
+    @PostMapping("/v1/kakao/user/analysis")
+    public Map<String, Object> userFunc(@RequestBody Map<String, Object> jsonParams) { return serializer.examSer(jsonParams); }
+
+    @PostMapping("/v1/kakao/admin/analysis")
+    public Map<String, Object> adminFunc(@RequestBody Map<String, Object> jsonParams) { return serializer.examSer(jsonParams); }
 }

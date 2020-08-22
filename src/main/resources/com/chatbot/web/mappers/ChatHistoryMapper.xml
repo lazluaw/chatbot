@@ -8,15 +8,6 @@
         values (#{chatId}, #{userInfo}, #{chatKind}, #{chatBody}, now())
     </insert>
 
-    <select id="selectList" parameterType="int" resultType="chatHistory">
-        select chat_body as chatBody
-        from chathistory
-        where chat_id = #{chatId}
-        <if test="chatKind != null">
-            and chat_kind = "C"
-        </if>
-    </select>
-
     <update id="updateData" parameterType="chatHistory">
         update chathistory set
         chat_kind = #{chatKind},
