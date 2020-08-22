@@ -28,11 +28,9 @@ public class Fallback {
                 if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                     vop.set("secondMes", "시험분석");
                     vop.set("thirdMes", "출결관리");
-//                    chat.setUserCode(Integer.valueOf(vop.get("adminCode").toString()));
                 } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                     vop.set("secondMes", "오답노트");
                     vop.set("thirdMes", "출석체크");
-//                    chat.setUserCode(Integer.valueOf(vop.get("userCode").toString()));
                 }
                 if (vop.get("overlap").equals("1")) {
                     logger.info("로그인O 중복");
