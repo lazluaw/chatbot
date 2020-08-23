@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Alias("chat")
 @MappedTypes(LocalDate.class)
 public class Chat {
-    private int chatId, userCode, id, homeClass, curGrade;
+    private int chatId, userCode, id, homeClass, curGrade, score;
     private String chatBody, name, userId, userPw;
     private LocalDateTime insertDate, updateDate;
     private BigInteger updateDateDiffCnt, insertDateDiffCnt;

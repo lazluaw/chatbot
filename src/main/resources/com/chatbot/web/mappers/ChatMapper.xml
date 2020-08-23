@@ -40,4 +40,15 @@
         delete from chat
         where chat_id = #{chatId}
     </delete>
+
+    <resultMap id="chat" type="chat">
+        <collection property="user" resultMap="chat"/>
+        <collection property="grade" resultMap="chat"/>
+    </resultMap>
+
+    <select id="selectAverage" resultMap="chat">
+        select score g, home_class u as homeClass
+        from user u, grade g
+        where u.user_code = g.user_code
+    </select>
 </mapper>

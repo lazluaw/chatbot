@@ -568,6 +568,10 @@ public class Serializer {
             vop.set("firstMes", "메뉴로 이동");
             vop.set("lastMes", "");
             String des = null;
+            Chat userList = chatMapper.selectUserList(392);
+            chat.setHomeClass(userList.getHomeClass());
+            System.out.println(chatMapper.selectAverage(chat.getHomeClass()).toArray().toString());
+
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 if (division.contains("8")) {
                     if (chatBody.contains("시험")) {
@@ -580,6 +584,7 @@ public class Serializer {
                     } else if (chatBody.contains("과목")) {
                         title1 = "시험종류";
                         img = "https://cdn.pixabay.com/photo/2016/10/09/08/32/digital-marketing-1725340_1280.jpg";
+
                         des = vop.get("kor") + ": " +
                                 "\n" + vop.get("eng") + ": " + "data" + "점" +
                                 "\n" + vop.get("mat") + ": " + "data" + "점" +
@@ -590,7 +595,8 @@ public class Serializer {
                                 "\n" + vop.get("his") + ": " + "data" + "점" +
                                 "\n" + vop.get("for") + ": " + "data" + "점";
                     }
-                    Chat userList = chatMapper.selectUserList(392);
+
+
                     vop.set("description", des);
                     vop.set("title", (userList.getCurGrade() + "학년 " + userList.getHomeClass() + "반의 평균점수 분석결과"));
                     vop.set("img", img);

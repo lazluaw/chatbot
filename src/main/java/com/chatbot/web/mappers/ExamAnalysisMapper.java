@@ -9,5 +9,4 @@ public interface ExamAnalysisMapper {
     public ArrayList<ExamAnalysis> selectList(ExamAnalysis examAnalysis);
     public int codeExamKind(String examAnalysis);
     public String codeSubjectKind(String examAnalysis);
-    public ArrayList<ExamAnalysis> selectAverage(int examAnalysis);
 }

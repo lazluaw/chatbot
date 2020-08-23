@@ -61,23 +61,25 @@ DEFAULT CHARSET=utf8
 COLLATE=utf8_general_ci;
 
 
-create table codeExamKind (
-idx int(10) unsigned primary key auto_increment,
-code_exam int(10) not null,
-code_exam_kor varchar(50) not null
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8
-COLLATE=utf8_general_ci;
+create table codeExamKind
+(
+    code_id int unsigned not null auto_increment,
+    code_exam int not null,
+    code_exam_kor varchar(50) not null,
+    PRIMARY KEY (code_id)
+)ENGINE=InnoDB
+ DEFAULT CHARSET=utf8
+ COLLATE=utf8_general_ci;
 
-create table codeSubjectKind (
-idx int(11) unsigned primary key auto_increment,
-code_subject char(5) not null,
-code_subject_kor char(10) not null
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8
-COLLATE=utf8_general_ci;
+create table codeSubjectKind
+(
+    code_id int unsigned not null auto_increment,
+    code_subject char(5) not null,
+    code_subject_kor char(10) not null,
+    PRIMARY KEY (code_id)
+)ENGINE=InnoDB
+ DEFAULT CHARSET=utf8
+ COLLATE=utf8_general_ci;
 
 
 --연관 관계--
