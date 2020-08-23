@@ -3,15 +3,35 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ExamAnalysisMapper">
-    <select id="analysisList" parameterType="int"
-            resultType="examAnalysis">
-        select user_code as userCode,
-        subject_code as subjectCode,
-        exam_kind as examKind,
-        exam_num as examNum,
+
+    <select id="codeExamKind" parameterType="string" resultType="int">
+        select code_exam as codeExam
+        from codeExamKind
+        where code_exam_kor = #{codeExamKor}
+    </select>
+
+    <select id="codeSubjectKind" parameterType="string" resultType="string">
+        select code_subject as codeSubject
+        from codeSubjectKind
+        where code_subject_kor = #{codeSubjectKor}
+    </select>
+
+    <select id="selectList" parameterType="examAnalysis" resultType="examAnalysis">
+        select exam_num as examNum,
         wrong_answer as wrongAnswer
         from examanalysis
-        where analysis_id = 1
-        and user_code = #{userCode}
+        where wrong_answer != ""
+        <if test="userCode != null">
+            and user_code = #{userCode}
+        </if>
+        <if test="examKind != null">
+            and exam_kind = #{examKind}
+        </if>
+        <if test="subjectCode != null">
+            and subject_code = #{subjectCode}
+        </if>
     </select>
+
+    <!--    <select id="selectAverage"-->
+
 </mapper>

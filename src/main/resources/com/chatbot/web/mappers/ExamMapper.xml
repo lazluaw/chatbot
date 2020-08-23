@@ -3,10 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chatbot.web.mappers.ExamMapper">
-    <select id="examList" parameterType="exam"
+    <select id="selectList" parameterType="exam"
             resultType="exam">
-        select exam_num as examNum,
-        exam_question as examQuestion,
+        select exam_question as examQuestion,
         exam_choice1 as examChoice1,
         exam_choice2 as examChoice2,
         exam_choice3 as examChoice3,
@@ -16,8 +15,12 @@
         exam_content as examContent
         from exam
         where exam_kind = #{examKind}
-        <if test="subject_code != null">
+        <if test="subjectCode != null">
             and subject_code = #{subjectCode}
         </if>
+        <if test="examNum != null">
+            and exam_num = #{examNum}
+        </if>
+
     </select>
 </mapper>

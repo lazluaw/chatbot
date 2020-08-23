@@ -9,10 +9,12 @@
             values (#{userCode}, #{chatBody}, now(), now())
     </insert>
 
-    <select id="selectUserList" resultType="chat">
+    <select id="selectUserList" parameterType="int" resultType="chat">
         select user_id as userId,
         user_pw as userPw,
         user_code as userCode,
+        home_class as homeClass,
+        cur_grade as curGrade,
         name
         from user
         where id = #{id}

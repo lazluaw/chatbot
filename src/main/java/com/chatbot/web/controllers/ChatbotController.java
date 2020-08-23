@@ -10,7 +10,7 @@ import java.util.Map;
 public class ChatbotController {
     @Autowired Serializer serializer;
     @PostMapping("/v1/kakao/login")
-    public Map<String, Object> login() { return serializer.loginSer(); }
+    public Map<String, Object> login(@RequestBody Map<String, Object> jsonParams) { return serializer.checkSer(jsonParams); }
 
     @PostMapping("/v1/kakao/fallback")
     public Map<String, Object> fallback(@RequestBody Map<String, Object> jsonParams) { return serializer.checkSer(jsonParams); }
@@ -35,6 +35,9 @@ public class ChatbotController {
 
     @PostMapping("/v1/kakao/wronganswernote")
     public Map<String, Object> wrongAnswerNote(@RequestBody Map<String, Object> jsonParams) { return serializer.checkSer(jsonParams); }
+
+    @PostMapping("/v1/kakao/analysis/criteria")
+    public Map<String, Object> analysisCriteria(@RequestBody Map<String, Object> jsonParams) { return serializer.checkSer(jsonParams); }
 
     @PostMapping("/v1/kakao/analysis")
     public Map<String, Object> analysis(@RequestBody Map<String, Object> jsonParams) { return serializer.checkSer(jsonParams); }

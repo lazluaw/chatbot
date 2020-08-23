@@ -22,6 +22,7 @@ public class Fallback {
     public Map<String, Object> fallback(Map<String, Object> jsonParams) {
         try {
             vop = redisTemplate.opsForValue();
+            vop.set("lastMes", "메뉴로 이동");
             vop.set("firstMes", "화상교육");
             logger.info("fallback 진입");
             if (chat.getChatId() != 0) {

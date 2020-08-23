@@ -61,6 +61,25 @@ DEFAULT CHARSET=utf8
 COLLATE=utf8_general_ci;
 
 
+create table codeExamKind (
+idx int(10) unsigned primary key auto_increment,
+code_exam int(10) not null,
+code_exam_kor varchar(50) not null
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8
+COLLATE=utf8_general_ci;
+
+create table codeSubjectKind (
+idx int(11) unsigned primary key auto_increment,
+code_subject char(5) not null,
+code_subject_kor char(10) not null
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8
+COLLATE=utf8_general_ci;
+
+
 --연관 관계--
 CREATE TABLE user
 (
@@ -82,6 +101,18 @@ CREATE TABLE user
     `insert_date`       DATETIME       NULL,
     `update_date`       DATETIME       NULL,
     PRIMARY KEY (id)
+)ENGINE=InnoDB
+ DEFAULT CHARSET=utf8
+ COLLATE=utf8_general_ci;
+
+CREATE TABLE grade
+(
+    `grade_id` INT NOT NULL AUTO_INCREMENT,
+    `semester_code` INT NOT NULL,
+    `score` INT NOT NULL,
+    `user_code` INT NOT NULL,
+    `subject_id` int NOT NULL,
+    PRIMARY KEY (grade_id)
 )ENGINE=InnoDB
  DEFAULT CHARSET=utf8
  COLLATE=utf8_general_ci;

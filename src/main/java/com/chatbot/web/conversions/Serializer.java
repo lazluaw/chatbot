@@ -23,25 +23,36 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Spliterator;
 
 //user : v204ap, l7hi3x0e
 //admin: cucumber, cucumber123
 @Service
 public class Serializer {
-    @Autowired Chat chat;
-    @Autowired ChatHistory chatHistory;
-    @Autowired ChatMapper chatMapper;
-    @Autowired Exam exam;
-    @Autowired ExamAnalysis examAnalysis;
-    @Autowired ChatHistoryMapper chatHistoryMapper;
-    @Autowired ExamMapper examMapper;
-    @Autowired ExamAnalysisMapper examAnalysisMapper;
-    @Autowired Fallback fallback;
-    @Autowired RedisTemplate<String, Object> redisTemplate;
-    @Autowired Exit exit;
+    @Autowired
+    Chat chat;
+    @Autowired
+    ChatHistory chatHistory;
+    @Autowired
+    ChatMapper chatMapper;
+    @Autowired
+    Exam exam;
+    @Autowired
+    ExamAnalysis examAnalysis;
+    @Autowired
+    ChatHistoryMapper chatHistoryMapper;
+    @Autowired
+    ExamMapper examMapper;
+    @Autowired
+    ExamAnalysisMapper examAnalysisMapper;
+    @Autowired
+    Fallback fallback;
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    Exit exit;
     private static ObjectMapper mapper = new JsonMapper();
     private JSONParser parser = new JSONParser();
     private JSONObject obj, obj0, obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9, obj10, obj11, obj12, obj13, arrObj;
@@ -49,6 +60,7 @@ public class Serializer {
     private ValueOperations<String, Object> vop;
     private String jsonStr, title, title1, url, img, img1, division, chatBody;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public Map<String, Object> addJson(String format, String button) {
         try {
             obj = new JSONObject();
@@ -185,32 +197,6 @@ public class Serializer {
                     obj6.put("label", vop.get("secondMes"));
                     obj6.put("action", "message");
                     arr0.add(obj6);
-                    if (chatHistory.getChatBody().contains("오답")) {
-                        obj13.put("message", vop.get("ninethMes"));
-                        obj13.put("label", vop.get("ninethMes"));
-                        obj13.put("action", "message");
-                        arr0.add(obj13);
-                        obj12.put("message", vop.get("eightthMes"));
-                        obj12.put("label", vop.get("eightthMes"));
-                        obj12.put("action", "message");
-                        arr0.add(obj12);
-                        obj11.put("message", vop.get("seventhMes"));
-                        obj11.put("label", vop.get("seventhMes"));
-                        obj11.put("action", "message");
-                        arr0.add(obj11);
-                        obj10.put("message", vop.get("sixthMes"));
-                        obj10.put("label", vop.get("sixthMes"));
-                        obj10.put("action", "message");
-                        arr0.add(obj10);
-                        obj9.put("message", vop.get("fifthMes"));
-                        obj9.put("label", vop.get("fifthMes"));
-                        obj9.put("action", "message");
-                        arr0.add(obj9);
-                        obj8.put("message", vop.get("fourthMes"));
-                        obj8.put("label", vop.get("fourthMes"));
-                        obj8.put("action", "message");
-                        arr0.add(obj8);
-                    }
                 } else {
                     logger.error("car ERROR");
                 }
@@ -340,7 +326,7 @@ public class Serializer {
                     return this.classSer(jsonParams);
                 } else if (division.contains("4") || division.contains("5") || division.contains("6")) {
                     return this.examSer(jsonParams);
-                } else if (division.contains("7")) {
+                } else if (division.contains("7") || division.contains("8")) {
                     return this.analysisSer(jsonParams);
                 } else if (division.contains("99")) {
                     return exit.exit(jsonParams);
@@ -446,7 +432,6 @@ public class Serializer {
             } else {
                 logger.error("attendance classSer logic ERROR");
             }
-
             vop.set("title", title);
             vop.set("description", title + " 진행합니다.");
             vop.set("img", img);
@@ -469,15 +454,11 @@ public class Serializer {
 
     public Map<String, Object> examSer(Map<String, Object> jsonParams) {
         try {
-            if(vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
-                vop.set("lastMes", "");
+            if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                 division = this.parsing(jsonParams, "division");
                 chatBody = this.parsing(jsonParams, "chatBody");
+                vop.set("lastMes", "");
                 //test: 기준 세우기
-                vop.set("firstSem", "1학기");
-                vop.set("secondSem", "2학기");
-                vop.set("midtermExm", "중간고사");
-                vop.set("finalExm", "기말고사");
                 vop.set("kor", "국어");
                 vop.set("eng", "영어");
                 vop.set("mat", "수학");
@@ -494,7 +475,9 @@ public class Serializer {
                     vop.set("secondMes", vop.get("phy"));
                     vop.set("thirdMes", vop.get("bio"));
                     vop.set("fourthMes", vop.get("for"));
-                    vop.set("examKind", chatBody);
+                    if (chatBody.contains("고사")) {
+                        vop.set("examKind", chatBody);
+                    }
                     this.addData(jsonParams, "b", null);
                     this.addData(jsonParams, "c", null);
                     this.addData(jsonParams, "b", "과목종류");
@@ -502,58 +485,70 @@ public class Serializer {
                 } else if (division.contains("6")) {
                     System.out.println("오답노트");
                     vop.set("subjectKind", chatBody);
-                    if (vop.get("examKind").toString().equals("1학기 중간고사")) {
-                        exam.setExamKind(202001);
-                    } else if (vop.get("examKind").toString().equals("1학기 기말고사")) {
-                        exam.setExamKind(202002);
-                    } else if (vop.get("examKind").toString().equals("2학기 중간고사")) {
-                        exam.setExamKind(202003);
-                    } else if (vop.get("examKind").toString().equals("2학기 기말고사")) {
-                        exam.setExamKind(202004);
+                    examAnalysis.setUserCode(chat.getUserCode());
+                    examAnalysis.setExamKind(examAnalysisMapper.codeExamKind(vop.get("examKind").toString()));
+                    examAnalysis.setSubjectCode(examAnalysisMapper.codeSubjectKind(vop.get("subjectKind").toString()));
+                    ArrayList<ExamAnalysis> analyses = examAnalysisMapper.selectList(examAnalysis);
+                    System.out.println(analyses.toString());
+                    for (int i = 0; i < analyses.size(); i++) {
+                        examAnalysis.setExamNum(analyses.get(i).getExamNum());
+                        examAnalysis.setWrongAnswer(analyses.get(i).getWrongAnswer());
                     }
-                    if (vop.get("subjectKind").toString().equals("국어")) {
-                        exam.setSubjectCode("kor");
-                    } else if (vop.get("subjectKind").toString().equals("영어")) {
-                        exam.setSubjectCode("eng");
-                    } else if (vop.get("subjectKind").toString().equals("수학")) {
-                        exam.setSubjectCode("mat");
-                    } else if (vop.get("subjectKind").toString().equals("한국사")) {
-                        exam.setSubjectCode("his");
-                    } else if (vop.get("subjectKind").toString().equals("생활과윤리")) {
-                        exam.setSubjectCode("phl");
-                    } else if (vop.get("subjectKind").toString().equals("경제")) {
-                        exam.setSubjectCode("eco");
-                    } else if (vop.get("subjectKind").toString().equals("물리")) {
-                        exam.setSubjectCode("phy");
-                    } else if (vop.get("subjectKind").toString().equals("생명과학")) {
-                        exam.setSubjectCode("bio");
-                    } else if (vop.get("subjectKind").toString().equals("제2외국어")) {
-                        exam.setSubjectCode("for");
+                    exam.setExamNum(examAnalysis.getExamNum());
+                    exam.setExamKind(examAnalysis.getExamKind());
+                    exam.setSubjectCode(examAnalysis.getSubjectCode());
+                    ArrayList<Exam> exams = examMapper.selectList(exam);
+
+                    for (int i = 0; i < exams.size(); i++) {
+                        exam.setExamQuestion(exams.get(i).getExamQuestion());
+                        exam.setExamChoice1(exams.get(i).getExamChoice1());
+                        exam.setExamChoice2(exams.get(i).getExamChoice2());
+                        exam.setExamChoice3(exams.get(i).getExamChoice3());
+                        exam.setExamChoice3(exams.get(i).getExamChoice3());
+                        exam.setExamChoice4(exams.get(i).getExamChoice4());
+                        exam.setExamAnswer(exams.get(i).getExamAnswer());
+                        exam.setExamContent(exams.get(i).getExamContent());
+                        if (exams.get(i).getExamChoice5() != "") {
+                            exam.setExamChoice5(exams.get(i).getExamChoice5());
+                        } else {
+                            exam.setExamChoice5("없음");
+                        }
                     }
-                    System.out.println("결과 나오기 전: " + exam.toString());
-                    ArrayList<Exam> examList = examMapper.selectList(exam);
-                    System.out.println("examList 결과: " + Arrays.toString(examList.toArray()));
-                    vop.set("title", (vop.get("examKind") + " " + vop.get("subjectKind")));
-//                    vop.set("description", );
-//                    vop.set("img", );
+
+                    if (examAnalysis.getExamNum() == 0) {
+                         title = (vop.get("examKind") + " 틀린 문제가 없어요!");
+                         title1 = "축하합니다. 만점이에요 :)";
+                    } else {
+                        title =(vop.get("examKind") + " " + vop.get("subjectKind") + " 오답노트");
+                        title1 = "[" + examAnalysis.getExamNum() + "번 문제] 정답: (" + exam.getExamAnswer() + ") 오답: (" + examAnalysis.getWrongAnswer() + ")" +
+                                "\n- " + exam.getExamQuestion() + "\n1. " + exam.getExamChoice1() + " 2. " + exam.getExamChoice2() + " 3. " + exam.getExamChoice3() + " 4. " + exam.getExamChoice4() + " 5. " + exam.getExamChoice5() +
+                                "\n해설: " + exam.getExamContent();
+                    }
+                    vop.set("title", title);
+                    vop.set("img", "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRDHlNX5vcEeSgkLeAGU9PQ8g3qDFgG7sdrSQ&usqp=CAUhttps://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRDHlNX5vcEeSgkLeAGU9PQ8g3qDFgG7sdrSQ&usqp=CAU");
+                    vop.set("description", title1);
+
                     vop.set("firstMes", "메뉴로 이동");
                     vop.set("firstUrl", "메뉴로 이동");
                     vop.set("kind", "message");
+                    vop.set("mesKind", "messageText");
+                    vop.set("thirdMes", "시험 선택");
+                    vop.set("secondMes", "과목 선택");
                     this.addData(jsonParams, "b", null);
                     this.addData(jsonParams, "c", null);
                     this.addData(jsonParams, "b", "오답노트");
-                    return this.addJson("car", "carBut");
+                    return this.addJson("car", "qBut");
                 }
                 vop.set("text", "시험종류를 선택해주세요.");
-                vop.set("firstMes", (vop.get("secondSem") + " " + vop.get("finalExm")));
-                vop.set("secondMes", (vop.get("secondSem") + " " + vop.get("midtermExm")));
-                vop.set("thirdMes", (vop.get("firstSem") + " " + vop.get("finalExm")));
-                vop.set("fourthMes", (vop.get("firstSem") + " " + vop.get("midtermExm")));
+                vop.set("firstMes", "2학기 기말고사");
+                vop.set("secondMes", "2학기 중간고사");
+                vop.set("thirdMes", "1학기 기말고사");
+                vop.set("fourthMes", "1학기 중간고사");
                 this.addData(jsonParams, "b", null);
                 this.addData(jsonParams, "c", null);
                 this.addData(jsonParams, "b", "시험종류");
                 return this.addJson("sim", "qBut");
-                } else if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
+            } else if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 logger.info("admin 접근 불가");
                 return fallback.fallback(jsonParams);
             } else {
@@ -568,6 +563,64 @@ public class Serializer {
     }
 
     public Map<String, Object> analysisSer(Map<String, Object> jsonParams) {
-        return null;
+        try {
+            division = this.parsing(jsonParams, "division");
+            vop.set("firstMes", "메뉴로 이동");
+            vop.set("lastMes", "");
+            String des = null;
+            if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
+                if (division.contains("8")) {
+                    if (chatBody.contains("시험")) {
+                        title1 = "과목종류";
+                        img = "https://cdn.pixabay.com/photo/2017/10/17/14/10/financial-2860753_1280.jpg";
+                        des = "1학기 중간고사: " +
+                                "\n1학기 기말고사: " +
+                                "\n2학기 중간고사: " +
+                                "\n2학기 기말고사: ";
+                    } else if (chatBody.contains("과목")) {
+                        title1 = "시험종류";
+                        img = "https://cdn.pixabay.com/photo/2016/10/09/08/32/digital-marketing-1725340_1280.jpg";
+                        des = vop.get("kor") + ": " +
+                                "\n" + vop.get("eng") + ": " + "data" + "점" +
+                                "\n" + vop.get("mat") + ": " + "data" + "점" +
+                                "\n" + vop.get("phl") + ": " + "data" + "점" +
+                                "\n" + vop.get("eco") + ": " + "data" + "점" +
+                                "\n" + vop.get("phy") + ": " + "data" + "점" +
+                                "\n" + vop.get("bio") + ": " + "data" + "점" +
+                                "\n" + vop.get("his") + ": " + "data" + "점" +
+                                "\n" + vop.get("for") + ": " + "data" + "점";
+                    }
+                    Chat userList = chatMapper.selectUserList(392);
+                    vop.set("description", des);
+                    vop.set("title", (userList.getCurGrade() + "학년 " + userList.getHomeClass() + "반의 평균점수 분석결과"));
+                    vop.set("img", img);
+                    vop.set("secondMes", "종료");
+                    vop.set("thirdMes", title1);
+                    this.addData(jsonParams, "b", null);
+                    this.addData(jsonParams, "c", null);
+                    this.addData(jsonParams, "b", "시험분석");
+                    return this.addJson("car", "qBut");
+                }
+                vop.set("text", "분석할 기준을 고르세요.");
+                vop.set("secondMes", "시험종류");
+                vop.set("thirdMes", "과목종류");
+                vop.set("kind", "message");
+                vop.set("mesKind", "messageText");
+                this.addData(jsonParams, "b", null);
+                this.addData(jsonParams, "c", null);
+                this.addData(jsonParams, "b", "분석기준");
+                return this.addJson("sim", "qBut");
+            } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
+                logger.info("user 접근 불가");
+                return fallback.fallback(jsonParams);
+            } else {
+                logger.error("사용자구분 ERROR");
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("analysis logic ERROR");
+            e.printStackTrace();
+            return null;
+        }
     }
 }
