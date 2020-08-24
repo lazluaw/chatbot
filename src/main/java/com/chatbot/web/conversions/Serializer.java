@@ -73,11 +73,9 @@ public class Serializer {
             arr4 = new JSONArray();
             vop = redisTemplate.opsForValue();
             if (format.equals("sim")) {
-                System.out.println("sim 진입");
                 obj2.put("text", vop.get("text"));
                 obj1.put("simpleText", obj2);
                 if (button.equals("qBut")) {
-                    System.out.println("qBut 진입");
                     if (chatHistory.getChatBody().contains("시험")) {
                         obj6.put("message", vop.get("fourthMes"));
                         obj6.put("label", vop.get("fourthMes"));
@@ -122,11 +120,9 @@ public class Serializer {
                     obj3.put("action", "message");
                     arr0.add(obj3);
                 } else {
-                    System.out.println(obj3.toString());
                     logger.error("qBut ERROR");
                 }
             } else if (format.equals("list")) {
-                System.out.println("list 진입");
                 obj9.put("messageText", vop.get("button"));
                 obj9.put("label", vop.get("button"));
                 obj9.put("action", "message");
@@ -158,7 +154,6 @@ public class Serializer {
                 obj2.put("header", obj3);
                 obj1.put("listCard", obj2);
             } else if (format.equals("car")) {
-                System.out.println("케러셀 진입");
                 obj5.put("action", vop.get("kind"));
                 obj5.put("label", vop.get("firstMes"));
                 obj5.put(vop.get("mesKind"), vop.get("firstUrl"));
@@ -174,7 +169,6 @@ public class Serializer {
                 obj2.put("type", "basicCard");
                 obj1.put("carousel", obj2);
                 if (button.equals("qBut")) {
-                    System.out.println("qBut 진입");
                     obj7.put("message", vop.get("thirdMes"));
                     obj7.put("label", vop.get("thirdMes"));
                     obj7.put("action", "message");
@@ -197,7 +191,6 @@ public class Serializer {
             arrObj.put("outputs", arr);
             obj.put("template", arrObj);
             obj.put("version", "2.0");
-            System.out.println(obj);
             return obj;
         } catch (Exception e) {
             logger.error("format ERROR");
@@ -215,7 +208,7 @@ public class Serializer {
                 return userRequest.toString();
             } else if (kind.equals("chatBody")) {
                 JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
-                return  userRequest.get("utterance").toString();
+                return userRequest.get("utterance").toString();
             } else if (kind.equals("division")) {
                 JSONObject action = (JSONObject) jsonPar.get("action");
                 return action.get("name").toString();
@@ -236,11 +229,9 @@ public class Serializer {
 
     public void addData(Map<String, Object> jsonParams, String division, String data) {
         try {
-            System.out.println("addData 진입");
             chatBody = this.parsing(jsonParams, "chatBody");
             String userInfo = this.parsing(jsonParams, "userInfo");
             if (division.equals("c")) {
-                System.out.println("C addData");
                 chatHistory.setChatId(chat.getChatId());
                 chatHistory.setChatKind("C");
                 chatHistory.setUserInfo(userInfo);
@@ -248,12 +239,10 @@ public class Serializer {
                 chatHistoryMapper.insertData(chatHistory);
             } else if (division.equals("b")) {
                 if (data != null) {
-                    System.out.println("B chatHistory addData");
                     chatHistory.setChatKind("B");
                     chatHistory.setChatBody(data);
                     chatHistoryMapper.insertData(chatHistory);
                 } else {
-                    System.out.println("B chat addData");
                     chat.setChatBody(chatBody);
                     chat.setUserCode(chat.getUserCode());
                     chatMapper.insertData(chat);
@@ -356,7 +345,7 @@ public class Serializer {
             } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                 title = "출석체크";
                 img = "https://i.pinimg.com/564x/3c/02/af/3c02afb940e4aa0e7c9448d75ee0f04f.jpg";
-                url = "http://localhost:3000/student/attendance";
+                url = "http://localhost:3000/studentstreaming";
                 title1 = "오답노트";
                 img1 = "https://i.pinimg.com/564x/3f/fb/3b/3ffb3ba83f1be537725827d331452695.jpg";
                 vop.set("thirdUrl", "http://localhost:3000/studentstreaming");
@@ -467,13 +456,11 @@ public class Serializer {
                     this.addData(jsonParams, "b", "과목종류");
                     return this.addJson("sim", "qBut");
                 } else if (division.contains("6")) {
-                    System.out.println("오답노트");
                     vop.set("subjectKind", chatBody);
                     examAnalysis.setUserCode(chat.getUserCode());
                     examAnalysis.setExamKind(examAnalysisMapper.codeExamKind(vop.get("examKind").toString()));
                     examAnalysis.setSubjectCode(examAnalysisMapper.codeSubjectKind(vop.get("subjectKind").toString()));
                     ArrayList<ExamAnalysis> analyses = examAnalysisMapper.selectList(examAnalysis);
-                    System.out.println(analyses.toString());
                     for (int i = 0; i < analyses.size(); i++) {
                         examAnalysis.setExamNum(analyses.get(i).getExamNum());
                         examAnalysis.setWrongAnswer(analyses.get(i).getWrongAnswer());
@@ -500,10 +487,10 @@ public class Serializer {
                     }
 
                     if (examAnalysis.getExamNum() == 0) {
-                         title = (vop.get("examKind") + " 틀린 문제가 없어요!");
-                         title1 = "축하합니다. 만점이에요 :)";
+                        title = (vop.get("examKind") + " 틀린 문제가 없어요!");
+                        title1 = "축하합니다. 만점이에요 :)";
                     } else {
-                        title =(vop.get("examKind") + " " + vop.get("subjectKind") + " 오답노트");
+                        title = (vop.get("examKind") + " " + vop.get("subjectKind") + " 오답노트");
                         title1 = "[" + examAnalysis.getExamNum() + "번 문제] 정답: (" + exam.getExamAnswer() + ") 오답: (" + examAnalysis.getWrongAnswer() + ")" +
                                 "\n- " + exam.getExamQuestion() + "\n1. " + exam.getExamChoice1() + " 2. " + exam.getExamChoice2() + " 3. " + exam.getExamChoice3() + " 4. " + exam.getExamChoice4() + " 5. " + exam.getExamChoice5() +
                                 "\n해설: " + exam.getExamContent();
@@ -518,6 +505,7 @@ public class Serializer {
                     vop.set("mesKind", "messageText");
                     vop.set("thirdMes", "시험 선택");
                     vop.set("secondMes", "과목 선택");
+                    vop.set("lastMes", "종료");
                     this.addData(jsonParams, "b", null);
                     this.addData(jsonParams, "c", null);
                     this.addData(jsonParams, "b", "오답노트");
@@ -549,57 +537,94 @@ public class Serializer {
     public Map<String, Object> analysisSer(Map<String, Object> jsonParams) {
         try {
             division = this.parsing(jsonParams, "division");
-            vop.set("firstMes", "메뉴로 이동");
-            vop.set("firstUrl", "메뉴로 이동");
-            vop.set("mesKind", "messageText");
-            vop.set("lastMes", "");
+            vop.set("firstMes", "");
+            vop.set("firstUrl", "");
+            vop.set("mesKind", "");
+            vop.set("kind", "");
+            vop.set("lastMes", "메뉴로 이동");
+            Chat userList = chatMapper.selectUserList(392);
             String des = null;
             double allAvg = 0;
-            /*
-            examAnalysis.setFms(50.8010);
-            examAnalysis.setFfs(48.9920);
-            examAnalysis.setSms(47.8148);
-            examAnalysis.setSfs(49.0040);
-            examAnalysis.setFs(49.7237);
-            examAnalysis.setSes(45.5183);
-            examAnalysis.setTs(49.9410);
-            examAnalysis.setFos(49.9540);
-            examAnalysis.setFis(46.6370);
-            examAnalysis.setSis(49.3273);
-            examAnalysis.setSevs(50.2187);
-            examAnalysis.setEs(46.8750);
-            examAnalysis.setNs(50.4637);
-            */
+            double classAvg = 0;
 
+            ArrayList<ExamAnalysis> analyses = examAnalysisMapper.selectAvg();
+            examAnalysis.setFs(analyses.get(0).getAvgScore());
+            examAnalysis.setSes(analyses.get(1).getAvgScore());
+            examAnalysis.setTs(analyses.get(2).getAvgScore());
+            examAnalysis.setFos(analyses.get(3).getAvgScore());
+            examAnalysis.setFis(analyses.get(4).getAvgScore());
+            examAnalysis.setSis(analyses.get(5).getAvgScore());
+            examAnalysis.setSevs(analyses.get(6).getAvgScore());
+            examAnalysis.setEs(analyses.get(7).getAvgScore());
+            examAnalysis.setNs(analyses.get(8).getAvgScore());
+            examAnalysis.setFms(analyses.get(9).getAvgScore());
+            examAnalysis.setFfs(analyses.get(10).getAvgScore());
+            examAnalysis.setSms(analyses.get(11).getAvgScore());
+            examAnalysis.setSfs(analyses.get(12).getAvgScore());
 
-            Chat userList = chatMapper.selectUserList(392);
+            ArrayList<ExamAnalysis> homeAvg = examAnalysisMapper.comepareSvg();
+            examAnalysis.setFs1(homeAvg.get(0).getAvgHome());
+            examAnalysis.setSes1(homeAvg.get(1).getAvgHome());
+            examAnalysis.setTs1(homeAvg.get(2).getAvgHome());
+            examAnalysis.setFos1(homeAvg.get(3).getAvgHome());
+            examAnalysis.setFis1(homeAvg.get(4).getAvgHome());
+            examAnalysis.setSis1(homeAvg.get(5).getAvgHome());
+            examAnalysis.setSevs1(homeAvg.get(6).getAvgHome());
+            examAnalysis.setEs1(homeAvg.get(7).getAvgHome());
+            examAnalysis.setNs1(homeAvg.get(8).getAvgHome());
+            examAnalysis.setFms1(homeAvg.get(9).getAvgHome());
+            examAnalysis.setFfs1(homeAvg.get(10).getAvgHome());
+            examAnalysis.setSms1(homeAvg.get(11).getAvgHome());
+            examAnalysis.setSfs1(homeAvg.get(12).getAvgHome());
+
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 if (division.contains("8")) {
                     if (chatBody.contains("시험")) {
-                        allAvg = (examAnalysis.getFms()+examAnalysis.getFfs()+examAnalysis.getSms()+examAnalysis.getSfs())/4;
+                        allAvg = Math.round((examAnalysis.getFms() + examAnalysis.getFfs() + examAnalysis.getSms() + examAnalysis.getSfs()) / 4);
+                        classAvg = Math.round((examAnalysis.getFms1() + examAnalysis.getFfs1() + examAnalysis.getSms1() + examAnalysis.getSfs1()) / 4);
                         title1 = "과목기준";
                         img = "https://cdn.pixabay.com/photo/2017/10/17/14/10/financial-2860753_1280.jpg";
-                        des = "총 평균: " + allAvg + " 점" +
-                                "\n1학기 중간고사 : " + examAnalysis.getFms() + "점" +
-                                "\n1학기 기말고사 : " + examAnalysis.getFfs() + "점" +
-                                "\n2학기 중간고사 : " + examAnalysis.getSms() + "점" +
-                                "\n2학기 기말고사 : "+ examAnalysis.getSfs() + "점";
+                        des = "--- 1학년 평균 점수 " + allAvg + " ---" +
+                                "\n1학기 중간고사 : " + Math.round(examAnalysis.getFms()) +
+                                "\n1학기 기말고사 : " + Math.round(examAnalysis.getFfs()) +
+                                "\n2학기 중간고사 : " + Math.round(examAnalysis.getSms()) +
+                                "\n2학기 기말고사 : " + Math.round(examAnalysis.getSfs()) +
+                                "\n--- " + userList.getCurGrade() + "학년 " + userList.getHomeClass() + "반 평균 점수 " + classAvg + " ---" +
+                                "\n1학기 중간고사 : " + Math.round(examAnalysis.getFms1()) +
+                                "\n1학기 기말고사 : " + Math.round(examAnalysis.getFfs1()) +
+                                "\n2학기 중간고사 : " + Math.round(examAnalysis.getSms1()) +
+                                "\n2학기 기말고사 : " + Math.round(examAnalysis.getSfs1());
                     } else if (chatBody.contains("과목")) {
-                        allAvg = (examAnalysis.getFs() + examAnalysis.getSes()+examAnalysis.getTs()+examAnalysis.getFos()+examAnalysis.getFis()+examAnalysis.getSis()+examAnalysis.getSevs()+examAnalysis.getEs()+examAnalysis.getNs())/9;
-
+                        allAvg = Math.round((examAnalysis.getFs() + examAnalysis.getSes() + examAnalysis.getTs() + examAnalysis.getFos() + examAnalysis.getFis() + examAnalysis.getSis() + examAnalysis.getSevs() + examAnalysis.getEs() + examAnalysis.getNs()) / 9);
+                        classAvg = Math.round((examAnalysis.getFs1() + examAnalysis.getSes1() + examAnalysis.getTs1() + examAnalysis.getFos1() + examAnalysis.getFis1() + examAnalysis.getSis1() + examAnalysis.getSevs1() + examAnalysis.getEs1() + examAnalysis.getNs1()) / 9);
                         title1 = "시험기준";
                         img = "https://cdn.pixabay.com/photo/2016/10/09/08/32/digital-marketing-1725340_1280.jpg";
-                        des = "총 평균: " + allAvg + " 점" +
-                                "\n" + vop.get("kor") + " : " + examAnalysis.getFs() + " 점" +
-                                "\n" + vop.get("eng") + " : " + examAnalysis.getSes() + "점" +
-                                "\n" + vop.get("mat") + " : " + examAnalysis.getTs() + "점" +
-                                "\n" + vop.get("phl") + " : " + examAnalysis.getFos() + "점" +
-                                "\n" + vop.get("eco") + " : " + examAnalysis.getFis() + "점" +
-                                "\n" + vop.get("phy") + " : " + examAnalysis.getSis() + "점" +
-                                "\n" + vop.get("bio") + " : " + examAnalysis.getSevs() + "점" +
-                                "\n" + vop.get("his") + " : " + examAnalysis.getEs() + "점" +
-                                "\n" + vop.get("for") + " : " + examAnalysis.getNs() + "점";
+                        des = "--- 1학년 평균 점수 " + allAvg + " ---" +
+                                "\n" + vop.get("kor") + " : " + Math.round(examAnalysis.getFs()) +
+                                "\n" + vop.get("eng") + " : " + Math.round(examAnalysis.getSes()) +
+                                "\n" + vop.get("mat") + " : " + Math.round(examAnalysis.getTs()) +
+                                "\n" + vop.get("phl") + " : " + Math.round(examAnalysis.getFos()) +
+                                "\n" + vop.get("eco") + " : " + Math.round(examAnalysis.getFis()) +
+                                "\n" + vop.get("phy") + " : " + Math.round(examAnalysis.getSis()) +
+                                "\n" + vop.get("bio") + " : " + Math.round(examAnalysis.getSevs()) +
+                                "\n" + vop.get("his") + " : " + Math.round(examAnalysis.getEs()) +
+                                "\n" + vop.get("for") + " : " + Math.round(examAnalysis.getNs()) +
+                                "\n--- " + userList.getCurGrade() + "학년 " + userList.getHomeClass() + "반 평균 점수 " + classAvg + " ---" +
+                                "\n" + vop.get("kor") + " : " + Math.round(examAnalysis.getFs1()) +
+                                "\n" + vop.get("eng") + " : " + Math.round(examAnalysis.getSes1()) +
+                                "\n" + vop.get("mat") + " : " + Math.round(examAnalysis.getTs1()) +
+                                "\n" + vop.get("phl") + " : " + Math.round(examAnalysis.getFos1()) +
+                                "\n" + vop.get("eco") + " : " + Math.round(examAnalysis.getFis1()) +
+                                "\n" + vop.get("phy") + " : " + Math.round(examAnalysis.getSis1()) +
+                                "\n" + vop.get("bio") + " : " + Math.round(examAnalysis.getSevs1()) +
+                                "\n" + vop.get("his") + " : " + Math.round(examAnalysis.getEs1()) +
+                                "\n" + vop.get("for") + " : " + Math.round(examAnalysis.getNs1());
                     }
+                    vop.set("firstMes", "자세히 확인");
+                    vop.set("firstUrl", "http://localhost:3000/teacher/grade/grade");
+                    vop.set("mesKind", "webLinkUrl");
+                    vop.set("kind", "webLink");
+
                     vop.set("description", des);
                     vop.set("title", "[" + (userList.getCurGrade() + "학년 " + userList.getHomeClass() + "반] 의 " + "분석 결과"));
                     vop.set("img", img);

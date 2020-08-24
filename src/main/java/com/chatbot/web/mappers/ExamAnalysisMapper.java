@@ -10,4 +10,5 @@ public interface ExamAnalysisMapper {
     public int codeExamKind(String examAnalysis);
     public String codeSubjectKind(String examAnalysis);
     public ArrayList<ExamAnalysis> selectAvg();
+    public ArrayList<ExamAnalysis> comepareSvg();
 }

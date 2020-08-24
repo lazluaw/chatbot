@@ -33,7 +33,7 @@
     </select>
 
     <select id="selectAvg" resultType="examAnalysis">
-        select avg(score),
+        select avg(score) as avgScore, subject_id,
         (
         case subject_id
         when 1 then '1학기 국어'
@@ -47,12 +47,13 @@
         when 9 then '1학년 제2외국어'
         end
         )
+        as subjectMemo
         from grade
         where semester_code &lt; 201930
         group by subject_id
         having subject_id &lt; 10
         union
-        select avg(score),
+        select avg(score)  as avgScore, semester_code,
         (
         case semester_code
         when 201911 then '1학기 중간고사'
@@ -61,6 +62,32 @@
         when 201922 then '2학기 기말고사'
         end
         )
+        as subjectMemo
+        from grade
+        group by semester_code
+        having semester_code &gt; 201822 and semester_code &lt; 201930
+    </select>
+
+    <select id="comepareSvg" resultType="examAnalysis">
+        select avg(score) as avgHome, subject_id, home_class,
+        (
+        case home_class
+        when 2 then '2반'
+        end
+        )
+        as homeMemo
+        from grade
+        where semester_code &lt; 201930
+        group by subject_id
+        having subject_id &lt; 10
+        union
+        select avg(score) as avgHome, semester_code, home_class,
+        (
+        case home_class
+        when 2 then '2반'
+        end
+        )
+        as homeMemo
         from grade
         group by semester_code
         having semester_code &gt; 201822 and semester_code &lt; 201930
