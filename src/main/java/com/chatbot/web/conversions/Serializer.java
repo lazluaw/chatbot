@@ -22,10 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Spliterator;
+import java.util.*;
 
 //user : v204ap, l7hi3x0e
 //admin: cucumber, cucumber123
@@ -215,22 +212,18 @@ public class Serializer {
             JSONObject jsonPar = (JSONObject) parser.parse(jsonStr);
             if (kind.equals("userInfo")) {
                 JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
-                String userInfo = userRequest.toString();
-                return userInfo;
+                return userRequest.toString();
             } else if (kind.equals("chatBody")) {
                 JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
-                String chatBody = (String) userRequest.get("utterance");
-                return chatBody;
+                return  userRequest.get("utterance").toString();
             } else if (kind.equals("division")) {
                 JSONObject action = (JSONObject) jsonPar.get("action");
-                String name = (String) action.get("name");
-                return name;
+                return action.get("name").toString();
             } else if (kind.equals("botUserKey")) {
                 JSONObject userRequest = (JSONObject) jsonPar.get("userRequest");
                 JSONObject user = (JSONObject) userRequest.get("user");
                 JSONObject properties = (JSONObject) user.get("properties");
-                String botUserKey = (String) properties.get("botUserKey");
-                return botUserKey;
+                return properties.get("botUserKey").toString();
             } else {
                 logger.error("pasring if절 ERROR");
                 return null;
@@ -244,7 +237,7 @@ public class Serializer {
     public void addData(Map<String, Object> jsonParams, String division, String data) {
         try {
             System.out.println("addData 진입");
-            String chatBody = this.parsing(jsonParams, "chatBody");
+            chatBody = this.parsing(jsonParams, "chatBody");
             String userInfo = this.parsing(jsonParams, "userInfo");
             if (division.equals("c")) {
                 System.out.println("C addData");
@@ -557,40 +550,58 @@ public class Serializer {
         try {
             division = this.parsing(jsonParams, "division");
             vop.set("firstMes", "메뉴로 이동");
+            vop.set("firstUrl", "메뉴로 이동");
+            vop.set("mesKind", "messageText");
             vop.set("lastMes", "");
             String des = null;
-            Chat userList = chatMapper.selectUserList(392);
-            chat.setHomeClass(userList.getHomeClass());
+            double allAvg = 0;
+            /*
+            examAnalysis.setFms(50.8010);
+            examAnalysis.setFfs(48.9920);
+            examAnalysis.setSms(47.8148);
+            examAnalysis.setSfs(49.0040);
+            examAnalysis.setFs(49.7237);
+            examAnalysis.setSes(45.5183);
+            examAnalysis.setTs(49.9410);
+            examAnalysis.setFos(49.9540);
+            examAnalysis.setFis(46.6370);
+            examAnalysis.setSis(49.3273);
+            examAnalysis.setSevs(50.2187);
+            examAnalysis.setEs(46.8750);
+            examAnalysis.setNs(50.4637);
+            */
 
+
+            Chat userList = chatMapper.selectUserList(392);
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 if (division.contains("8")) {
                     if (chatBody.contains("시험")) {
-
-                        ArrayList<Chat> analyses = chatMapper.selectGradeList(chat.getHomeClass());
-
-
+                        allAvg = (examAnalysis.getFms()+examAnalysis.getFfs()+examAnalysis.getSms()+examAnalysis.getSfs())/4;
                         title1 = "과목기준";
                         img = "https://cdn.pixabay.com/photo/2017/10/17/14/10/financial-2860753_1280.jpg";
-                        des = "1학기 중간고사: " +
-                                "\n1학기 기말고사: " +
-                                "\n2학기 중간고사: " +
-                                "\n2학기 기말고사: ";
+                        des = "총 평균: " + allAvg + " 점" +
+                                "\n1학기 중간고사 : " + examAnalysis.getFms() + "점" +
+                                "\n1학기 기말고사 : " + examAnalysis.getFfs() + "점" +
+                                "\n2학기 중간고사 : " + examAnalysis.getSms() + "점" +
+                                "\n2학기 기말고사 : "+ examAnalysis.getSfs() + "점";
                     } else if (chatBody.contains("과목")) {
+                        allAvg = (examAnalysis.getFs() + examAnalysis.getSes()+examAnalysis.getTs()+examAnalysis.getFos()+examAnalysis.getFis()+examAnalysis.getSis()+examAnalysis.getSevs()+examAnalysis.getEs()+examAnalysis.getNs())/9;
+
                         title1 = "시험기준";
                         img = "https://cdn.pixabay.com/photo/2016/10/09/08/32/digital-marketing-1725340_1280.jpg";
-
-                        des = vop.get("kor") + ": " +
-                                "\n" + vop.get("eng") + ": " + "data" + "점" +
-                                "\n" + vop.get("mat") + ": " + "data" + "점" +
-                                "\n" + vop.get("phl") + ": " + "data" + "점" +
-                                "\n" + vop.get("eco") + ": " + "data" + "점" +
-                                "\n" + vop.get("phy") + ": " + "data" + "점" +
-                                "\n" + vop.get("bio") + ": " + "data" + "점" +
-                                "\n" + vop.get("his") + ": " + "data" + "점" +
-                                "\n" + vop.get("for") + ": " + "data" + "점";
+                        des = "총 평균: " + allAvg + " 점" +
+                                "\n" + vop.get("kor") + " : " + examAnalysis.getFs() + " 점" +
+                                "\n" + vop.get("eng") + " : " + examAnalysis.getSes() + "점" +
+                                "\n" + vop.get("mat") + " : " + examAnalysis.getTs() + "점" +
+                                "\n" + vop.get("phl") + " : " + examAnalysis.getFos() + "점" +
+                                "\n" + vop.get("eco") + " : " + examAnalysis.getFis() + "점" +
+                                "\n" + vop.get("phy") + " : " + examAnalysis.getSis() + "점" +
+                                "\n" + vop.get("bio") + " : " + examAnalysis.getSevs() + "점" +
+                                "\n" + vop.get("his") + " : " + examAnalysis.getEs() + "점" +
+                                "\n" + vop.get("for") + " : " + examAnalysis.getNs() + "점";
                     }
                     vop.set("description", des);
-                    vop.set("title", (userList.getCurGrade() + "학년 " + userList.getHomeClass() + "반의 평균점수 분석결과"));
+                    vop.set("title", "[" + (userList.getCurGrade() + "학년 " + userList.getHomeClass() + "반] 의 " + "분석 결과"));
                     vop.set("img", img);
                     vop.set("secondMes", "종료");
                     vop.set("thirdMes", title1);

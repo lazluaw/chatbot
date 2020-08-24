@@ -28,37 +28,6 @@
         from chat
     </select>
 
-    <resultMap id="chat" type="chat">
-        <collection property="homeClass" resultMap="chat"/>
-    </resultMap>
-    <select id="selectGradeList" resultMap="chat">
-        select
-         g.score as score,
-         g.semester_code as semesterCode,
-         g.subject_id as subjectId,
-         g.user_code as userCode,
-         c.user_code as userCode,
-         u.user_code as userCode
-        from grade g
-         left outer join chat c on g.user_code = c.user_code
-         left outer join user u on g.user_code = u.user_code
-        where u.home_class = #{homeClass}
-    </select>
-
-    <select id="selectAvg" parameterType="int" resultType="chat">
-        select avg
-        from chat
-        <choose>
-            <when test="exam_kind != null">
-
-            </when>
-            <when test="subject_code != null">
-
-            </when>
-        </choose>
-
-    </select>
-
     <update id="updateData" parameterType="chat"
             useGeneratedKeys="true" keyProperty="chatId">
         update chat set

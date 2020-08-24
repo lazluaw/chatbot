@@ -31,4 +31,38 @@
             and subject_code = #{subjectCode}
         </if>
     </select>
+
+    <select id="selectAvg" resultType="examAnalysis">
+        select avg(score),
+        (
+        case subject_id
+        when 1 then '1학기 국어'
+        when 2 then '1학년 영어'
+        when 3 then '1학년 수학'
+        when 4 then '1학년 한국사'
+        when 5 then '1학년 생활과윤리'
+        when 6 then '1학년 경제'
+        when 7 then '1학년 물리'
+        when 8 then '1학년 생명과학'
+        when 9 then '1학년 제2외국어'
+        end
+        )
+        from grade
+        where semester_code &lt; 201930
+        group by subject_id
+        having subject_id &lt; 10
+        union
+        select avg(score),
+        (
+        case semester_code
+        when 201911 then '1학기 중간고사'
+        when 201912 then '1학기 기말고사'
+        when 201921 then '2학기 중간고사'
+        when 201922 then '2학기 기말고사'
+        end
+        )
+        from grade
+        group by semester_code
+        having semester_code &gt; 201822 and semester_code &lt; 201930
+    </select>
 </mapper>

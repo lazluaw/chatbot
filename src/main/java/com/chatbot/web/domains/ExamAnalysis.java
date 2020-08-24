@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @MappedTypes(LocalDate.class)
 public class ExamAnalysis {
     private int id, userCode, examKind, codeExam, codeSubject, examNum;
+    private double fs, ses, ts, fos, fis, sis, sevs, es, ns, fms, ffs, sms, sfs;
     private String subjectCode, codeSubjectKor, codeExamKor, wrongAnswer;
     private LocalDateTime insertDate;
 }

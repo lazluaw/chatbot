@@ -2,7 +2,6 @@ package com.chatbot.web.mappers;
 
 import com.chatbot.web.domains.Chat;
 import org.springframework.stereotype.Repository;
-import java.util.ArrayList;
 
 @Repository
 public interface ChatMapper {
@@ -11,6 +10,4 @@ public interface ChatMapper {
     public Chat selectList();
     public void updateData(Chat chat);
     public void deleteData(Chat chat);
-    public ArrayList<Chat> selectGradeList(int chat);
-    public Chat selectAvg(int chat);
 }
