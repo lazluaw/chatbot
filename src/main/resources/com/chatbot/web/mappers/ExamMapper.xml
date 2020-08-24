@@ -21,6 +21,5 @@
         <if test="examNum != null">
             and exam_num = #{examNum}
         </if>
-
     </select>
 </mapper>

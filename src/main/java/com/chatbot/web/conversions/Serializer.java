@@ -31,28 +31,17 @@ import java.util.Spliterator;
 //admin: cucumber, cucumber123
 @Service
 public class Serializer {
-    @Autowired
-    Chat chat;
-    @Autowired
-    ChatHistory chatHistory;
-    @Autowired
-    ChatMapper chatMapper;
-    @Autowired
-    Exam exam;
-    @Autowired
-    ExamAnalysis examAnalysis;
-    @Autowired
-    ChatHistoryMapper chatHistoryMapper;
-    @Autowired
-    ExamMapper examMapper;
-    @Autowired
-    ExamAnalysisMapper examAnalysisMapper;
-    @Autowired
-    Fallback fallback;
-    @Autowired
-    RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    Exit exit;
+    @Autowired Chat chat;
+    @Autowired ChatHistory chatHistory;
+    @Autowired ChatMapper chatMapper;
+    @Autowired Exam exam;
+    @Autowired ExamAnalysis examAnalysis;
+    @Autowired ChatHistoryMapper chatHistoryMapper;
+    @Autowired ExamMapper examMapper;
+    @Autowired ExamAnalysisMapper examAnalysisMapper;
+    @Autowired Fallback fallback;
+    @Autowired RedisTemplate<String, Object> redisTemplate;
+    @Autowired Exit exit;
     private static ObjectMapper mapper = new JsonMapper();
     private JSONParser parser = new JSONParser();
     private JSONObject obj, obj0, obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9, obj10, obj11, obj12, obj13, arrObj;
@@ -364,19 +353,20 @@ public class Serializer {
             vop.set("thirdT", "화상교육");
             vop.set("thirdD", "다대면 화상교육을 진행합니다.");
             vop.set("thirdImg", "https://i.pinimg.com/564x/fe/d2/d7/fed2d7cc7ffab16d06138b226735dfae.jpg");
-            vop.set("thirdUrl", "https://www.naver.com");
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 title = "출결관리";
                 img = "https://i.pinimg.com/564x/3c/02/af/3c02afb940e4aa0e7c9448d75ee0f04f.jpg";
-                url = "https://www.naver.com";
+                url = "http://localhost:3000/teacher/attendance";
                 title1 = "시험분석";
                 img1 = "https://i.pinimg.com/564x/59/e0/28/59e0283e88f18b5c35ed59dbdb869b8d.jpg";
+                vop.set("thirdUrl", "http://localhost:3000/teacherstreaming");
             } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                 title = "출석체크";
                 img = "https://i.pinimg.com/564x/3c/02/af/3c02afb940e4aa0e7c9448d75ee0f04f.jpg";
-                url = "https://www.naver.com";
+                url = "http://localhost:3000/student/attendance";
                 title1 = "오답노트";
                 img1 = "https://i.pinimg.com/564x/3f/fb/3b/3ffb3ba83f1be537725827d331452695.jpg";
+                vop.set("thirdUrl", "http://localhost:3000/studentstreaming");
             } else {
                 logger.error("menu ERROR");
                 return null;
@@ -408,23 +398,24 @@ public class Serializer {
             if (division.contains("2")) {
                 title = "화상교육";
                 img = "https://cdn.pixabay.com/photo/2018/10/23/10/09/video-recording-3767454_1280.jpg";
-                url = "https://www.naver.com";
                 if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                     title1 = "출결관리";
                     title2 = "시험분석";
+                    url = "http://localhost:3000/teacherstreaming";
                 } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                     title1 = "출석체크";
                     title2 = "오답노트";
+                    url = "http://localhost:3000/studentstreaming";
                 }
             } else if (division.contains("3")) {
                 if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                     title = "출결관리";
-                    url = "https://www.naver.com";
+                    url = "http://localhost:3000/teacher/attendance";
                     title1 = "화상교육";
                     title2 = "시험분석";
                 } else if (vop.get("userCode").equals(String.valueOf(chat.getUserCode()))) {
                     title = "출석체크";
-                    url = "https://www.naver.com";
+                    url = "http://localhost:3000/student/attendance";
                     title1 = "화상교육";
                     title2 = "오답노트";
                 }
@@ -570,19 +561,22 @@ public class Serializer {
             String des = null;
             Chat userList = chatMapper.selectUserList(392);
             chat.setHomeClass(userList.getHomeClass());
-            System.out.println(chatMapper.selectAverage(chat.getHomeClass()).toArray().toString());
 
             if (vop.get("adminCode").equals(String.valueOf(chat.getUserCode()))) {
                 if (division.contains("8")) {
                     if (chatBody.contains("시험")) {
-                        title1 = "과목종류";
+
+                        ArrayList<Chat> analyses = chatMapper.selectGradeList(chat.getHomeClass());
+
+
+                        title1 = "과목기준";
                         img = "https://cdn.pixabay.com/photo/2017/10/17/14/10/financial-2860753_1280.jpg";
                         des = "1학기 중간고사: " +
                                 "\n1학기 기말고사: " +
                                 "\n2학기 중간고사: " +
                                 "\n2학기 기말고사: ";
                     } else if (chatBody.contains("과목")) {
-                        title1 = "시험종류";
+                        title1 = "시험기준";
                         img = "https://cdn.pixabay.com/photo/2016/10/09/08/32/digital-marketing-1725340_1280.jpg";
 
                         des = vop.get("kor") + ": " +
@@ -595,8 +589,6 @@ public class Serializer {
                                 "\n" + vop.get("his") + ": " + "data" + "점" +
                                 "\n" + vop.get("for") + ": " + "data" + "점";
                     }
-
-
                     vop.set("description", des);
                     vop.set("title", (userList.getCurGrade() + "학년 " + userList.getHomeClass() + "반의 평균점수 분석결과"));
                     vop.set("img", img);
@@ -608,8 +600,8 @@ public class Serializer {
                     return this.addJson("car", "qBut");
                 }
                 vop.set("text", "분석할 기준을 고르세요.");
-                vop.set("secondMes", "시험종류");
-                vop.set("thirdMes", "과목종류");
+                vop.set("secondMes", "시험기준");
+                vop.set("thirdMes", "과목기준");
                 vop.set("kind", "message");
                 vop.set("mesKind", "messageText");
                 this.addData(jsonParams, "b", null);

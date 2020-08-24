@@ -66,6 +66,7 @@ create table codeExamKind
     code_id int unsigned not null auto_increment,
     code_exam int not null,
     code_exam_kor varchar(50) not null,
+    grade_exam int not null,
     PRIMARY KEY (code_id)
 )ENGINE=InnoDB
  DEFAULT CHARSET=utf8
@@ -76,10 +77,14 @@ create table codeSubjectKind
     code_id int unsigned not null auto_increment,
     code_subject char(5) not null,
     code_subject_kor char(10) not null,
+    grade_subject int not null,
     PRIMARY KEY (code_id)
 )ENGINE=InnoDB
  DEFAULT CHARSET=utf8
  COLLATE=utf8_general_ci;
+
+
+/v1/kakao/fallback
 
 
 --연관 관계--
