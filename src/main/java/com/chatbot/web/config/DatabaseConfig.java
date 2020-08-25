@@ -11,7 +11,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class DatabaseConfig {
-    @Autowired Chat chat;
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory();
@@ -23,7 +22,6 @@ public class DatabaseConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
-
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new StringRedisSerializer());
         return redisTemplate;
