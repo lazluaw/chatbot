@@ -69,27 +69,14 @@
     </select>
 
     <select id="comepareSvg" resultType="examAnalysis">
-        select avg(score) as avgHome, subject_id, home_class,
-        (
-        case home_class
-        when 2 then '2반'
-        end
-        )
-        as homeMemo
+        select avg(score) as avgHome, home_class
         from grade
-        where semester_code &lt; 201930
-        group by subject_id
-        having subject_id &lt; 10
-        union
-        select avg(score) as avgHome, semester_code, home_class,
-        (
-        case home_class
-        when 2 then '2반'
-        end
-        )
-        as homeMemo
-        from grade
+        where semester_code &gt; 201830 and semester_code &lt; 201990 and home_class = 2
         group by semester_code
-        having semester_code &gt; 201822 and semester_code &lt; 201930
+        union all
+        select avg(score) as avgHome, home_class
+        from grade
+        where subject_id &lt; 10 and home_class = 2
+        group by subject_id
     </select>
 </mapper>
