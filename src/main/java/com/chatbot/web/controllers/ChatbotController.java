@@ -21,7 +21,7 @@ public class ChatbotController {
     @PostMapping("/v1/kakao/menu")
     public Map<String, Object> menu(@RequestBody Map<String, Object> jsonParams) { return serializer.checkSer(jsonParams); }
 
-    @PostMapping("/v1/kakao/stream")
+    @PostMapping("/v1/kakao/streaming")
     public Map<String, Object> stream(@RequestBody Map<String, Object> jsonParams) { return serializer.checkSer(jsonParams); }
 
     @PostMapping("/v1/kakao/attendance")
