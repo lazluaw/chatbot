@@ -4,17 +4,18 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-
-!**/src/main/java/com.chatbot.web/config/
-!**/src/main/java/com.chatbot.web/proxy/
-!**/src/main/java/com.chatbot.web/test/
-
-### DB ###
 *.properties
 *.yml
 *.xml
 !**/src/main/resources/
-!**/src/main/resources/static/datas
+*.csv
+*.sql
+*.java
+src/main/resources/templates
+src/main/resources/logs/
+src/main/resources/static/test/
+!src/main/resources/static/datas/
+*.csv
 
 ### STS ###
 .apt_generated
@@ -27,7 +28,7 @@ build/
 
 ### IntelliJ IDEA ###
 *.gradle
-.idea
+*.idea
 *.iws
 *.iml
 *.ipr
@@ -44,7 +45,4 @@ out/
 
 ### VS Code ###
 .vscode/
-src/main/resources/templates
 src/main/java/com/chatbot/web/daos/
-
-src/main/resources/logs/
